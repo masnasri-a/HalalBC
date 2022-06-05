@@ -1,4 +1,2 @@
 # HalalBC
-
-
-KONTOL
+ Test
