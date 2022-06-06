@@ -97,7 +97,7 @@ def register_auditor(data: auth_model.DataKonsumen):
 def login(login_data : auth_model.Login):
     try:
         client, col = mongo.mongo('Accounts')
-        datas = col.find_one({'$and':[{'name':login_data.username},{'password':util.sha256(login_data.password)}]})
+        datas = col.find_one({'$and':[{'username':login_data.username},{'password':util.sha256(login_data.password)}]})
         client.close
         if datas != None:
             del datas['password']
@@ -106,6 +106,8 @@ def login(login_data : auth_model.Login):
                 "data":datas
             }
         else:
+            traceback.print_exc()
             raise HTTPException(401, "Please check your username and password")
     except:
+        traceback.print_exc()
         raise HTTPException(401, "Please check your username and password")
