@@ -7,9 +7,11 @@ class Login(BaseModel):
 class DataAuditor(BaseModel):
     no_ktp:str
     name:str
+    password:str
+    username:str
     religion:str
     address:str
-    isntitution:str
+    institution:str
     competence:str
     experience:str
     cert_competence:str
@@ -17,6 +19,8 @@ class DataAuditor(BaseModel):
     auditor_experience:str
 
 class DataUMKM(BaseModel):
+    username:str
+    password:str
     company_name:str
     company_address:str
     company_number:str
@@ -27,3 +31,12 @@ class DataUMKM(BaseModel):
     product_type:str
     marketing_area:str
     marketing_system:str
+
+class DataKonsumen(BaseModel):
+    username:str
+    password:str
+    name:str
+    email:str
+    password:str
+    phone:str
+    address:str
