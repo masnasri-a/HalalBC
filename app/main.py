@@ -1,16 +1,16 @@
-from typing import Union
+
 import uvicorn
 from fastapi import FastAPI
 from fastapi.responses import RedirectResponse
-from imp import reload
 from route import auth, images
 
 
 app = FastAPI()
 
 
-@app.get('/',include_in_schema=False)
+@app.get('/', include_in_schema=False)
 async def redirect():
+    """ a function for redirect / into /docs """
     return RedirectResponse('/docs')
 
 
