@@ -114,7 +114,7 @@ def login(login_data: auth_model.Login):
         datas = col.find_one({'$and': [{'username': login_data.username}, {
                              'password': util.sha256(login_data.password)}]})
         client.close()
-        if datas != None:
+        if datas is not None:
             del datas['password']
             return {
                 "status": "success",
