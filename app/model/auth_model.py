@@ -43,6 +43,5 @@ class DataKonsumen(BaseModel):
     password: str
     name: str
     email: str
-    password: str
     phone: str
     address: str
