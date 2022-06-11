@@ -12,6 +12,38 @@ from model import account_model
 app = APIRouter()
 
 
+@app.get("/get_auditor")
+def get_auditor(id: str):
+    """ A function to get Auditor Account by id """
+    try:
+        client, col = mongo.mongo('Accounts')
+        data = col.find_one({'_id': id, 'role': 'auditor'})
+        if data is not None:
+            return data
+        else:
+            client.close()
+            raise HTTPException(404, 'Account not found')
+    except errors.ExecutionTimeout as error:
+        traceback.print_exc()
+        raise HTTPException(400, "Failed Get Auditor") from error
+
+
+@app.get("/get_all_auditor")
+def get_all_auditor():
+    """ A function to get all Auditor Account """
+    try:
+        client, col = mongo.mongo('Accounts')
+        data = col.find({'role': 'auditor'})
+        if data is not None:
+            return [d for d in data]
+        else:
+            client.close()
+            raise HTTPException(404, 'Account not found')
+    except errors.ExecutionTimeout as error:
+        traceback.print_exc()
+        raise HTTPException(400, "Failed Get all Auditor") from error
+
+
 @app.post('/update_auditor')
 def update_auditor(data: account_model.DataAuditor):
     """ A function to update Auditor Account """
@@ -22,7 +54,6 @@ def update_auditor(data: account_model.DataAuditor):
             model = {
                 "no_ktp": data.no_ktp,
                 "name": data.name,
-                "role": "auditor",
                 "religion": data.religion if data.religion else datas['religion'],
                 "address": data.address if data.address else datas['address'],
                 "institution": data.institution if data.institution else datas['institution'],
@@ -42,6 +73,38 @@ def update_auditor(data: account_model.DataAuditor):
         traceback.print_exc()
         raise HTTPException(400, "Failed Update Auditor") from error
 
+
+@app.get("/get_umkm")
+def get_umkm(id: str):
+    """ A function to get UMKM Account by id """
+    try:
+        client, col = mongo.mongo('Accounts')
+        data = col.find_one({'_id': id, 'role': 'umkm'})
+        if data is not None:
+            return data
+        else:
+            client.close()
+            raise HTTPException(404, 'Account not found')
+    except errors.ExecutionTimeout as error:
+        traceback.print_exc()
+        raise HTTPException(400, "Failed Get UMKM") from error
+
+
+@app.get("/get_all_umkm")
+def get_all_umkm():
+    """ A function to get all UMKM Account """
+    try:
+        client, col = mongo.mongo('Accounts')
+        data = col.find({'role': 'umkm'})
+        if data is not None:
+            return [d for d in data]
+        else:
+            client.close()
+            raise HTTPException(404, 'Account not found')
+    except errors.ExecutionTimeout as error:
+        traceback.print_exc()
+        raise HTTPException(400, "Failed Get all UMKM") from error
+    
 
 @app.post('/update_umkm')
 def update_umkm(data: account_model.DataUMKM):
@@ -71,6 +134,38 @@ def update_umkm(data: account_model.DataUMKM):
     except errors.ExecutionTimeout as error:
         traceback.print_exc()
         raise HTTPException(400, "Failed Update UMKM") from error
+
+
+@app.get("/get_consumen")
+def get_consumen(id: str):
+    """ A function to get Consumen Account by id """
+    try:
+        client, col = mongo.mongo('Accounts')
+        data = col.find_one({'_id': id, 'role': 'consumen'})
+        if data is not None:
+            return data
+        else:
+            client.close()
+            raise HTTPException(404, 'Account not found')
+    except errors.ExecutionTimeout as error:
+        traceback.print_exc()
+        raise HTTPException(400, "Failed Update Auditor") from error
+
+
+@app.get("/get_all_consumen")
+def get_all_consumen():
+    """ A function to get all Consumen Account """
+    try:
+        client, col = mongo.mongo('Accounts')
+        data = col.find({'role': 'consumen'})
+        if data is not None:
+            return [d for d in data]
+        else:
+            client.close()
+            raise HTTPException(404, 'Account not found')
+    except errors.ExecutionTimeout as error:
+        traceback.print_exc()
+        raise HTTPException(400, "Failed Get all Consumen") from error
 
 
 @app.post('/update_consumen')
