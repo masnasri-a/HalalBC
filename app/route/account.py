@@ -106,6 +106,22 @@ def get_all_umkm():
         raise HTTPException(400, "Failed Get all UMKM") from error
     
 
+@app.get("/get_all_umkm_area")
+def get_all_umkm_area(marketing_area: str):
+    """ A function to get all UMKM Account by marketing area """
+    try:
+        client, col = mongo.mongo('Accounts')
+        data = col.find({'role': 'umkm', 'marketing_area': marketing_area})
+        if data is not None:
+            return [d for d in data]
+        else:
+            client.close()
+            raise HTTPException(404, 'Account not found')
+    except errors.ExecutionTimeout as error:
+        traceback.print_exc()
+        raise HTTPException(400, "Failed Get all UMKM") from error
+
+
 @app.post('/update_umkm')
 def update_umkm(data: account_model.DataUMKM):
     """ A function to update UMKM Account """
