@@ -1,13 +1,16 @@
-
+""" Auth Model Pages """
+# pylint: disable=no-name-in-module
 from pydantic import BaseModel
 
 
 class Login(BaseModel):
+    """ login input model """
     username: str
     password: str
 
 
 class DataAuditor(BaseModel):
+    """ login data auditor model """
     no_ktp: str
     name: str
     password: str
@@ -24,6 +27,7 @@ class DataAuditor(BaseModel):
 
 
 class DataUMKM(BaseModel):
+    """ login data umkm model """
     username: str
     password: str
     company_name: str
@@ -39,6 +43,7 @@ class DataUMKM(BaseModel):
 
 
 class DataKonsumen(BaseModel):
+    """ login data konsumen model """
     username: str
     password: str
     name: str

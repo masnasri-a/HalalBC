@@ -1,8 +1,11 @@
+""" pages for account model """
 
-from pydantic import BaseModel
 from typing import Optional
+# pylint: disable=no-name-in-module
+from pydantic import BaseModel
 
 class DataPassword(BaseModel):
+    
     id: str
     password: str
     new_password: str

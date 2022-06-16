@@ -13,7 +13,7 @@ app = APIRouter()
 
 
 @app.get("/get_auditor")
-def get_auditor(id: str):
+def get_auditor(_id: str):
     """ A function to get Auditor Account by id """
     try:
         client, col = mongo.mongo('Accounts')
@@ -97,14 +97,14 @@ def get_all_umkm():
         client, col = mongo.mongo('Accounts')
         data = col.find({'role': 'umkm'})
         if data is not None:
-            return [d for d in data]
+            return [detail for detail in data]
         else:
             client.close()
             raise HTTPException(404, 'Account not found')
     except errors.ExecutionTimeout as error:
         traceback.print_exc()
         raise HTTPException(400, "Failed Get all UMKM") from error
-    
+
 
 @app.get("/get_all_umkm_area")
 def get_all_umkm_area(marketing_area: str):
@@ -216,7 +216,8 @@ def update_password(data: account_model.DataPassword):
         datas = col.find_one({'_id': data.id})
         if datas is not None:
             if util.sha256(data.password) == datas['password']:
-                col.update_one({'_id': data.id}, {"$set": {"password": util.sha256(data.new_password)}})
+                col.update_one({'_id': data.id}, {
+                               "$set": {"password": util.sha256(data.new_password)}})
                 client.close()
                 return data.id
             else:
