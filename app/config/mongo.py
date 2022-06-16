@@ -1,13 +1,15 @@
+"""mongo config"""
 import traceback
 import pymongo
 from dotenv import dotenv_values
 
 conf = dotenv_values('.env')
 def mongo(column):
+    """ mongo config"""
     try:
         client = pymongo.MongoClient(conf.get('MONGO_URI'))
-        db = client["HalalBC"]
-        col = db[column]
+        database = client["HalalBC"]
+        col = database[column]
         return client, col
-    except:
+    except Exception as error:
         traceback.print_exc()

@@ -3,15 +3,23 @@
 # pylint: disable=no-name-in-module
 from pydantic import BaseModel
 
+class InitUMKM(BaseModel):
+    """ init """
+    creator_id:str
+
 class UmkmDetail(BaseModel):
     """ umkm detail info """
     id: str
+    nama_ketua: str
+    nama_penanggungjawab: str
     logo_perusahaan: str
     ttd_penanggungjawab: str
     ttd_ketua: str
 
+
 class ManagementHalahTeam(BaseModel):
     """ docx page 4 """
+    id_report:str
     ketua: str = """1. Bertanggungjawab dalam sosialisasi kebijakan halal
 2.	Bertanggungjawab dalam penunjukkan tim manajemen halal
 3.	Bertanggungjawab dalam pelatihan eksternal/internal 
@@ -31,3 +39,11 @@ class ManagementHalahTeam(BaseModel):
     pemyimpanan: str = """1. Bertanggungjawab dalam proses penyimpanan bahan dan produk jadi
 2.	Bertanggungjawab dalam proses transportasi bahan dan produk jadi 
 """
+
+class Pelaksanaan(BaseModel):
+    """ docx page 13 """
+    id:str
+    tanggal_pelaksanaan:int
+    pemateri:str
+    data:dict
+    
