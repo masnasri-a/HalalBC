@@ -5,12 +5,13 @@ from typing import Optional
 from pydantic import BaseModel
 
 class DataPassword(BaseModel):
-    
+    """ model for change password """
     id: str
     password: str
     new_password: str
 
 class DataAuditor(BaseModel):
+    """ model for data auditor """
     id: str
     no_ktp: str
     name: str
@@ -24,6 +25,7 @@ class DataAuditor(BaseModel):
     auditor_experience: Optional[str]
 
 class DataUMKM(BaseModel):
+    """ model for data umkm """
     id: str
     company_name: str
     company_address: Optional[str]
@@ -35,8 +37,9 @@ class DataUMKM(BaseModel):
     product_type: str
     marketing_area: Optional[str]
     marketing_system: Optional[str]
-    
+
 class DataKonsumen(BaseModel):
+    """ model for data konsumen """
     id: str
     name: str
     email: Optional[str]
