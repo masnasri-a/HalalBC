@@ -132,6 +132,7 @@ def bukti_pelaksanaan(data_model: umkm_model.Pelaksanaan, resp: Response):
 
 @app.get('/get_soal_evaluasi')
 def soal_evaluasi(resp:Response):
+    """ soal evaluasi """
     data = [
         {
             "id":1,
@@ -222,4 +223,21 @@ def soal_evaluasi(resp:Response):
         }
     ]
     return response.response_detail(200, data, resp)
-    
+
+
+@app.post('/input_jawaban', status_code=200)
+def jawaban(data:dict, resp:Response) -> bool:
+    """
+    example = {"id":asdasdasd,"nama":"Eka Widiawati","Tanggal":"19 Agustus 2021",1:"a",2:"b",3:"a",4:"a",5:"b",6:"a",7:"a",8:"b",9:"a",10:"a"}
+    """
+    try:
+        client, col = mongo.mongo('UMKM')
+        datas = col.insert_one(data)
+        client.close()
+        res = response.response_detail(200, str(datas.inserted_id), resp)
+        return res
+    except Exception as error:
+        return response.response_detail(400, error, resp)
+
+# @app.get('/get_audit_internal')
+# def get_audit_internal():
