@@ -76,8 +76,12 @@ def penetapan_tim(data_model: dict, resp: Response):
     }]}
     """
     try:
+        model = {
+            "type":"penetapan tim",
+            "data":data_model
+        }
         client, col = mongo.mongo('UMKM')
-        datas = col.insert_one(data_model)
+        datas = col.insert_one(model)
         client.close()
         res = response.response_detail(200, str(datas.inserted_id), resp)
         return res
@@ -118,6 +122,7 @@ def bukti_pelaksanaan(data_model: umkm_model.Pelaksanaan, resp: Response):
         model = {
             "id": data_model.id,
             "tanggal_pelaksanaan": data_model.tanggal_pelaksanaan,
+            "type":"bukti pelaksanaan",
             "pemateri": data_model.pemateri,
             "data": data_model.data
         }
@@ -232,7 +237,11 @@ def jawaban(data:dict, resp:Response) -> bool:
     """
     try:
         client, col = mongo.mongo('UMKM')
-        datas = col.insert_one(data)
+        model = {
+            "type":"jawaban evaluasi",
+            "data":data
+        }
+        datas = col.insert_one(model)
         client.close()
         res = response.response_detail(200, str(datas.inserted_id), resp)
         return res
@@ -343,4 +352,178 @@ def get_audit_internal():
     except Exception as error:
         raise HTTPException(400, "error getting data") from error
 
-    
+@app.post('/jawaban_audit_internal')
+def jawaban_audit(data:dict, resp:Response):
+    """ exmaple
+    {
+  "id": "asdas",
+  "tanggal_audit": "19 agustus 2021",
+  "nama_auditor": "faisal",
+  "bagian_diaudit": "produksi",
+  "jawaban": [
+    {
+      "id": 1,
+      "jawaban": true,
+      "keterangan": ""
+    },
+    {
+      "id": 2,
+      "jawaban": true,
+      "keterangan": ""
+    },
+    {
+      "id": 3,
+      "jawaban": true,
+      "keterangan": ""
+    },
+    {
+      "id": 4,
+      "jawaban": true,
+      "keterangan": ""
+    },
+    {
+      "id": 5,
+      "jawaban": true,
+      "keterangan": ""
+    },
+    {
+      "id": 6,
+      "jawaban": true,
+      "keterangan": ""
+    },
+    {
+      "id": 7,
+      "jawaban": true,
+      "keterangan": ""
+    },
+    {
+      "id": 8,
+      "jawaban": true,
+      "keterangan": ""
+    },
+    {
+      "id": 9,
+      "jawaban": true,
+      "keterangan": ""
+    },
+    {
+      "id": 10,
+      "jawaban": true,
+      "keterangan": ""
+    },
+    {
+      "id": 11,
+      "jawaban": true,
+      "keterangan": ""
+    },
+    {
+      "id": 12,
+      "jawaban": true,
+      "keterangan": ""
+    },
+    {
+      "id": 13,
+      "jawaban": true,
+      "keterangan": ""
+    },
+    {
+      "id": 14,
+      "jawaban": true,
+      "keterangan": ""
+    },
+    {
+      "id": 15,
+      "jawaban": true,
+      "keterangan": ""
+    },
+    {
+      "id": 16,
+      "jawaban": true,
+      "keterangan": ""
+    },
+    {
+      "id": 17,
+      "jawaban": true,
+      "keterangan": ""
+    },
+    {
+      "id": 18,
+      "jawaban": true,
+      "keterangan": ""
+    },
+    {
+      "id": 19,
+      "jawaban": true,
+      "keterangan": ""
+    },
+    {
+      "id": 20,
+      "jawaban": true,
+      "keterangan": ""
+    },
+    {
+      "id": 21,
+      "jawaban": true,
+      "keterangan": ""
+    },
+    {
+      "id": 22,
+      "jawaban": true,
+      "keterangan": ""
+    },
+    {
+      "id": 23,
+      "jawaban": true,
+      "keterangan": ""
+    },
+    {
+      "id": 24,
+      "jawaban": true,
+      "keterangan": ""
+    },
+    {
+      "id": 25,
+      "jawaban": true,
+      "keterangan": ""
+    },
+    {
+      "id": 26,
+      "jawaban": true,
+      "keterangan": ""
+    },
+    {
+      "id": 27,
+      "jawaban": true,
+      "keterangan": ""
+    },
+    {
+      "id": 28,
+      "jawaban": true,
+      "keterangan": ""
+    },
+    {
+      "id": 29,
+      "jawaban": true,
+      "keterangan": ""
+    },
+    {
+      "id": 30,
+      "jawaban": true,
+      "keterangan": ""
+    },
+    {
+      "id": 31,
+      "jawaban": true,
+      "keterangan": ""
+    }
+  ]
+}
+    """
+    try:
+        client, col = mongo.mongo('UMKM')
+        datas = col.insert_one(data)
+        client.close()
+        res = response.response_detail(200, str(datas.inserted_id), resp)
+        return res
+    except Exception as error:
+        return response.response_detail(400, error, resp)
