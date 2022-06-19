@@ -1,6 +1,6 @@
 """ umkm  routing pages """
 
-from fastapi import APIRouter, Response
+from fastapi import APIRouter, HTTPException, Response
 # from utils import word
 from model import umkm_model
 from utils import response, util
@@ -239,5 +239,108 @@ def jawaban(data:dict, resp:Response) -> bool:
     except Exception as error:
         return response.response_detail(400, error, resp)
 
-# @app.get('/get_audit_internal')
-# def get_audit_internal():
+@app.get('/get_audit_internal')
+def get_audit_internal():
+    """ soal audit internal """
+    try:
+        model = [
+    {
+        "id":1,
+        "soal":"Apakah kebijakan halal telah dijelaskan pada semua karyawan ?"
+    },{
+        "id":2,
+        "soal":"Apakah ada bukti sosialisasi kebijakan halal ? (daftar hadir sosialisasi)"
+    },{
+        "id":3,
+        "soal":"Apakah tersedia poster kebijakan halal dan edukasi halal di kantor, area produksi dan  udang?"
+    },{
+        "id":4,
+        "soal":"Apakah ketua/anggota Tim Manajemen Halal telah mengikuti pelatihan eksternal setidaknya sekali dalam dua tahun?"
+    },{
+        "id":5,
+        "soal":"Apakah ada bukti pelatihan eksternal (sertifikat pelatihan) ?"
+    },{
+        "id":6,
+        "soal":"Apakah pelatihan internal kepada semua karyawan, termasuk karyawan baru, dengan materi seperti tercantum dalam Lampiran 3 telah dilaksanakan setidaknya setahun sekali ?"
+    },{
+        "id":7,
+        "soal":"Apakah ada bukti pelatihan internal (daftar hadir pelatihan) ?"
+    },{
+        "id":8,
+        "soal":"Apakah Daftar Bahan dengan format seperti pada Lampiran 4 telah dibuat ?"
+    },{
+        "id":9,
+        "soal":"Apakah nama/merk bahan dan nama produsen bahan yang dibeli sesuai dengan yang tercantum dalam Daftar Bahan Halal ?"
+    },{
+        "id":10,
+        "soal":"Apakah bukti pembelian (nota/kuitansi) dan contoh label kemasan (jika ada) selalu disimpan setidaknya selama 6 bulan ?"
+    },{
+        "id":11,
+        "soal":"Apakah setiap ada bahan baru selalu dimintakan persetujuan ke LPPOM MUI sebelum digunakan? (kecuali bahan tidak kritis dan bahan bersertifikat halal MUI yang ada di www.halalmui.org)"
+    },{
+        "id":12,
+        "soal":"Apakah bukti persetujuan penggunaan bahan baru dari LPPOM MUI selalu disimpan setidaknya selama dua tahun ?"
+    },{
+        "id":13,
+        "soal":"Apakah dilakukan pemeriksaan label bahan pada setiap pembelian atau penerimaan bahan ? (kecuali bahan tidak kritis)"
+    },{
+        "id":14,
+        "soal":"Apakah hasil pemeriksaan menunjukkan informasi nama bahan dan produsen yang tercantum di label sesuai dengan Daftar Bahan Halal ?"
+    },{
+        "id":15,
+        "soal":"Apakah ada formula/resep produk baku (untuk produk yang memiliki formula) ?"
+    },{
+        "id":16,
+        "soal":"Apakah bahan yang digunakan dalam produksi hanya bahan yang tercantum dalam Daftar Bahan ?"
+    },{
+        "id":17,
+        "soal":"Apakah formula produk yang digunakan pada proses produksi mengacu pada formula baku ?"
+    },{
+        "id":18,
+        "soal":"Jika terlanjur ada penggunaan bahan yang tidak tercantum dalam Daftar Bahan Halal, apakah produk yang dihasilkan tidak akan dijual ke konsumen dan dimusnahkan ?"
+    },{
+        "id":19,
+        "soal":"Apakah semua fasilitas dan peralatan produksi selalu dalam keadaan bersih (bebas dari najis) sebelum dan sesudah digunakan ?"
+    },{
+        "id":20,
+        "soal":"Apakah bahan dan produk selalu disimpan di tempat yang bersih dan terhindar dari najis?"
+    },{
+        "id":21,
+        "soal":"Apakah kendaraan yang digunakan untuk mengangkut produk halal dalam kondisi baik dan tidak digunakan untuk mengangkut produk lain yang diragukan kehalalannya ?"
+    },{
+        "id":22,
+        "soal":"Apakah setiap ada produk baru dengan merk yang sama selalu disertifikasi halal sebelum dipasarkan?"
+    },{
+        "id":23,
+        "soal":"Apakah setiap ada penambahan fasilitas produksi baru selalu didaftarkan untuk disertifikasi ?"
+    },{
+        "id":24,
+        "soal":"Apakah telah dilakukan audit internal setiap enam bulan sekali dengan cara memeriksa pelaksanaan seluruh prosedur operasional ? *"
+    },{
+        "id":25,
+        "soal":"Apakah audit internal dilakukan oleh ketua/ anggota Tim Manajemen Halal yang sudah mengikuti pelatihan ? *"
+    },{
+        "id":26,
+        "soal":"Apakah ada bukti pelaksanaan audit internal? *"
+    },{
+        "id":27,
+        "soal":"Apakah hasil audit internal telah dibahas dalam rapat kaji ulang manajemen yang dihadiri oleh ketua dan anggota Tim Manajemen Halal ? *"
+    },{
+        "id":28,
+        "soal":"Jika dalam audit internal ditemukan kelemahan, yaitu ada pertanyaan yang dijawab “tidak”, apakah segera dilakukan perbaikan agar kelemahan tersebut tidak terulang ? *"
+    },{
+        "id":29,
+        "soal":"Jika dalam audit internal ditemukan kelemahan, apakah ada bukti pelaksanaan perbaikan ? *"
+    },{
+        "id":30,
+        "soal":"Apakah ada bukti pelaksanaan rapat kaji ulang manajemen ? *"
+    },{
+        "id":31,
+        "soal":"Apakah form hasil audit internal yang telah terisi telah dikirimkan ke LPPOM MUI melalui Cerol? *"
+    }
+    ]
+        return model
+    except Exception as error:
+        raise HTTPException(400, "error getting data") from error
+
+    
