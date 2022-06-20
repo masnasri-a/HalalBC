@@ -1,7 +1,6 @@
 """ umkm  routing pages """
 
 from fastapi import APIRouter, HTTPException, Response
-from app.model.umkm_model import DaftarHadirKaji
 # from utils import word
 from model import umkm_model
 from utils import response, util
@@ -531,7 +530,7 @@ def jawaban_audit(data:dict, resp:Response):
         return response.response_detail(400, error, resp)
 
 @app.post('/daftar_hadir_kaji')
-def daftar_hadir_kaji(model: DaftarHadirKaji, resp: Response):
+def daftar_hadir_kaji(model: umkm_model.DaftarHadirKaji, resp: Response):
     """ daftar hadir kaji ulang \n  docx hal 18"""
     try:
         client, col = mongo.mongo('UMKM')
