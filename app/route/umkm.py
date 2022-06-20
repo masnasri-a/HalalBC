@@ -1,6 +1,7 @@
 """ umkm  routing pages """
 
 from fastapi import APIRouter, HTTPException, Response
+from app.model.umkm_model import DaftarHadirKaji
 # from utils import word
 from model import umkm_model
 from utils import response, util
@@ -358,6 +359,7 @@ def jawaban_audit(data:dict, resp:Response):
     {
   "id": "asdas",
   "tanggal_audit": "19 agustus 2021",
+  "auditee":"Eka Dwi Wijayanti",
   "nama_auditor": "faisal",
   "bagian_diaudit": "produksi",
   "jawaban": [
@@ -527,3 +529,25 @@ def jawaban_audit(data:dict, resp:Response):
         return res
     except Exception as error:
         return response.response_detail(400, error, resp)
+
+@app.post('/daftar_hadir_kaji')
+def daftar_hadir_kaji(model: DaftarHadirKaji, resp: Response):
+    """ daftar hadir kaji ulang \n  docx hal 18"""
+    try:
+        client, col = mongo.mongo('UMKM')
+        data = {
+            "id":model.id,
+            "tanggal":model.tanggal,
+            "list_orang":model.list_orang,
+            "pembahasan":model.pembahasan
+        }
+        datas = col.insert_one(data)
+        client.close()
+        return response.response_detail(200, str(datas.inserted_id), resp)
+    except Exception as error:
+        return response.response_detail(400, error, resp)
+
+# BIKIN DOWNLOAD LAMPIRAN 6
+
+# @app.post('/form_pembelian_pemeriksaan')
+# def pembelian_pemeriksaan()

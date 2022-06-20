@@ -47,3 +47,10 @@ class Pelaksanaan(BaseModel):
     pemateri:str
     data:dict
     
+
+class DaftarHadirKaji(BaseModel):
+    """ daftar hadir kaji class """
+    id: str
+    tanggal: str
+    list_orang: dict
+    pembahasan: dict
