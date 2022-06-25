@@ -522,6 +522,10 @@ def jawaban_audit(data:dict, resp:Response):
     """
     try:
         client, col = mongo.mongo('UMKM')
+        data = {
+            "type":"jawaban_audit",
+            "data":data
+        }
         datas = col.insert_one(data)
         client.close()
         res = response.response_detail(200, str(datas.inserted_id), resp)
@@ -548,5 +552,115 @@ def daftar_hadir_kaji(model: umkm_model.DaftarHadirKaji, resp: Response):
 
 # BIKIN DOWNLOAD LAMPIRAN 6
 
-# @app.post('/form_pembelian_pemeriksaan')
-# def pembelian_pemeriksaan()
+@app.post('/form_pembelian_pemeriksaan')
+def pembelian_pemeriksaan(data:dict , resp:Response):
+    """ form pembelian dan pemeriksaan bahan """
+    try:
+        client, col = mongo.mongo('UMKM')
+        data = {
+            "type":"pembelian",
+            "data":data
+        }
+        datas = col.insert_one(data)
+        
+        client.close()
+        return response.response_detail(200, str(datas.inserted_id), resp)
+    except Exception as error:
+        return response.response_detail(400, error, resp)
+    
+    
+@app.post('/form_pembelian_pemeriksaan_import')
+def pembelian_pemeriksaan(data:dict , resp:Response):
+    """ form pembelian dan pemeriksaan bahan import"""
+    try:
+        client, col = mongo.mongo('UMKM')
+        data = {
+            "type":"pembelian_import",
+            "data":data
+        }
+        datas = col.insert_one(data)
+        client.close()
+        return response.response_detail(200, str(datas.inserted_id), resp)
+    except Exception as error:
+        return response.response_detail(400, error, resp)
+    
+@app.post('/form_stok_barang')
+def form_stok_barang(data:dict , resp:Response):
+    """ form pembelian dan pemeriksaan bahan import"""
+    try:
+        client, col = mongo.mongo('UMKM')
+        data = {
+            "type":"stok_barang",
+            "data":data
+        }
+        datas = col.insert_one(data)
+        client.close()
+        return response.response_detail(200, str(datas.inserted_id), resp)
+    except Exception as error:
+        return response.response_detail(400, error, resp)
+
+
+@app.post('/form_produksi')
+def form_produksi(data:dict , resp:Response):
+    """ form pembelian dan pemeriksaan bahan import"""
+    try:
+        client, col = mongo.mongo('UMKM')
+        data = {
+            "type":"form_produksi",
+            "data":data
+        }
+        datas = col.insert_one(data)
+        client.close()
+        return response.response_detail(200, str(datas.inserted_id), resp)
+    except Exception as error:
+        return response.response_detail(400, error, resp)
+
+
+@app.post('/form_pemusnahan')
+def form_produksi(data:dict , resp:Response):
+    """ form pembelian dan pemeriksaan bahan import"""
+    try:
+        client, col = mongo.mongo('UMKM')
+        data = {
+            "type":"form_pemusnahan",
+            "data":data
+        }
+        datas = col.insert_one(data)
+        client.close()
+        return response.response_detail(200, str(datas.inserted_id), resp)
+    except Exception as error:
+        return response.response_detail(400, error, resp)
+
+
+@app.post('/form_pengecekan_kebersihan')
+def form_pengecekan_kebersihan(data:dict , resp:Response):
+    """ form pembelian dan pemeriksaan bahan import"""
+    try:
+        client, col = mongo.mongo('UMKM')
+        data = {
+            "type":"form_pengecekan_kebersihan",
+            "data":data
+        }
+        datas = col.insert_one(data)
+        client.close()
+        return response.response_detail(200, str(datas.inserted_id), resp)
+    except Exception as error:
+        return response.response_detail(400, error, resp)
+
+
+# @app.post('/daftar_barang_halal')
+# def form_pengecekan_kebersihan(data:dict , resp:Response):
+#     """ form pembelian dan pemeriksaan bahan import"""
+#     try:
+#         client, col = mongo.mongo('UMKM')
+#         data = {
+#             "type":"form_pengecekan_kebersihan",
+#             "data":data
+#         }
+#         datas = col.insert_one(data)
+#         client.close()
+#         return response.response_detail(200, str(datas.inserted_id), resp)
+#     except Exception as error:
+#         return response.response_detail(400, error, resp)
+
+

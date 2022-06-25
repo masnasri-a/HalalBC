@@ -31,6 +31,7 @@ class ManagementHalahTeam(BaseModel):
 3.	Membuat dan memperbaharui Daftar Bahan Halal serta memonitoring masa berlaku dokumen bahan
 4.	Bertanggungjawab dalam proses pemeriksaan kedatangan bahan
 """
+
     produksi: str = """1. Bertanggungjawab dalam proses produksi halal
 2.	Bertanggungjawab dalam proses pengembangan produk  
 3.	Bertanggungjawab dalam proses pencucian fasilitas produksi 
@@ -46,7 +47,7 @@ class Pelaksanaan(BaseModel):
     tanggal_pelaksanaan:int
     pemateri:str
     data:dict
-    
+
 
 class DaftarHadirKaji(BaseModel):
     """ daftar hadir kaji class """
@@ -54,3 +55,62 @@ class DaftarHadirKaji(BaseModel):
     tanggal: str
     list_orang: dict
     pembahasan: dict
+
+"""
+/form_pembelian_pemeriksaan_import
+/form_pembelian_pemeriksaan
+[
+    {
+        "Tanggal":"",
+        "nama_dan_merk":"",
+        "nama_dan_negara":"",
+        "halal":True,
+        "exp_bahan":"",
+        "paraf":""
+    }
+]
+"""
+
+"""
+/form_stok_barang
+[
+    {
+        "tanggal_beli":"",
+        "nama_bahan":"",
+        "jumlah_bahan":"",
+        "jumlah_keluar":"",
+        "stok_sisa":"",
+        "paraf":""
+    }
+]
+"""
+
+"""
+/form_produksi
+[
+    {
+        "tanggal_produksi":"",
+        "nama_produk":"",
+        "jumlah_awal":"",
+        "jumlah_produk_keluar":"",
+        "sisa_stok":"",
+        "paraf":""
+        
+    }
+]
+"""
+
+"""
+/form_pemusnahan
+[
+    {
+        "tanggal_produksi":"",
+        "nama_produk":"",
+        "tanggal_produksi":"",
+        "jumlah":"",
+        "penyebab":"",
+        "tanggal_pemusnahan":"",
+        "penanggungjawab":""
+    }
+]
+"""
