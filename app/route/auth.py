@@ -45,6 +45,7 @@ def register_umkm(data: auth_model.DataUMKM):
         raise HTTPException(400, error) from error
 
 
+
 @app.post('/register_auditor')
 def register_auditor(data: auth_model.DataAuditor):
     """ A Function for register Auditor Account like a 'Fatwa','LBH','BPJPH' """
