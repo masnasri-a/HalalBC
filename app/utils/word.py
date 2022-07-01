@@ -2,17 +2,36 @@
 import traceback
 from fastapi.exceptions import HTTPException
 from docx import Document
+from docx.shared import Pt
+from docx.enum.style import WD_STYLE_TYPE
 
 def word_generator() -> str:
     """ function for generating word files """
     try:
         document = Document()
-        document.add_heading('MANUAL SJH', 0)
+        # document.add_heading('MANUAL SJH', 0)
         # document.
         # document.add_heading('SISTEM JAMINAN HALAL', 0)
 
-        paragraph = document.add_paragraph("MANUAL SJH\nSISTEM JAMINAN HALAL")
-        paragraph.alignment = 1
+        font_styles = document.styles
+        font_charstyle = font_styles.add_style('lampiran', WD_STYLE_TYPE.CHARACTER)
+        font_object = font_charstyle.font
+        font_object.size = Pt(10)
+        font_object.name = 'Arial'
+
+
+        paragraph = document.add_paragraph("")
+        paragraph.add_run('Lampiran 6. Surat pernyataan dasar alamat fasilitas dan bebas dari babi dan turunannya').bold = True
+        # paragraph.alignment = 1
+        
+
+        paragraph_1 = document.add_paragraph("")
+        paragraph_1.add_run("SURAT PERNYATAAN DAFTAR ALAMAT FASILITAS PRODUKSI \nDAN BEBAS DARI BABI DAN TURUNANNYA").bold = True
+        style = document.styles['Normal']
+        font_1 = style.font
+        font_1.name = 'Arial'
+        font_1.size = Pt(12)
+        paragraph_1.alignment = 1
 
         document.add_heading('Heading, level 1', level=1)
         document.add_paragraph('Intense quote', style='Intense Quote')
@@ -49,3 +68,6 @@ def word_generator() -> str:
     except Exception as err:
         traceback.print_exc()
         raise HTTPException(400, "failed generate file") from err
+
+
+word_generator()

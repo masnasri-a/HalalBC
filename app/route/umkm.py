@@ -32,6 +32,7 @@ def create_init(model: umkm_model.InitUMKM, resp: Response):
         client.close()
         client, col = mongo.mongo('Log')
         model = {
+            "creator":model.creator_id,
             "id": id,
             "status": "init",
             "detail_umkm": False,
@@ -57,10 +58,10 @@ def create_init(model: umkm_model.InitUMKM, resp: Response):
 
 
 @app.get('/get_ukmk_detail')
-def details(id, resp: Response):
+def details(creator_id, resp: Response):
     try:
         client, col = mongo.mongo('Log')
-        data = col.find_one({"id": id})
+        data = col.find_one({"creator": creator_id})
         return response.response_detail(200, data, resp)
 
     except Exception as error:
