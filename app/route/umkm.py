@@ -1,5 +1,6 @@
 """ umkm  routing pages """
 
+import traceback
 from fastapi import APIRouter, HTTPException, Response
 # from utils import word
 from model import umkm_model
@@ -21,9 +22,9 @@ app = APIRouter()
 def create_init(model: umkm_model.InitUMKM, resp: Response):
     """ function init docs """
     try:
-        id = util.id_generator('DOC'),
+        _id = util.id_generator('DOC')
         data = {
-            "_id": id,
+            "_id": _id,
             "type": "init",
             "creator": model.creator_id
         }
@@ -32,8 +33,8 @@ def create_init(model: umkm_model.InitUMKM, resp: Response):
         client.close()
         client, col = mongo.mongo('Log')
         model = {
+            "_id": _id,
             "creator":model.creator_id,
-            "id": id,
             "status": "init",
             "detail_umkm": False,
             "penetapan_tim": False,
@@ -53,6 +54,7 @@ def create_init(model: umkm_model.InitUMKM, resp: Response):
         col.insert_one(model)
         return response.response_detail(200, {'doc_id': data}, resp)
     except Exception as error:
+        traceback.print_exc()
         print(error)
         return response.response_detail(400, error, resp)
 

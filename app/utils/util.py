@@ -16,7 +16,7 @@ def sha256(param):
 
 def id_generator(param):
     """ id generator """
-    return param+":"+str(randint(111111111111,999999999999))
+    return str(param+":"+str(randint(111111111111,999999999999)))
 
 def get_created_at():
     """ created_at generator """
