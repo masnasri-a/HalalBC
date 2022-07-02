@@ -1,6 +1,6 @@
 
 import traceback
-from fastapi import APIRouter, UploadFile, File
+from fastapi import APIRouter, UploadFile, File, Response
 from fastapi.exceptions import HTTPException
 from fastapi.responses import FileResponse
 from utils import response
@@ -8,15 +8,15 @@ import aiofiles
 app = APIRouter()
 
 
-@app.post('/upload_files')
-async def upload(image: UploadFile = File(...)):
+@app.post('/upload_files', status_code=200)
+async def upload(resp: Response,image: UploadFile = File(...)):
     """ a function for insert images """
     try:
         destination_file_path = 'app/assets/'+image.filename
         async with aiofiles.open(destination_file_path, 'wb') as out_file:
             while content := await image.read(1024):
                 await out_file.write(content)
-        return response.response_detail(200, "Image success uploaded")
+        return response.response_detail(200, "Image success uploaded", resp)
     except Exception as error:
         traceback.print_exc()
         raise HTTPException(400, "Failed Insert Images") from error
