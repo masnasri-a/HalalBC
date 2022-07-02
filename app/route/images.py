@@ -16,7 +16,7 @@ async def upload(resp: Response,image: UploadFile = File(...)):
         async with aiofiles.open(destination_file_path, 'wb') as out_file:
             while content := await image.read(1024):
                 await out_file.write(content)
-        return response.response_detail(200, "Image success uploaded", resp)
+        return response.response_detail(200, image.filename, resp)
     except Exception as error:
         traceback.print_exc()
         raise HTTPException(400, "Failed Insert Images") from error
