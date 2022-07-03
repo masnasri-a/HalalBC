@@ -89,12 +89,14 @@ def detail_umkm(data_model: umkm_model.UmkmDetail, resp: Response):
             "type": "detail_umkm",
             "data": data
         }
-        client, col = mongo.mongo('UMKM')
+        client, col = mongo.mongo('DetailUMKM')
         datas = col.insert_one(model)
         client.close()
         client, col = mongo.mongo('Log')
         change = {'creator': data_model.id}
         newvalues = {"$set": {'status': 'detail_umkm'}}
+        col.update_one(change, newvalues)
+        newvalues = {"$set": {'detail_umkm': True}}
         col.update_one(change, newvalues)
         client.close()
         res = response.response_detail(200, str(datas.inserted_id), resp)
@@ -126,7 +128,7 @@ def penetapan_tim(data_model: dict, resp: Response):
             "type": "penetapan_tim",
             "data": data_model
         }
-        client, col = mongo.mongo('UMKM')
+        client, col = mongo.mongo('DetailUMKM')
         datas = col.insert_one(model)
         client.close()
 
