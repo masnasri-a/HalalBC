@@ -107,25 +107,18 @@ def detail_umkm(data_model: umkm_model.UmkmDetail, resp: Response):
 
 
 @app.post('/insert_penetapan_tim', status_code=200)
-def penetapan_tim(data_model: dict, resp: Response):
-    """{"id":"",data:
-    [{
+def penetapan_tim(doc_id:str, data_model: dict, resp: Response):
+    """[{
         "nama":"names1",
-        "jabata":"job1",
-        "posisiton":"posisi1"
-    },{
-        "nama":"names1",
-        "jabata":"job1",
-        "posisiton":"posisi1"
-    },{
-        "nama":"names1",
-        "jabata":"job1",
-        "posisiton":"posisi1"
-    }]}
+        "jabatan":"job1",
+        "position":"posisi1"
+    }]
     """
     try:
         model = {
+            "_id": util.id_generator('Detail'),
             "type": "penetapan_tim",
+            "doc_id":doc_id,
             "data": data_model
         }
         client, col = mongo.mongo('DetailUMKM')
@@ -133,7 +126,7 @@ def penetapan_tim(data_model: dict, resp: Response):
         client.close()
 
         client, col = mongo.mongo('Log')
-        change = {'id': data_model.id}
+        change = {'id': doc_id}
         newvalues = {
             "$set": {'$and': [{'status': 'penetapan_tim'}, {'penetapan_tim': True}]}}
         col.update_one(change, newvalues)
@@ -149,22 +142,10 @@ def penetapan_tim(data_model: dict, resp: Response):
 @app.post('/insert_bukti_pelaksanaan', status_code=200)
 def bukti_pelaksanaan(data_model: umkm_model.Pelaksanaan, resp: Response):
     """{
-  "id": "UKMa12312312321",
+  "id": "DOC:123123123",
   "tanggal_pelaksanaan": 123123123123,
   "pemateri": "pemateri",
   "data": [
-    {
-      "nama": "",
-      "posisi": "",
-      "ttd": "",
-      "nilai": 100
-    },
-    {
-      "nama": "",
-      "posisi": "",
-      "ttd": "",
-      "nilai": 100
-    },
     {
       "nama": "",
       "posisi": "",
@@ -181,19 +162,20 @@ def bukti_pelaksanaan(data_model: umkm_model.Pelaksanaan, resp: Response):
             "data": data_model.data
         }
         data = {
-            "id": data_model.id,
+            "_id": util.id_generator('Detail'),
+            "doc_id": data_model.id,
             "type": "bukti_pelaksanaan",
-            "data": model
+            "model_data": model
         }
 
-        client, col = mongo.mongo('UMKM')
+        client, col = mongo.mongo('DetailUMKM')
         datas = col.insert_one(data)
         client.close()
-        client, col = mongo.mongo('Log')
+        client, log_col = mongo.mongo('Log')
         change = {'id': data_model.id}
         newvalues = {"$set": {
             '$and': [{'status': 'bukti_pelaksanaan'}, {'bukti_pelaksanaan': True}]}}
-        col.update_one(change, newvalues)
+        log_col.update_one(change, newvalues)
         client.close()
         res = response.response_detail(200, str(datas.inserted_id), resp)
         return res
@@ -303,20 +285,21 @@ def jawaban(data: umkm_model.InputJawabanEvaluasi, resp: Response) -> bool:
     # example = {"id":asdasdasd,"nama":"Eka Widiawati","Tanggal":"19 Agustus 2021",1:"a",2:"b",3:"a",4:"a",5:"b",6:"a",7:"a",8:"b",9:"a",10:"a"}
     """
     try:
-        client, col = mongo.mongo('UMKM')
+        client, col = mongo.mongo('DetailUMKM')
         model = {
-            "id": data.id,
+            "_id": util.id_generator('Detail'),
+            "doc_id": data.id,
             "type": "jawaban_evaluasi",
             "nama": data.nama,
             "data": data
         }
         datas = col.insert_one(model)
         client.close()
-        client, col = mongo.mongo('Log')
+        client, log_col = mongo.mongo('Log')
         change = {'id': data.id}
         newvalues = {
             "$set": {'$and': [{'status': 'jawaban_evaluasi'}, {'jawaban_evaluasi': True}]}}
-        col.update_one(change, newvalues)
+        log_col.update_one(change, newvalues)
         client.close()
         res = response.response_detail(200, str(datas.inserted_id), resp)
         return res
@@ -593,9 +576,10 @@ def jawaban_audit(data: umkm_model.JawabanAuditInternal, resp: Response):
 }
     """
     try:
-        client, col = mongo.mongo('UMKM')
+        client, col = mongo.mongo('DetailUMKM')
         data = {
-            "id": data.id,
+            "_id": util.id_generator('Detail'),
+            "doc_id": data.id,
             "type": "jawaban_audit",
             "auditee": data.auditee,
             "nama_auditor": data.nama_auditor,
@@ -604,11 +588,11 @@ def jawaban_audit(data: umkm_model.JawabanAuditInternal, resp: Response):
         }
         datas = col.insert_one(data)
         client.close()
-        client, col = mongo.mongo('Log')
+        client, log_col = mongo.mongo('Log')
         change = {'id': data.id}
         newvalues = {
             "$set": {'$and': [{'status': 'jawaban_audit'}, {'jawaban_audit': True}]}}
-        col.update_one(change, newvalues)
+        log_col.update_one(change, newvalues)
         client.close()
         res = response.response_detail(200, str(datas.inserted_id), resp)
         return res
@@ -620,9 +604,10 @@ def jawaban_audit(data: umkm_model.JawabanAuditInternal, resp: Response):
 def daftar_hadir_kaji(model: umkm_model.DaftarHadirKaji, resp: Response):
     """ daftar hadir kaji ulang \n  docx hal 18"""
     try:
-        client, col = mongo.mongo('UMKM')
+        client, col = mongo.mongo('DetailUMKM')
         data = {
-            "id": model.id,
+            "_id": util.id_generator('Detail'),
+            "doc_id": model.id,
             "tanggal": model.tanggal,
             "list_orang": model.list_orang,
             "pembahasan": model.pembahasan
@@ -633,11 +618,11 @@ def daftar_hadir_kaji(model: umkm_model.DaftarHadirKaji, resp: Response):
         }
         datas = col.insert_one(model)
         client.close()
-        client, col = mongo.mongo('Log')
+        client, log_col = mongo.mongo('Log')
         change = {'id': model.id}
         newvalues = {"$set": {
             '$and': [{'status': 'daftar_hasil_kaji'}, {'daftar_hasil_kaji': True}]}}
-        col.update_one(change, newvalues)
+        log_col.update_one(change, newvalues)
         client.close()
         return response.response_detail(200, str(datas.inserted_id), resp)
     except Exception as error:
@@ -650,18 +635,19 @@ def daftar_hadir_kaji(model: umkm_model.DaftarHadirKaji, resp: Response):
 def pembelian_pemeriksaan(pemeriksaan: umkm_model.Pemeriksaan, resp: Response):
     """ form pembelian dan pemeriksaan bahan """
     try:
-        client, col = mongo.mongo('UMKM')
+        client, col = mongo.mongo('DetailUMKM')
         data = {
+            "_id": util.id_generator('Detail'),
             "type": "pembelian",
             "data": pemeriksaan.data
         }
         datas = col.insert_one(data)
         client.close()
-        client, col = mongo.mongo('Log')
+        client, log_col = mongo.mongo('Log')
         change = {'id': data.id}
         newvalues = {
             "$set": {'$and': [{'status': 'pembelian'}, {'pembelian': True}]}}
-        col.update_one(change, newvalues)
+        log_col.update_one(change, newvalues)
         client.close()
         return response.response_detail(200, str(datas.inserted_id), resp)
     except Exception as error:
@@ -672,18 +658,19 @@ def pembelian_pemeriksaan(pemeriksaan: umkm_model.Pemeriksaan, resp: Response):
 def pembelian_pemeriksaan(data: umkm_model.Pemeriksaan, resp: Response):
     """ form pembelian dan pemeriksaan bahan import"""
     try:
-        client, col = mongo.mongo('UMKM')
+        client, col = mongo.mongo('DetailUMKM')
         data = {
+            "_id": util.id_generator('Detail'),
             "type": "pembelian_import",
             "data": data.data
         }
         datas = col.insert_one(data)
         client.close()
-        client, col = mongo.mongo('Log')
+        client, log_col = mongo.mongo('Log')
         change = {'id': data.id}
         newvalues = {
             "$set": {'$and': [{'status': 'pembelian_import'}, {'pembelian_import': True}]}}
-        col.update_one(change, newvalues)
+        log_col.update_one(change, newvalues)
         client.close()
         return response.response_detail(200, str(datas.inserted_id), resp)
     except Exception as error:
@@ -694,18 +681,19 @@ def pembelian_pemeriksaan(data: umkm_model.Pemeriksaan, resp: Response):
 def form_stok_barang(data: umkm_model.StokBarang, resp: Response):
     """ form pembelian dan pemeriksaan bahan import"""
     try:
-        client, col = mongo.mongo('UMKM')
+        client, col = mongo.mongo('DetailUMKM')
         data = {
+            "_id": util.id_generator('Detail'),
             "type": "stok_barang",
             "data": data.data
         }
         datas = col.insert_one(data)
         client.close()
-        client, col = mongo.mongo('Log')
+        client, log_col = mongo.mongo('Log')
         change = {'id': data.id}
         newvalues = {
             "$set": {'$and': [{'status': 'stok_barang'}, {'stok_barang': True}]}}
-        col.update_one(change, newvalues)
+        log_col.update_one(change, newvalues)
         client.close()
         return response.response_detail(200, str(datas.inserted_id), resp)
     except Exception as error:
@@ -716,18 +704,19 @@ def form_stok_barang(data: umkm_model.StokBarang, resp: Response):
 def form_produksi(data: umkm_model.FormProduksi, resp: Response):
     """ form pembelian dan pemeriksaan bahan import"""
     try:
-        client, col = mongo.mongo('UMKM')
+        client, col = mongo.mongo('DetaiUMKM')
         data = {
+            "_id": util.id_generator('Detail'),
             "type": "form_produksi",
             "data": data.data
         }
         datas = col.insert_one(data)
         client.close()
-        client, col = mongo.mongo('Log')
+        client, log_col = mongo.mongo('Log')
         change = {'id': data.id}
         newvalues = {
             "$set": {'$and': [{'status': 'form_produksi'}, {'form_produksi': True}]}}
-        col.update_one(change, newvalues)
+        log_col.update_one(change, newvalues)
         client.close()
         return response.response_detail(200, str(datas.inserted_id), resp)
     except Exception as error:
@@ -738,18 +727,19 @@ def form_produksi(data: umkm_model.FormProduksi, resp: Response):
 def form_produksi(data: umkm_model.FormPemusnahan, resp: Response):
     """ form pembelian dan pemeriksaan bahan import"""
     try:
-        client, col = mongo.mongo('UMKM')
+        client, col = mongo.mongo('DetailUMKM')
         data = {
+            "_id": util.id_generator('Detail'),
             "type": "form_pemusnahan",
             "data": data
         }
         datas = col.insert_one(data)
         client.close()
-        client, col = mongo.mongo('Log')
+        client, col_col = mongo.mongo('Log')
         change = {'id': data.id}
         newvalues = {
             "$set": {'$and': [{'status': 'form_pemusnahan'}, {'form_pemusnahan': True}]}}
-        col.update_one(change, newvalues)
+        col_col.update_one(change, newvalues)
         client.close()
         return response.response_detail(200, str(datas.inserted_id), resp)
     except Exception as error:
@@ -760,18 +750,19 @@ def form_produksi(data: umkm_model.FormPemusnahan, resp: Response):
 def form_pengecekan_kebersihan(data: umkm_model.FormPengecekanKebersihan, resp: Response):
     """ form pembelian dan pemeriksaan bahan import"""
     try:
-        client, col = mongo.mongo('UMKM')
+        client, col = mongo.mongo('DetailUMKM')
         data = {
+            "_id": util.id_generator('Detail'),
             "type": "form_pengecekan_kebersihan",
             "data": data.data
         }
         datas = col.insert_one(data)
         client.close()
-        client, col = mongo.mongo('Log')
+        client, log_col = mongo.mongo('Log')
         change = {'id': data.id}
         newvalues = {"$set": {'$and': [{'status': 'form_pengecekan_kebersihan'}, {
             'form_pengecekan_kebersihan': True}]}}
-        col.update_one(change, newvalues)
+        log_col.update_one(change, newvalues)
         client.close()
         return response.response_detail(200, str(datas.inserted_id), resp)
     except Exception as error:
@@ -782,18 +773,19 @@ def form_pengecekan_kebersihan(data: umkm_model.FormPengecekanKebersihan, resp: 
 def daftar_bahan_halal(data: umkm_model.DaftarBarangHalal, resp: Response):
     """ form pembelian dan pemeriksaan bahan import"""
     try:
-        client, col = mongo.mongo('UMKM')
+        client, col = mongo.mongo('DetailUMKM')
         data = {
+            "_id": util.id_generator('Detail'),
             "type": "daftar_bahan_halal",
             "data": data.data
         }
         datas = col.insert_one(data)
         client.close()
-        client, col = mongo.mongo('Log')
+        client, log_col = mongo.mongo('Log')
         change = {'id': data.id}
         newvalues = {"$set": {
             '$and': [{'status': 'daftar_bahan_halal'}, {'daftar_bahan_halal': True}]}}
-        col.update_one(change, newvalues)
+        log_col.update_one(change, newvalues)
         client.close()
         return response.response_detail(200, str(datas.inserted_id), resp)
     except Exception as error:
@@ -804,18 +796,19 @@ def daftar_bahan_halal(data: umkm_model.DaftarBarangHalal, resp: Response):
 def matriks_produk(data: umkm_model.MatrixProduksi, resp: Response):
     """ form pembelian dan pemeriksaan bahan import"""
     try:
-        client, col = mongo.mongo('UMKM')
+        client, col = mongo.mongo('DetailUMKM')
         data = {
+            "_id": util.id_generator('Detail'),
             "type": "matriks_produk",
             "data": data
         }
         datas = col.insert_one(data)
         client.close()
-        client, col = mongo.mongo('Log')
+        client, log_col = mongo.mongo('Log')
         change = {'id': data.id}
         newvalues = {
             "$set": {'$and': [{'status': 'matriks_produk'}, {'matriks_produk': True}]}}
-        col.update_one(change, newvalues)
+        log_col.update_one(change, newvalues)
         client.close()
         return response.response_detail(200, str(datas.inserted_id), resp)
     except Exception as error:

@@ -28,8 +28,8 @@ def Lampiran(nama: str, ktp, no, jabatan, perusahaan, alamat, region):
     pdf.cell(200, 0, "Demikian pernyataan ini saya buat dengan sebenar benarnya untuk dapat digunakan", ln=1)
     pdf.cell(200, 15, "sebagaimana mestinya.", ln=1)
 
-    
-    pdf.cell(200, 10, region+", "+)
+
+    pdf.cell(200, 10, region+", ")
     pdf.output('demox.pdf')
 
 

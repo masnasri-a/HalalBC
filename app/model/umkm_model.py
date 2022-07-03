@@ -87,7 +87,6 @@ class Pemeriksaan(BaseModel):
     ]
     """
     id: str
-    created_at:int
     data:list
 
 
@@ -106,7 +105,6 @@ class StokBarang(BaseModel):
     ]
     """
     id:str
-    created_at:int
     data:list
 
 class FormProduksi(BaseModel):
@@ -125,7 +123,6 @@ class FormProduksi(BaseModel):
     ]
     """
     id:str
-    created_at:int
     data:list
 
 class FormPemusnahan(BaseModel):
@@ -144,7 +141,6 @@ class FormPemusnahan(BaseModel):
     ]
     """
     id:str
-    created_at:int
     data:list
 
 class FormPengecekanKebersihan(BaseModel):
@@ -160,7 +156,6 @@ class FormPengecekanKebersihan(BaseModel):
     }]
     """
     id:str
-    created_at:int
     data:list
 
 
@@ -179,7 +174,6 @@ class DaftarBarangHalal(BaseModel):
     }]
     """
     id:str
-    created_at:int
     data:list
 
 class MatrixProduksi(BaseModel):
@@ -193,6 +187,5 @@ class MatrixProduksi(BaseModel):
     }]
     """
     id:str
-    created_at:int
     data:list
     
