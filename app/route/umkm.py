@@ -31,7 +31,7 @@ def create_init(model: umkm_model.InitUMKM, resp: Response):
         client, col = mongo.mongo('UMKM')
         col.insert_one(data)
         client.close()
-        client, col = mongo.mongo('Log')
+        client, col_log = mongo.mongo('Log')
         model = {
             "_id": _id,
             "creator":model.creator_id,
@@ -51,7 +51,7 @@ def create_init(model: umkm_model.InitUMKM, resp: Response):
             "daftar_bahan_halal": False,
             "matriks_produk": False
         }
-        col.insert_one(model)
+        col_log.insert_one(model)
         return response.response_detail(200, {'doc_id': data}, resp)
     except Exception as error:
         traceback.print_exc()
