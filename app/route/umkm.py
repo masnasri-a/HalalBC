@@ -294,7 +294,7 @@ def jawaban(data: umkm_model.InputJawabanEvaluasi, resp: Response) -> bool:
             "doc_id": data.id,
             "type": "jawaban_evaluasi",
             "nama": data.nama,
-            "data": data
+            "data": data.data
         }
         datas = col.insert_one(model)
         client.close()
@@ -308,6 +308,7 @@ def jawaban(data: umkm_model.InputJawabanEvaluasi, resp: Response) -> bool:
         res = response.response_detail(200, str(datas.inserted_id), resp)
         return res
     except Exception as error:
+        traceback.print_exc()
         return response.response_detail(400, error, resp)
 
 
@@ -581,7 +582,7 @@ def jawaban_audit(data: umkm_model.JawabanAuditInternal, resp: Response):
     """
     try:
         client, col = mongo.mongo('DetailUMKM')
-        data = {
+        model = {
             "_id": util.id_generator('Detail'),
             "doc_id": data.id,
             "type": "jawaban_audit",
@@ -590,7 +591,7 @@ def jawaban_audit(data: umkm_model.JawabanAuditInternal, resp: Response):
             "bagian_diaudit": data.bagian_diaudit,
             "data": data.data
         }
-        datas = col.insert_one(data)
+        datas = col.insert_one(model)
         client.close()
         client, log_col = mongo.mongo('Log')
         change = {'_id': data.id}
@@ -602,6 +603,7 @@ def jawaban_audit(data: umkm_model.JawabanAuditInternal, resp: Response):
         res = response.response_detail(200, str(datas.inserted_id), resp)
         return res
     except Exception as error:
+        traceback.print_exc()
         return response.response_detail(400, error, resp)
 
 

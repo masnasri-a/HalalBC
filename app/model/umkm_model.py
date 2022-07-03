@@ -51,8 +51,9 @@ class Pelaksanaan(BaseModel):
 class InputJawabanEvaluasi(BaseModel):
     id:str
     created_at:int
+    tanggal:int
     nama:str
-    data:list
+    data:dict
 
 class JawabanAuditInternal(BaseModel):
     id:str
@@ -68,7 +69,7 @@ class DaftarHadirKaji(BaseModel):
     id: str
     tanggal: str
     list_orang: dict
-    pembahasan: dict
+    pembahasan: list
 
 
 class Pemeriksaan(BaseModel):
