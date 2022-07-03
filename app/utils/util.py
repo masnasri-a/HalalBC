@@ -35,5 +35,7 @@ def username_checker(username:str)->bool:
     except PyMongoError as error:
         raise HTTPException(400, "Error Mongo") from error
 
-# def get_time_parse():
+def get_time_parse():
+    today = date.today()
+    return today.strftime("%d %B %Y")
 

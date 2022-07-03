@@ -125,11 +125,11 @@ def penetapan_tim(doc_id:str, data_model: dict, resp: Response):
         datas = col.insert_one(model)
         client.close()
 
-        client, col = mongo.mongo('Log')
+        client, log_col = mongo.mongo('Log')
         change = {'id': doc_id}
         newvalues = {
             "$set": {'$and': [{'status': 'penetapan_tim'}, {'penetapan_tim': True}]}}
-        col.update_one(change, newvalues)
+        log_col.update_one(change, newvalues)
         client.close()
 
         res = response.response_detail(200, str(datas.inserted_id), resp)

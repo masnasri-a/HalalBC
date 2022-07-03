@@ -1,5 +1,36 @@
 from fpdf import FPDF
+from datetime import date
 
+def get_time_parse():
+    today = date.today()
+    day = today.strftime("%d")
+    month = today.strftime("%m")
+    if month == "01":
+        month = "Januari"
+    elif month == "02":
+        month = "Februari"
+    elif month == "03":
+        month = "Maret"
+    elif month == "04":
+        month = "April"
+    elif month == "05":
+        month = "Mei"
+    elif month == "06":
+        month = "Juni"
+    elif month == "07":
+        month = "Juli"
+    elif month == "08":
+        month = "Agustus"
+    elif month == "09":
+        month = "September"
+    elif month == "10":
+        month = "Oktober"
+    elif month == "11":
+        month = "November"
+    elif month == "12":
+        month = "Desember"
+    year = today.strftime("%Y")
+    return str(day+" "+month+" "+year)
 
 def Lampiran(nama: str, ktp, no, jabatan, perusahaan, alamat, region):
     pdf = FPDF()
@@ -29,7 +60,7 @@ def Lampiran(nama: str, ktp, no, jabatan, perusahaan, alamat, region):
     pdf.cell(200, 15, "sebagaimana mestinya.", ln=1)
 
 
-    pdf.cell(200, 10, region+", ")
+    pdf.cell(200, 10, region+", "+get_time_parse())
     pdf.output('demox.pdf')
 
 
