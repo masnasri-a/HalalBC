@@ -634,6 +634,7 @@ def daftar_hadir_kaji(model: umkm_model.DaftarHadirKaji, resp: Response):
         client.close()
         return response.response_detail(200, str(datas.inserted_id), resp)
     except Exception as error:
+        traceback.print_exc()
         return response.response_detail(400, error, resp)
 
 # BIKIN DOWNLOAD LAMPIRAN 6

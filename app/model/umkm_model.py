@@ -68,7 +68,7 @@ class DaftarHadirKaji(BaseModel):
     """ daftar hadir kaji class """
     id: str
     tanggal: str
-    list_orang: dict
+    list_orang: list
     pembahasan: list
 
 
