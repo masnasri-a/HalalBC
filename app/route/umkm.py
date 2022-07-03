@@ -92,12 +92,12 @@ def detail_umkm(data_model: umkm_model.UmkmDetail, resp: Response):
         client, col = mongo.mongo('DetailUMKM')
         datas = col.insert_one(model)
         client.close()
-        client, col = mongo.mongo('Log')
-        change = {'creator': data_model.id}
+        client, log_col = mongo.mongo('Log')
+        change = {'_id': data_model.id}
         newvalues = {"$set": {'status': 'detail_umkm'}}
-        col.update_one(change, newvalues)
+        log_col.update_one(change, newvalues)
         newvalues = {"$set": {'detail_umkm': True}}
-        col.update_one(change, newvalues)
+        log_col.update_one(change, newvalues)
         client.close()
         res = response.response_detail(200, str(datas.inserted_id), resp)
         return res
