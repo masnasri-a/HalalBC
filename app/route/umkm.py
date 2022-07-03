@@ -93,7 +93,7 @@ def detail_umkm(data_model: umkm_model.UmkmDetail, resp: Response):
         datas = col.insert_one(model)
         client.close()
         client, col = mongo.mongo('Log')
-        change = {'id': data_model.id}
+        change = {'creator': data_model.id}
         newvalues = {"$set": {'status': 'detail_umkm'}}
         col.update_one(change, newvalues)
         client.close()
