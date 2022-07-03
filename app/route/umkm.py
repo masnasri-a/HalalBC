@@ -75,8 +75,8 @@ def details(creator_id, resp: Response):
 def detail_umkm(data_model: umkm_model.UmkmDetail, resp: Response):
     """ function  """
     try:
+        _id = util.id_generator('Detail')
         data = {
-
             "nama_ketua": data_model.nama_ketua,
             "nama_penanggungjawab": data_model.nama_penanggungjawab,
             "logo_perusahaan": data_model.logo_perusahaan,
@@ -84,7 +84,8 @@ def detail_umkm(data_model: umkm_model.UmkmDetail, resp: Response):
             "ttd_ketua": data_model.ttd_ketua
         }
         model = {
-            '_id': data_model.id,
+            '_id':_id,
+            'doc_id': data_model.id,
             "type": "detail_umkm",
             "data": data
         }
@@ -99,7 +100,7 @@ def detail_umkm(data_model: umkm_model.UmkmDetail, resp: Response):
         res = response.response_detail(200, str(datas.inserted_id), resp)
         return res
     except Exception as error:
-        print(error)
+        traceback.print_exc()
         return response.response_detail(400, error, resp)
 
 

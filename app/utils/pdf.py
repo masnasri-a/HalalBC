@@ -1,7 +1,7 @@
 from fpdf import FPDF
 
 
-def Lampiran(nama: str, ktp, no, jabatan, perusahaan, alamat):
+def Lampiran(nama: str, ktp, no, jabatan, perusahaan, alamat, region):
     pdf = FPDF()
     pdf.add_page()
     pdf.set_font("Arial", size=12)
@@ -23,10 +23,16 @@ def Lampiran(nama: str, ktp, no, jabatan, perusahaan, alamat):
              perusahaan+' yaitu:', ln=1)
     pdf.cell(200, 20, alamat, ln=1)
     pdf.cell(200, 0, "Seluruh fasilitas tersebut dan peralatan yang kami gunakan untuk produksi adalah bebas", ln=1)
-    pdf.cell(200, 10, "dari cemaran babi dan turunannya", ln=1)
- 
+    pdf.cell(200, 15, "dari cemaran babi dan turunannya.", ln=1)
+    pdf.set_font('helvetica', style="")
+    pdf.cell(200, 0, "Demikian pernyataan ini saya buat dengan sebenar benarnya untuk dapat digunakan", ln=1)
+    pdf.cell(200, 15, "sebagaimana mestinya.", ln=1)
+
+    
+    pdf.cell(200, 10, region+", "+)
     pdf.output('demox.pdf')
 
 
 Lampiran("Nasri", "320230234234234", "0822228832323",
-         "Pemimping perusahaan", "Pt Owi Mulet", "Jln Permata berlian blok AA no 5")
+         "Pemimpin perusahaan", "Pt Owi Mulet", "Jln Permata berlian blok AA no 5",
+         "Jakarta")
