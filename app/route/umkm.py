@@ -619,11 +619,11 @@ def daftar_hadir_kaji(model: umkm_model.DaftarHadirKaji, resp: Response):
             "list_orang": model.list_orang,
             "pembahasan": model.pembahasan
         }
-        model = {
+        datas = {
             "type": "daftar_hasil_kaji",
             "data": data
         }
-        datas = col.insert_one(model)
+        datas = col.insert_one(datas)
         client.close()
         client, log_col = mongo.mongo('Log')
         change = {'_id': model.id}
