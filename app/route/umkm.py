@@ -647,13 +647,14 @@ def pembelian_pemeriksaan(pemeriksaan: umkm_model.Pemeriksaan, resp: Response):
         client, col = mongo.mongo('DetailUMKM')
         data = {
             "_id": util.id_generator('Detail'),
+            "doc_id":pemeriksaan.id,
             "type": "pembelian",
             "data": pemeriksaan.data
         }
         datas = col.insert_one(data)
         client.close()
         client, log_col = mongo.mongo('Log')
-        change = {'_id': data.id}
+        change = {'_id': pemeriksaan.id}
         newvalues = { "$set":{'status': 'pembelian'}}
         log_col.update_one(change, newvalues)
         newvalues = { "$set":{'pembelian': True}}
@@ -669,12 +670,13 @@ def pembelian_pemeriksaan(data: umkm_model.Pemeriksaan, resp: Response):
     """ form pembelian dan pemeriksaan bahan import"""
     try:
         client, col = mongo.mongo('DetailUMKM')
-        data = {
+        datas = {
             "_id": util.id_generator('Detail'),
+            "doc_id":data.id,
             "type": "pembelian_import",
             "data": data.data
         }
-        datas = col.insert_one(data)
+        datas = col.insert_one(datas)
         client.close()
         client, log_col = mongo.mongo('Log')
         change = {'_id': data.id}
