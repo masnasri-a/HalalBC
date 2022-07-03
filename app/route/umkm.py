@@ -126,7 +126,7 @@ def penetapan_tim(doc_id:str, data_model: dict, resp: Response):
         client.close()
 
         client, log_col = mongo.mongo('Log')
-        change = {'id': doc_id}
+        change = {'_id': doc_id}
         newvalues = {
             "$set": {'$and': [{'status': 'penetapan_tim'}, {'penetapan_tim': True}]}}
         log_col.update_one(change, newvalues)
@@ -172,7 +172,7 @@ def bukti_pelaksanaan(data_model: umkm_model.Pelaksanaan, resp: Response):
         datas = col.insert_one(data)
         client.close()
         client, log_col = mongo.mongo('Log')
-        change = {'id': data_model.id}
+        change = {'_id': data_model.id}
         newvalues = {"$set": {
             '$and': [{'status': 'bukti_pelaksanaan'}, {'bukti_pelaksanaan': True}]}}
         log_col.update_one(change, newvalues)
@@ -296,7 +296,7 @@ def jawaban(data: umkm_model.InputJawabanEvaluasi, resp: Response) -> bool:
         datas = col.insert_one(model)
         client.close()
         client, log_col = mongo.mongo('Log')
-        change = {'id': data.id}
+        change = {'_id': data.id}
         newvalues = {
             "$set": {'$and': [{'status': 'jawaban_evaluasi'}, {'jawaban_evaluasi': True}]}}
         log_col.update_one(change, newvalues)
@@ -589,7 +589,7 @@ def jawaban_audit(data: umkm_model.JawabanAuditInternal, resp: Response):
         datas = col.insert_one(data)
         client.close()
         client, log_col = mongo.mongo('Log')
-        change = {'id': data.id}
+        change = {'_id': data.id}
         newvalues = {
             "$set": {'$and': [{'status': 'jawaban_audit'}, {'jawaban_audit': True}]}}
         log_col.update_one(change, newvalues)
@@ -619,7 +619,7 @@ def daftar_hadir_kaji(model: umkm_model.DaftarHadirKaji, resp: Response):
         datas = col.insert_one(model)
         client.close()
         client, log_col = mongo.mongo('Log')
-        change = {'id': model.id}
+        change = {'_id': model.id}
         newvalues = {"$set": {
             '$and': [{'status': 'daftar_hasil_kaji'}, {'daftar_hasil_kaji': True}]}}
         log_col.update_one(change, newvalues)
@@ -644,7 +644,7 @@ def pembelian_pemeriksaan(pemeriksaan: umkm_model.Pemeriksaan, resp: Response):
         datas = col.insert_one(data)
         client.close()
         client, log_col = mongo.mongo('Log')
-        change = {'id': data.id}
+        change = {'_id': data.id}
         newvalues = {
             "$set": {'$and': [{'status': 'pembelian'}, {'pembelian': True}]}}
         log_col.update_one(change, newvalues)
@@ -667,7 +667,7 @@ def pembelian_pemeriksaan(data: umkm_model.Pemeriksaan, resp: Response):
         datas = col.insert_one(data)
         client.close()
         client, log_col = mongo.mongo('Log')
-        change = {'id': data.id}
+        change = {'_id': data.id}
         newvalues = {
             "$set": {'$and': [{'status': 'pembelian_import'}, {'pembelian_import': True}]}}
         log_col.update_one(change, newvalues)
@@ -690,7 +690,7 @@ def form_stok_barang(data: umkm_model.StokBarang, resp: Response):
         datas = col.insert_one(data)
         client.close()
         client, log_col = mongo.mongo('Log')
-        change = {'id': data.id}
+        change = {'_id': data.id}
         newvalues = {
             "$set": {'$and': [{'status': 'stok_barang'}, {'stok_barang': True}]}}
         log_col.update_one(change, newvalues)
@@ -713,7 +713,7 @@ def form_produksi(data: umkm_model.FormProduksi, resp: Response):
         datas = col.insert_one(data)
         client.close()
         client, log_col = mongo.mongo('Log')
-        change = {'id': data.id}
+        change = {'_id': data.id}
         newvalues = {
             "$set": {'$and': [{'status': 'form_produksi'}, {'form_produksi': True}]}}
         log_col.update_one(change, newvalues)
@@ -736,7 +736,7 @@ def form_produksi(data: umkm_model.FormPemusnahan, resp: Response):
         datas = col.insert_one(data)
         client.close()
         client, col_col = mongo.mongo('Log')
-        change = {'id': data.id}
+        change = {'_id': data.id}
         newvalues = {
             "$set": {'$and': [{'status': 'form_pemusnahan'}, {'form_pemusnahan': True}]}}
         col_col.update_one(change, newvalues)
@@ -759,7 +759,7 @@ def form_pengecekan_kebersihan(data: umkm_model.FormPengecekanKebersihan, resp: 
         datas = col.insert_one(data)
         client.close()
         client, log_col = mongo.mongo('Log')
-        change = {'id': data.id}
+        change = {'_id': data.id}
         newvalues = {"$set": {'$and': [{'status': 'form_pengecekan_kebersihan'}, {
             'form_pengecekan_kebersihan': True}]}}
         log_col.update_one(change, newvalues)
@@ -782,7 +782,7 @@ def daftar_bahan_halal(data: umkm_model.DaftarBarangHalal, resp: Response):
         datas = col.insert_one(data)
         client.close()
         client, log_col = mongo.mongo('Log')
-        change = {'id': data.id}
+        change = {'_id': data.id}
         newvalues = {"$set": {
             '$and': [{'status': 'daftar_bahan_halal'}, {'daftar_bahan_halal': True}]}}
         log_col.update_one(change, newvalues)
@@ -805,7 +805,7 @@ def matriks_produk(data: umkm_model.MatrixProduksi, resp: Response):
         datas = col.insert_one(data)
         client.close()
         client, log_col = mongo.mongo('Log')
-        change = {'id': data.id}
+        change = {'_id': data.id}
         newvalues = {
             "$set": {'$and': [{'status': 'matriks_produk'}, {'matriks_produk': True}]}}
         log_col.update_one(change, newvalues)

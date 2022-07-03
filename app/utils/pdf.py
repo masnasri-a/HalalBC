@@ -60,6 +60,8 @@ def Lampiran(nama: str, ktp, no, jabatan, perusahaan, alamat, region):
     pdf.cell(200, 15, "sebagaimana mestinya.", ln=1)
 
 
+    pdf.cell(200, 10, region+", "+get_time_parse(), ln=1)
+    pdf.cell(200, 10, region+", "+get_time_parse(), ln=1)
     pdf.cell(200, 10, region+", "+get_time_parse())
     pdf.output('demox.pdf')
 
