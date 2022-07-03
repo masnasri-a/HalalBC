@@ -182,6 +182,7 @@ def bukti_pelaksanaan(data_model: umkm_model.Pelaksanaan, resp: Response):
         res = response.response_detail(200, str(datas.inserted_id), resp)
         return res
     except Exception as error:
+        traceback.print_exc()
         print(error)
         return response.response_detail(400, error, resp)
 

@@ -46,7 +46,7 @@ class Pelaksanaan(BaseModel):
     id:str
     tanggal_pelaksanaan:int
     pemateri:str
-    data:dict
+    data:list
 
 class InputJawabanEvaluasi(BaseModel):
     id:str
