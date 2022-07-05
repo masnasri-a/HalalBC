@@ -1,7 +1,7 @@
 """ util file pages """
 
 import hashlib
-from datetime import datetime
+from datetime import datetime, date
 from random import randint
 from pymongo.errors import PyMongoError
 from config.mongo import mongo
@@ -34,3 +34,8 @@ def username_checker(username:str)->bool:
             return False
     except PyMongoError as error:
         raise HTTPException(400, "Error Mongo") from error
+
+def get_time_parse():
+    today = date.today()
+    return today.strftime("%d %B %Y")
+

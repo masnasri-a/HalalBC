@@ -46,13 +46,14 @@ class Pelaksanaan(BaseModel):
     id:str
     tanggal_pelaksanaan:int
     pemateri:str
-    data:dict
+    data:list
 
 class InputJawabanEvaluasi(BaseModel):
     id:str
     created_at:int
+    tanggal:int
     nama:str
-    data:list
+    data:dict
 
 class JawabanAuditInternal(BaseModel):
     id:str
@@ -67,8 +68,8 @@ class DaftarHadirKaji(BaseModel):
     """ daftar hadir kaji class """
     id: str
     tanggal: str
-    list_orang: dict
-    pembahasan: dict
+    list_orang: list
+    pembahasan: list
 
 
 class Pemeriksaan(BaseModel):
@@ -87,7 +88,6 @@ class Pemeriksaan(BaseModel):
     ]
     """
     id: str
-    created_at:int
     data:list
 
 
@@ -106,7 +106,6 @@ class StokBarang(BaseModel):
     ]
     """
     id:str
-    created_at:int
     data:list
 
 class FormProduksi(BaseModel):
@@ -125,7 +124,6 @@ class FormProduksi(BaseModel):
     ]
     """
     id:str
-    created_at:int
     data:list
 
 class FormPemusnahan(BaseModel):
@@ -144,7 +142,6 @@ class FormPemusnahan(BaseModel):
     ]
     """
     id:str
-    created_at:int
     data:list
 
 class FormPengecekanKebersihan(BaseModel):
@@ -160,7 +157,6 @@ class FormPengecekanKebersihan(BaseModel):
     }]
     """
     id:str
-    created_at:int
     data:list
 
 
@@ -179,7 +175,6 @@ class DaftarBarangHalal(BaseModel):
     }]
     """
     id:str
-    created_at:int
     data:list
 
 class MatrixProduksi(BaseModel):
@@ -193,6 +188,5 @@ class MatrixProduksi(BaseModel):
     }]
     """
     id:str
-    created_at:int
     data:list
     
