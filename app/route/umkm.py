@@ -713,7 +713,7 @@ def form_stok_barang(data: umkm_model.StokBarang, resp: Response):
 def form_produksi(data: umkm_model.FormProduksi, resp: Response):
     """ form pembelian dan pemeriksaan bahan import"""
     try:
-        client, col = mongo.mongo('UMKM')
+        client, col = mongo.mongo('DetailUMKM')
         data = {
             "type": "form_produksi",
             "data": data.data
