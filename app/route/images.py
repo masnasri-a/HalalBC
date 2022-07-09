@@ -3,7 +3,7 @@ import traceback
 from fastapi import APIRouter, UploadFile, File, Response
 from fastapi.exceptions import HTTPException
 from fastapi.responses import FileResponse
-from app.utils import response
+from utils import response
 import aiofiles
 app = APIRouter()
 

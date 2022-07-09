@@ -4,9 +4,9 @@ import traceback
 from fastapi import APIRouter
 from fastapi.exceptions import HTTPException
 from pymongo import errors
-from app.config import mongo
-from app.utils import util
-from app.model import auth_model
+from config import mongo
+from utils import util
+from model import auth_model
 
 app = APIRouter()
 

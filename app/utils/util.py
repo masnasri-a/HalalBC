@@ -4,7 +4,7 @@ import hashlib
 from datetime import datetime, date
 from random import randint
 from pymongo.errors import PyMongoError
-from app import config
+from config import mongo
 from fastapi.exceptions import HTTPException
 
 
@@ -29,7 +29,7 @@ def get_created_at():
 def username_checker(username: str) -> bool:
     """ username check into mongodb """
     try:
-        client, col = config.mongodb_config('Accounts')
+        client, col = mongo.mongodb_config('Accounts')
         data = col.find_one({'username': username})
         client.close()
         if data is None:

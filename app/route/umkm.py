@@ -1,13 +1,14 @@
 """ umkm  routing pages """
 
 import traceback
+from typing import List
 from fastapi import APIRouter, HTTPException, Response
 from fastapi.responses import FileResponse
-from app.utils import pdf
-from app.model import umkm_model
-from app.utils import response, util
-from app.config import mongo
-
+from utils import pdf
+from model import umkm_model
+from utils import response, util
+from config import mongo
+from pydantic import parse_obj_as
 
 app = APIRouter()
 
@@ -31,9 +32,8 @@ def create_init(model: umkm_model.InitUMKM, resp: Response):
         }
         client, col = mongo.mongodb_config('UMKM')
         col.insert_one(data)
-        client.close()
         client, col_log = mongo.mongodb_config('Log')
-        model = {
+        data_model = {
             "_id": _id,
             "creator":model.creator_id,
             "status": "init",
@@ -52,7 +52,29 @@ def create_init(model: umkm_model.InitUMKM, resp: Response):
             "daftar_bahan_halal": False,
             "matriks_produk": False
         }
-        col_log.insert_one(model)
+        col_log.insert_one(data_model)
+        client, doc_detail = mongo.mongodb_config('DocumentDetails')
+        doc_model = {
+            "_id": _id,
+            "creator":model.creator_id,
+            "detail_umkm": None,
+            "penetapan_tim": None,
+            "bukti_pelaksanaan": None,
+            "jawaban_evaluasi": None,
+            "jawaban_audit": None,
+            "daftar_hasil_kaji": None,
+            "pembelian": None,
+            "pembelian_import": None,
+            "stok_barang": None,
+            "form_produksi": None,
+            "form_pemusnahan": None,
+            "form_pengecekan_kebersihan": None,
+            "daftar_bahan_halal": None,
+            "matriks_produk": None
+        }
+        doc_detail.insert_one(doc_model)
+        client.close()
+        
         return response.response_detail(200, {'doc_id': data}, resp)
     except Exception as error:
         traceback.print_exc()
@@ -65,6 +87,7 @@ def details(creator_id, resp: Response):
     try:
         client, col = mongo.mongodb_config('Log')
         data = col.find_one({"creator": creator_id})
+        client.close()
         return response.response_detail(200, data, resp)
 
     except Exception as error:
@@ -76,7 +99,6 @@ def details(creator_id, resp: Response):
 def detail_umkm(data_model: umkm_model.UmkmDetail, resp: Response):
     """ function  """
     try:
-        _id = util.id_generator('Detail')
         data = {
             "nama_ketua": data_model.nama_ketua,
             "no_telp_ketua":data_model.no_ktp_ketua,
@@ -86,14 +108,10 @@ def detail_umkm(data_model: umkm_model.UmkmDetail, resp: Response):
             "ttd_penanggungjawab": data_model.ttd_penanggungjawab,
             "ttd_ketua": data_model.ttd_ketua
         }
-        model = {
-            '_id':_id,
-            'doc_id': data_model.id,
-            "type": "detail_umkm",
-            "data": data
-        }
-        client, col = mongo.mongodb_config('DetailUMKM')
-        datas = col.insert_one(model)
+        client, col = mongo.mongodb_config('DocumentDetails')
+        change = {'_id': data_model.id}
+        newvalues = {"$set": {'detail_umkm': data}}
+        col.update_one(change, newvalues)
         client.close()
         client, log_col = mongo.mongodb_config('Log')
         change = {'_id': data_model.id}
@@ -102,7 +120,7 @@ def detail_umkm(data_model: umkm_model.UmkmDetail, resp: Response):
         newvalues = {"$set": {'detail_umkm': True}}
         log_col.update_one(change, newvalues)
         client.close()
-        res = response.response_detail(200, str(datas.inserted_id), resp)
+        res = response.response_detail(200, "insert detail umkm success", resp)
         return res
     except Exception as error:
         traceback.print_exc()
@@ -110,38 +128,31 @@ def detail_umkm(data_model: umkm_model.UmkmDetail, resp: Response):
 
 
 @app.post('/insert_penetapan_tim', status_code=200)
-def penetapan_tim(doc_id:str, data_model: dict, resp: Response):
-    """[{
-        "nama":"names1",
-        "jabatan":"job1",
-        "position":"posisi1"
-    }]
-    """
+def penetapan_tim( data_model: umkm_model.PenetapanTeam, resp: Response):
+    """ penetapan team """
     try:
-        model = {
-            "_id": util.id_generator('Detail'),
-            "type": "penetapan_tim",
-            "doc_id":doc_id,
-            "data": data_model
-        }
-        client, col = mongo.mongodb_config('DetailUMKM')
-        datas = col.insert_one(model)
+        model = data_model.data
+        list_detail = []
+        for detail in model:
+            list_detail.append(detail.dict())
+        client, col = mongo.mongodb_config('DocumentDetails')
+        change = {'_id': data_model.id}
+        newvalues = {"$set": {'penetapan_tim': list_detail}}
+        col.update_one(change, newvalues)
         client.close()
 
         client, log_col = mongo.mongodb_config('Log')
-        change = {'_id': doc_id}
+        change = {'_id': data_model.id}
         newvalues = {"$set":{'status': 'penetapan_tim'}}
         log_col.update_one(change, newvalues)
         newvalues = { "$set":{'penetapan_tim': True}}
         log_col.update_one(change, newvalues)
         client.close()
 
-        res = response.response_detail(200, str(datas.inserted_id), resp)
+        res = response.response_detail(200, "penetapan team has been created", resp)
         return res
     except Exception as error:
-        print(error)
         return response.response_detail(400, error, resp)
-
 
 @app.post('/insert_bukti_pelaksanaan', status_code=200)
 def bukti_pelaksanaan(data_model: umkm_model.Pelaksanaan, resp: Response):
@@ -160,20 +171,25 @@ def bukti_pelaksanaan(data_model: umkm_model.Pelaksanaan, resp: Response):
 }
     """
     try:
+        list_data = []
+        for detail in data_model.data:
+            list_data.append(detail.dict())
         model = {
             "tanggal_pelaksanaan": data_model.tanggal_pelaksanaan,
             "pemateri": data_model.pemateri,
-            "data": data_model.data
+            "data": list_data
         }
-        data = {
-            "_id": util.id_generator('Detail'),
-            "doc_id": data_model.id,
-            "type": "bukti_pelaksanaan",
-            "model_data": model
-        }
+        # data = {
+        #     "_id": util.id_generator('Detail'),
+        #     "doc_id": data_model.id,
+        #     "type": "bukti_pelaksanaan",
+        #     "model_data": model
+        # }
 
-        client, col = mongo.mongodb_config('DetailUMKM')
-        datas = col.insert_one(data)
+        client, col = mongo.mongodb_config('DocumentDetails')
+        change = {'_id': data_model.id}
+        newvalues = {"$set": {'bukti_pelaksanaan': model}}
+        col.update_one(change, newvalues)
         client.close()
         client, log_col = mongo.mongodb_config('Log')
         change = {'_id': data_model.id}
@@ -182,7 +198,7 @@ def bukti_pelaksanaan(data_model: umkm_model.Pelaksanaan, resp: Response):
         newvalues = {"$set": {'bukti_pelaksanaan': True}}
         log_col.update_one(change, newvalues)
         client.close()
-        res = response.response_detail(200, str(datas.inserted_id), resp)
+        res = response.response_detail(200, "data pelaksanaan has been inserted", resp)
         return res
     except Exception as error:
         traceback.print_exc()
@@ -291,15 +307,15 @@ def jawaban(data: umkm_model.InputJawabanEvaluasi, resp: Response) -> bool:
     # example = {"id":asdasdasd,"nama":"Eka Widiawati","Tanggal":"19 Agustus 2021",1:"a",2:"b",3:"a",4:"a",5:"b",6:"a",7:"a",8:"b",9:"a",10:"a"}
     """
     try:
-        client, col = mongo.mongodb_config('DetailUMKM')
+        client, col = mongo.mongodb_config('DocumentDetails')
         model = {
-            "_id": util.id_generator('Detail'),
-            "doc_id": data.id,
-            "type": "jawaban_evaluasi",
             "nama": data.nama,
+            "tanggal":data.tanggal,
             "data": data.data
         }
-        datas = col.insert_one(model)
+        change = {'_id': data.id}
+        newvalues = {"$set": {'jawaban_evaluasi': model}}
+        col.update_one(change, newvalues)
         client.close()
         client, log_col = mongo.mongodb_config('Log')
         change = {'_id': data.id}
@@ -308,7 +324,7 @@ def jawaban(data: umkm_model.InputJawabanEvaluasi, resp: Response) -> bool:
         newvalues = {"$set": {'jawaban_evaluasi': True}}
         log_col.update_one(change, newvalues)
         client.close()
-        res = response.response_detail(200, str(datas.inserted_id), resp)
+        res = response.response_detail(200, "jawaban evaluasi has been created", resp)
         return res
     except Exception as error:
         traceback.print_exc()
@@ -584,17 +600,20 @@ def jawaban_audit(data: umkm_model.JawabanAuditInternal, resp: Response):
 }
     """
     try:
-        client, col = mongo.mongodb_config('DetailUMKM')
+        client, col = mongo.mongodb_config('DocumentDetails')
+        list_detail = []
+        for detail in data.data:
+            list_detail.append(detail.dict())
         model = {
-            "_id": util.id_generator('Detail'),
-            "doc_id": data.id,
-            "type": "jawaban_audit",
+            "created_at":data.created_at,
             "auditee": data.auditee,
             "nama_auditor": data.nama_auditor,
             "bagian_diaudit": data.bagian_diaudit,
-            "data": data.data
+            "data": list_detail
         }
-        datas = col.insert_one(model)
+        change = {'_id': data.id}
+        newvalues = {"$set": {'jawaban_audit': model}}
+        col.update_one(change, newvalues)
         client.close()
         client, log_col = mongo.mongodb_config('Log')
         change = {'_id': data.id}
@@ -603,7 +622,7 @@ def jawaban_audit(data: umkm_model.JawabanAuditInternal, resp: Response):
         newvalues = {"$set": {'jawaban_audit': True}}
         log_col.update_one(change, newvalues)
         client.close()
-        res = response.response_detail(200, str(datas.inserted_id), resp)
+        res = response.response_detail(200, "Jawaban audit iinternal has been created", resp)
         return res
     except Exception as error:
         traceback.print_exc()
@@ -614,19 +633,23 @@ def jawaban_audit(data: umkm_model.JawabanAuditInternal, resp: Response):
 def daftar_hadir_kaji(model: umkm_model.DaftarHadirKaji, resp: Response):
     """ daftar hadir kaji ulang \n  docx hal 18"""
     try:
-        client, col = mongo.mongodb_config('DetailUMKM')
+        client, col = mongo.mongodb_config('DocumentDetails')
+        list_orang = []
+        for detail_list_orang in model.list_orang:
+            list_orang.append(detail_list_orang.dict())
+
+        list_pembahasan = []
+        for detail_pembahasan in model.pembahasan:
+            list_pembahasan.append(detail_pembahasan.dict())
+
         data = {
-            "_id": util.id_generator('Detail'),
-            "doc_id": model.id,
             "tanggal": model.tanggal,
-            "list_orang": model.list_orang,
-            "pembahasan": model.pembahasan
+            "list_orang": list_orang,
+            "pembahasan": list_pembahasan
         }
-        datas = {
-            "type": "daftar_hasil_kaji",
-            "data": data
-        }
-        datas = col.insert_one(datas)
+        change = {'_id': model.id}
+        newvalues = {"$set": {'daftar_hasil_kaji': data}}
+        col.update_one(change, newvalues)
         client.close()
         client, log_col = mongo.mongodb_config('Log')
         change = {'_id': model.id}
@@ -635,16 +658,15 @@ def daftar_hadir_kaji(model: umkm_model.DaftarHadirKaji, resp: Response):
         newvalues = {"$set":{'daftar_hasil_kaji': True}}
         log_col.update_one(change, newvalues)
         client.close()
-        return response.response_detail(200, str(datas.inserted_id), resp)
+        return response.response_detail(200, "daftar hasil kaji has been created", resp)
     except Exception as error:
         traceback.print_exc()
         return response.response_detail(400, error, resp)
 
-
+# Belum di modif
 @app.post('/generate_lampiran')
 def generate_lampiran(doc_id:str, resp: Response):
     try:
-        client, coll = mongo.mongodb_config("DetailUMKM")
         client, coll = mongo.mongodb_config("DetailUMKM")
         data = coll.find_one({'$and':[{'doc_id':doc_id},{'type':'detail_umkm'}]})
         detail = data['data']
@@ -670,14 +692,13 @@ def generate_lampiran(doc_id:str, resp: Response):
 def pembelian_pemeriksaan(pemeriksaan: umkm_model.Pemeriksaan, resp: Response):
     """ form pembelian dan pemeriksaan bahan """
     try:
-        client, col = mongo.mongodb_config('DetailUMKM')
-        data = {
-            "_id": util.id_generator('Detail'),
-            "doc_id":pemeriksaan.id,
-            "type": "pembelian",
-            "data": pemeriksaan.data
-        }
-        datas = col.insert_one(data)
+        client, col = mongo.mongodb_config('DocumentDetails')
+        list_pemeriksaan = []
+        for detail_pemeriksaan in pemeriksaan.data:
+            list_pemeriksaan.append(detail_pemeriksaan.dict())
+        change = {'_id': pemeriksaan.id}
+        newvalues = {"$set": {'pembelian': list_pemeriksaan}}
+        col.update_one(change, newvalues)
         client.close()
         client, log_col = mongo.mongodb_config('Log')
         change = {'_id': pemeriksaan.id}
@@ -686,7 +707,7 @@ def pembelian_pemeriksaan(pemeriksaan: umkm_model.Pemeriksaan, resp: Response):
         newvalues = { "$set":{'pembelian': True}}
         log_col.update_one(change, newvalues)
         client.close()
-        return response.response_detail(200, str(datas.inserted_id), resp)
+        return response.response_detail(200, "pembelian dan pemeriksaan has been created", resp)
     except Exception as error:
         traceback.print_exc()
         return response.response_detail(400, error, resp)
@@ -696,14 +717,13 @@ def pembelian_pemeriksaan(pemeriksaan: umkm_model.Pemeriksaan, resp: Response):
 def pembelian_pemeriksaan(data: umkm_model.Pemeriksaan, resp: Response):
     """ form pembelian dan pemeriksaan bahan import"""
     try:
-        client, col = mongo.mongodb_config('DetailUMKM')
-        datas = {
-            "_id": util.id_generator('Detail'),
-            "doc_id":data.id,
-            "type": "pembelian_import",
-            "data": data.data
-        }
-        datas = col.insert_one(datas)
+        client, col = mongo.mongodb_config('DocumentDetails')
+        list_pemeriksaan = []
+        for detail_pemeriksaan in data.data:
+            list_pemeriksaan.append(detail_pemeriksaan.dict())
+        change = {'_id': data.id}
+        newvalues = {"$set": {'pembelian_import': list_pemeriksaan}}
+        col.update_one(change, newvalues)
         client.close()
         client, log_col = mongo.mongodb_config('Log')
         change = {'_id': data.id}
@@ -712,7 +732,7 @@ def pembelian_pemeriksaan(data: umkm_model.Pemeriksaan, resp: Response):
         newvalues = {"$set":{'pembelian_import': True}}
         log_col.update_one(change, newvalues)
         client.close()
-        return response.response_detail(200, str(datas.inserted_id), resp)
+        return response.response_detail(200, "pembelian dan pemeriksaan import has been created", resp)
     except Exception as error:
         return response.response_detail(400, error, resp)
 
@@ -721,13 +741,13 @@ def pembelian_pemeriksaan(data: umkm_model.Pemeriksaan, resp: Response):
 def form_stok_barang(data: umkm_model.StokBarang, resp: Response):
     """ form pembelian dan pemeriksaan bahan import"""
     try:
-        client, col = mongo.mongodb_config('DetailUMKM')
-        model = {
-            "_id": util.id_generator('Detail'),
-            "type": "stok_barang",
-            "data": data.data
-        }
-        datas = col.insert_one(model)
+        client, col = mongo.mongodb_config('DocumentDetails')
+        list_stok = []
+        for detail_stok in data.data:
+            list_stok.append(detail_stok.dict())
+        change = {'_id': data.id}
+        newvalues = {"$set": {'stok_barang': list_stok}}
+        col.update_one(change, newvalues)
         client.close()
         client, log_col = mongo.mongodb_config('Log')
         change = {'_id': data.id}
@@ -736,7 +756,7 @@ def form_stok_barang(data: umkm_model.StokBarang, resp: Response):
         newvalues = {"$set":{'stok_barang': True}}
         log_col.update_one(change, newvalues)
         client.close()
-        return response.response_detail(200, str(datas.inserted_id), resp)
+        return response.response_detail(200, "Stok barang has been created", resp)
     except Exception as error:
         traceback.print_exc()
         return response.response_detail(400, error, resp)
@@ -746,13 +766,13 @@ def form_stok_barang(data: umkm_model.StokBarang, resp: Response):
 def form_produksi(data: umkm_model.FormProduksi, resp: Response):
     """ form pembelian dan pemeriksaan bahan import"""
     try:
-        client, col = mongo.mongodb_config('DetailUMKM')
-        model = {
-            "_id": util.id_generator('Detail'),
-            "type": "form_produksi",
-            "data": data.data
-        }
-        datas = col.insert_one(model)
+        client, col = mongo.mongodb_config('DocumentDetails')
+        list_produksi = []
+        for detail_stok in data.data:
+            list_produksi.append(detail_stok.dict())
+        change = {'_id': data.id}
+        newvalues = {"$set": {'form_produksi': list_produksi}}
+        col.update_one(change, newvalues)
         client.close()
         client, log_col = mongo.mongodb_config('Log')
         change = {'_id': data.id}
@@ -761,7 +781,7 @@ def form_produksi(data: umkm_model.FormProduksi, resp: Response):
         newvalues = {"$set":{'form_produksi': True}}
         log_col.update_one(change, newvalues)
         client.close()
-        return response.response_detail(200, str(datas.inserted_id), resp)
+        return response.response_detail(200, "form produksi has been created", resp)
     except Exception as error:
         traceback.print_exc()
         return response.response_detail(400, error, resp)
@@ -771,13 +791,13 @@ def form_produksi(data: umkm_model.FormProduksi, resp: Response):
 def form_produksi(data: umkm_model.FormPemusnahan, resp: Response):
     """ form pembelian dan pemeriksaan bahan import"""
     try:
-        client, col = mongo.mongodb_config('DetailUMKM')
-        model = {
-            "_id": util.id_generator('Detail'),
-            "type": "form_pemusnahan",
-            "data": data.data
-        }
-        datas = col.insert_one(model)
+        client, col = mongo.mongodb_config('DocumentDetails')
+        list_pemusnahan = []
+        for detail_stok in data.data:
+            list_pemusnahan.append(detail_stok.dict())
+        change = {'_id': data.id}
+        newvalues = {"$set": {'form_pemusnahan': list_pemusnahan}}
+        col.update_one(change, newvalues)
         client.close()
         client, col_col = mongo.mongodb_config('Log')
         change = {'_id': data.id}
@@ -786,7 +806,7 @@ def form_produksi(data: umkm_model.FormPemusnahan, resp: Response):
         newvalues = {"$set":{'form_pemusnahan': True}}
         col_col.update_one(change, newvalues)
         client.close()
-        return response.response_detail(200, str(datas.inserted_id), resp)
+        return response.response_detail(200, "Pemusnahan has been created", resp)
     except Exception as error:
         traceback.print_exc()
         return response.response_detail(400, error, resp)
@@ -796,13 +816,13 @@ def form_produksi(data: umkm_model.FormPemusnahan, resp: Response):
 def form_pengecekan_kebersihan(data: umkm_model.FormPengecekanKebersihan, resp: Response):
     """ form pembelian dan pemeriksaan bahan import"""
     try:
-        client, col = mongo.mongodb_config('DetailUMKM')
-        model = {
-            "_id": util.id_generator('Detail'),
-            "type": "form_pengecekan_kebersihan",
-            "data": data.data
-        }
-        datas = col.insert_one(model)
+        client, col = mongo.mongodb_config('DocumentDetails')
+        list_pemusnahan = []
+        for detail_stok in data.data:
+            list_pemusnahan.append(detail_stok.dict())
+        change = {'_id': data.id}
+        newvalues = {"$set": {'form_pengecekan_kebersihan': list_pemusnahan}}
+        col.update_one(change, newvalues)
         client.close()
         client, log_col = mongo.mongodb_config('Log')
         change = {'_id': data.id}
@@ -811,8 +831,9 @@ def form_pengecekan_kebersihan(data: umkm_model.FormPengecekanKebersihan, resp: 
         newvalues = {"$set":{'form_pengecekan_kebersihan': True}}
         log_col.update_one(change, newvalues)
         client.close()
-        return response.response_detail(200, str(datas.inserted_id), resp)
+        return response.response_detail(200, "pengecekan kebersihan has been created",resp)
     except Exception as error:
+        traceback.print_exc()
         return response.response_detail(400, error, resp)
 
 
@@ -820,13 +841,13 @@ def form_pengecekan_kebersihan(data: umkm_model.FormPengecekanKebersihan, resp: 
 def daftar_bahan_halal(data: umkm_model.DaftarBarangHalal, resp: Response):
     """ form pembelian dan pemeriksaan bahan import"""
     try:
-        client, col = mongo.mongodb_config('DetailUMKM')
-        model = {
-            "_id": util.id_generator('Detail'),
-            "type": "daftar_bahan_halal",
-            "data": data.data
-        }
-        datas = col.insert_one(model)
+        client, col = mongo.mongodb_config('DocumentDetails')
+        list_pemusnahan = []
+        for detail_stok in data.data:
+            list_pemusnahan.append(detail_stok.dict())
+        change = {'_id': data.id}
+        newvalues = {"$set": {'daftar_bahan_halal': list_pemusnahan}}
+        col.update_one(change, newvalues)
         client.close()
         client, log_col = mongo.mongodb_config('Log')
         change = {'_id': data.id}
@@ -835,7 +856,7 @@ def daftar_bahan_halal(data: umkm_model.DaftarBarangHalal, resp: Response):
         newvalues = {"$set": {'daftar_bahan_halal': True}}
         log_col.update_one(change, newvalues)
         client.close()
-        return response.response_detail(200, str(datas.inserted_id), resp)
+        return response.response_detail(200, "daftar barang halal has benn created", resp)
     except Exception as error:
         return response.response_detail(400, error, resp)
 
@@ -844,13 +865,13 @@ def daftar_bahan_halal(data: umkm_model.DaftarBarangHalal, resp: Response):
 def matriks_produk(data: umkm_model.MatrixProduksi, resp: Response):
     """ form pembelian dan pemeriksaan bahan import"""
     try:
-        client, col = mongo.mongodb_config('DetailUMKM')
-        model = {
-            "_id": util.id_generator('Detail'),
-            "type": "matriks_produk",
-            "data": data.data
-        }
-        datas = col.insert_one(model)
+        client, col = mongo.mongodb_config('DocumentDetails')
+        list_pemusnahan = []
+        for detail_stok in data.data:
+            list_pemusnahan.append(detail_stok.dict())
+        change = {'_id': data.id}
+        newvalues = {"$set": {'matriks_produk': list_pemusnahan}}
+        col.update_one(change, newvalues)
         client.close()
         client, log_col = mongo.mongodb_config('Log')
         change = {'_id': data.id}
@@ -859,6 +880,6 @@ def matriks_produk(data: umkm_model.MatrixProduksi, resp: Response):
         newvalues = {"$set":{'matriks_produk': True}}
         log_col.update_one(change, newvalues)
         client.close()
-        return response.response_detail(200, str(datas.inserted_id), resp)
+        return response.response_detail(200, "matrix product has been created", resp)
     except Exception as error:
         return response.response_detail(400, error, resp)

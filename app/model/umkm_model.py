@@ -22,6 +22,16 @@ class UmkmDetail(BaseModel):
     ttd_ketua: str
 
 
+class DataPenetapanTeam(BaseModel):
+    """ penetapan team """
+    nama:str
+    jabatan:str
+    position:str
+
+class PenetapanTeam(BaseModel):
+    id : str
+    data : List[DataPenetapanTeam]
+
 class ManagementHalahTeam(BaseModel):
     """ docx page 4 """
     id_report: str
@@ -46,13 +56,20 @@ class ManagementHalahTeam(BaseModel):
 2.	Bertanggungjawab dalam proses transportasi bahan dan produk jadi 
 """
 
+class DataPelaksanaan(BaseModel):
+    """data pelaksanaan"""
+    nama:str
+    posisi:str
+    ttd:str
+    nilai:int
 
 class Pelaksanaan(BaseModel):
     """ docx page 13 """
     id: str
     tanggal_pelaksanaan: int
     pemateri: str
-    data: list
+    data: List[DataPelaksanaan]
+
 
 
 class InputJawabanEvaluasi(BaseModel):
@@ -63,27 +80,47 @@ class InputJawabanEvaluasi(BaseModel):
     data: dict
 
 
+class DataJawabanAudit(BaseModel):
+    id: str
+    jawaban: bool
+    keterangan: str
+
 class JawabanAuditInternal(BaseModel):
     id: str
     created_at: int
     auditee: str
     nama_auditor: str
     bagian_diaudit: str
-    data: list
+    data: List[DataJawabanAudit]
 
+class DataListOrang(BaseModel):
+    nama:str
+    jabatan:str
+    paraf:str
+
+class DataPembahasan(BaseModel):
+    pembahasan:str
+    perbaikan:str
 
 class DaftarHadirKaji(BaseModel):
     """ daftar hadir kaji class """
     id: str
     tanggal: str
-    list_orang: list
-    pembahasan: list
+    list_orang: List[DataListOrang]
+    pembahasan: List[DataPembahasan]
 
 
 class Lampiran(BaseModel):
     'lampiran'
     id: str
 
+class DataPemeriksaan(BaseModel):
+    Tanggal:str
+    nama_dan_merk:str
+    nama_dan_negara:str
+    halal:str
+    exp_bahan:str
+    paraf:str
 
 class Pemeriksaan(BaseModel):
     """
@@ -101,7 +138,7 @@ class Pemeriksaan(BaseModel):
     ]
     """
     id: str
-    data: list
+    data: List[DataPemeriksaan]
 
 class DataStokBarang(BaseModel):
     tanggal_beli: str
@@ -135,8 +172,8 @@ class FormProduksi(BaseModel):
 
 class DataFormPemusnahan(BaseModel):
     """ data form pemusnhanan """
-    tanggal_produksi: int
-    tanggal_pemusnahan: int
+    tanggal_produksi: str
+    tanggal_pemusnahan: str
     nama_produk:str
     jumlah:str
     penyebab:str
