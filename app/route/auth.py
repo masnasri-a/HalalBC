@@ -4,9 +4,9 @@ import traceback
 from fastapi import APIRouter
 from fastapi.exceptions import HTTPException
 from pymongo import errors
-from config import mongo
-from utils import util
-from model import auth_model
+from app.config import mongo
+from app.utils import util
+from app.model import auth_model
 
 app = APIRouter()
 
@@ -34,7 +34,7 @@ def register_umkm(data: auth_model.DataUMKM):
                 "marketing_system": data.marketing_system,
                 "created_at": util.get_created_at()
             }
-            client, col = mongo.mongo('Accounts')
+            client, col = mongo.mongodb_config('Accounts')
             datas = col.insert_one(model)
             client.close()
             return datas.inserted_id
@@ -69,7 +69,7 @@ def register_auditor(data: auth_model.DataAuditor):
                 "auditor_experience": data.auditor_experience,
                 "created_at": util.get_created_at()
             }
-            client, col = mongo.mongo('Accounts')
+            client, col = mongo.mongodb_config('Accounts')
             datas = col.insert_one(model)
             client.close()
             return datas.inserted_id
@@ -96,7 +96,7 @@ def register_consumer(data: auth_model.DataKonsumen):
                 "address": data.address,
                 "created_at": util.get_created_at()
             }
-            client, col = mongo.mongo('Accounts')
+            client, col = mongo.mongodb_config('Accounts')
             datas = col.insert_one(model)
             client.close()
             return datas.inserted_id
@@ -111,7 +111,7 @@ def register_consumer(data: auth_model.DataKonsumen):
 def login(login_data: auth_model.Login):
     """ A function for login """
     try:
-        client, col = mongo.mongo('Accounts')
+        client, col = mongo.mongodb_config('Accounts')
         datas = col.find_one({'$and': [{'username': login_data.username}, {
                              'password': util.sha256(login_data.password)}]})
         client.close()

@@ -4,11 +4,13 @@ from typing import Optional
 # pylint: disable=no-name-in-module
 from pydantic import BaseModel
 
+
 class DataPassword(BaseModel):
     """ model for change password """
     id: str
     password: str
     new_password: str
+
 
 class DataAuditor(BaseModel):
     """ model for data auditor """
@@ -24,6 +26,7 @@ class DataAuditor(BaseModel):
     experied_cert: Optional[int]
     auditor_experience: Optional[str]
 
+
 class DataUMKM(BaseModel):
     """ model for data umkm """
     id: str
@@ -37,6 +40,7 @@ class DataUMKM(BaseModel):
     product_type: str
     marketing_area: Optional[str]
     marketing_system: Optional[str]
+
 
 class DataKonsumen(BaseModel):
     """ model for data konsumen """

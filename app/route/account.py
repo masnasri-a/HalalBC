@@ -4,9 +4,9 @@ import traceback
 from fastapi import APIRouter
 from fastapi.exceptions import HTTPException
 from pymongo import errors
-from config import mongo
-from utils import util
-from model import account_model
+from app.config import mongo
+from app.utils import util
+from app.model import account_model
 
 
 app = APIRouter()
@@ -16,7 +16,7 @@ app = APIRouter()
 def get_auditor(_id: str):
     """ A function to get Auditor Account by id """
     try:
-        client, col = mongo.mongo('Accounts')
+        client, col = mongo.mongodb_config('Accounts')
         data = col.find_one({'_id': id, 'role': 'auditor'})
         if data is not None:
             return data
@@ -32,7 +32,7 @@ def get_auditor(_id: str):
 def get_all_auditor():
     """ A function to get all Auditor Account """
     try:
-        client, col = mongo.mongo('Accounts')
+        client, col = mongo.mongodb_config('Accounts')
         data = col.find({'role': 'auditor'})
         if data is not None:
             return [d for d in data]
@@ -48,7 +48,7 @@ def get_all_auditor():
 def update_auditor(data: account_model.DataAuditor):
     """ A function to update Auditor Account """
     try:
-        client, col = mongo.mongo('Accounts')
+        client, col = mongo.mongodb_config('Accounts')
         datas = col.find_one({'_id': data.id})
         if datas is not None:
             model = {
@@ -78,7 +78,7 @@ def update_auditor(data: account_model.DataAuditor):
 def get_umkm(id: str):
     """ A function to get UMKM Account by id """
     try:
-        client, col = mongo.mongo('Accounts')
+        client, col = mongo.mongodb_config('Accounts')
         data = col.find_one({'_id': id, 'role': 'umkm'})
         if data is not None:
             return data
@@ -94,7 +94,7 @@ def get_umkm(id: str):
 def get_all_umkm():
     """ A function to get all UMKM Account """
     try:
-        client, col = mongo.mongo('Accounts')
+        client, col = mongo.mongodb_config('Accounts')
         data = col.find({'role': 'umkm'})
         if data is not None:
             return [detail for detail in data]
@@ -110,7 +110,7 @@ def get_all_umkm():
 def get_all_umkm_area(marketing_area: str):
     """ A function to get all UMKM Account by marketing area """
     try:
-        client, col = mongo.mongo('Accounts')
+        client, col = mongo.mongodb_config('Accounts')
         data = col.find({'role': 'umkm', 'marketing_area': marketing_area})
         if data is not None:
             return [d for d in data]
@@ -126,7 +126,7 @@ def get_all_umkm_area(marketing_area: str):
 def update_umkm(data: account_model.DataUMKM):
     """ A function to update UMKM Account """
     try:
-        client, col = mongo.mongo('Accounts')
+        client, col = mongo.mongodb_config('Accounts')
         datas = col.find_one({'_id': data.id})
         if datas is not None:
             model = {
@@ -156,7 +156,7 @@ def update_umkm(data: account_model.DataUMKM):
 def get_consumen(id: str):
     """ A function to get Consumen Account by id """
     try:
-        client, col = mongo.mongo('Accounts')
+        client, col = mongo.mongodb_config('Accounts')
         data = col.find_one({'_id': id, 'role': 'consumen'})
         if data is not None:
             return data
@@ -172,7 +172,7 @@ def get_consumen(id: str):
 def get_all_consumen():
     """ A function to get all Consumen Account """
     try:
-        client, col = mongo.mongo('Accounts')
+        client, col = mongo.mongodb_config('Accounts')
         data = col.find({'role': 'consumen'})
         if data is not None:
             return [d for d in data]
@@ -188,7 +188,7 @@ def get_all_consumen():
 def update_consumen(data: account_model.DataKonsumen):
     """ A function to update consumen Account """
     try:
-        client, col = mongo.mongo('Accounts')
+        client, col = mongo.mongodb_config('Accounts')
         datas = col.find_one({'_id': data.id})
         if datas is not None:
             model = {
@@ -212,7 +212,7 @@ def update_consumen(data: account_model.DataKonsumen):
 def update_password(data: account_model.DataPassword):
     """ A function to change Account password """
     try:
-        client, col = mongo.mongo('Accounts')
+        client, col = mongo.mongodb_config('Accounts')
         datas = col.find_one({'_id': data.id})
         if datas is not None:
             if util.sha256(data.password) == datas['password']:

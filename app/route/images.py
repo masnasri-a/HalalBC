@@ -3,7 +3,7 @@ import traceback
 from fastapi import APIRouter, UploadFile, File, Response
 from fastapi.exceptions import HTTPException
 from fastapi.responses import FileResponse
-from utils import response
+from app.utils import response
 import aiofiles
 app = APIRouter()
 
@@ -23,6 +23,7 @@ async def upload(resp: Response,image: UploadFile = File(...)):
 
 @app.get('/load_image')
 async def load_image(image_name:str):
+    """ load images data """
     try:
         return FileResponse('app/assets/'+image_name)
     except Exception as error:

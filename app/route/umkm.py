@@ -2,10 +2,11 @@
 
 import traceback
 from fastapi import APIRouter, HTTPException, Response
-# from utils import word
-from model import umkm_model
-from utils import response, util
-from config import mongo
+from fastapi.responses import FileResponse
+from app.utils import pdf
+from app.model import umkm_model
+from app.utils import response, util
+from app.config import mongo
 
 
 app = APIRouter()
@@ -28,10 +29,10 @@ def create_init(model: umkm_model.InitUMKM, resp: Response):
             "type": "init",
             "creator": model.creator_id
         }
-        client, col = mongo.mongo('UMKM')
+        client, col = mongo.mongodb_config('UMKM')
         col.insert_one(data)
         client.close()
-        client, col_log = mongo.mongo('Log')
+        client, col_log = mongo.mongodb_config('Log')
         model = {
             "_id": _id,
             "creator":model.creator_id,
@@ -62,7 +63,7 @@ def create_init(model: umkm_model.InitUMKM, resp: Response):
 @app.get('/get_ukmk_detail')
 def details(creator_id, resp: Response):
     try:
-        client, col = mongo.mongo('Log')
+        client, col = mongo.mongodb_config('Log')
         data = col.find_one({"creator": creator_id})
         return response.response_detail(200, data, resp)
 
@@ -78,6 +79,8 @@ def detail_umkm(data_model: umkm_model.UmkmDetail, resp: Response):
         _id = util.id_generator('Detail')
         data = {
             "nama_ketua": data_model.nama_ketua,
+            "no_telp_ketua":data_model.no_ktp_ketua,
+            "no_ktp_ketua":data_model.no_ktp_ketua,
             "nama_penanggungjawab": data_model.nama_penanggungjawab,
             "logo_perusahaan": data_model.logo_perusahaan,
             "ttd_penanggungjawab": data_model.ttd_penanggungjawab,
@@ -89,10 +92,10 @@ def detail_umkm(data_model: umkm_model.UmkmDetail, resp: Response):
             "type": "detail_umkm",
             "data": data
         }
-        client, col = mongo.mongo('DetailUMKM')
+        client, col = mongo.mongodb_config('DetailUMKM')
         datas = col.insert_one(model)
         client.close()
-        client, log_col = mongo.mongo('Log')
+        client, log_col = mongo.mongodb_config('Log')
         change = {'_id': data_model.id}
         newvalues = {"$set": {'status': 'detail_umkm'}}
         log_col.update_one(change, newvalues)
@@ -121,11 +124,11 @@ def penetapan_tim(doc_id:str, data_model: dict, resp: Response):
             "doc_id":doc_id,
             "data": data_model
         }
-        client, col = mongo.mongo('DetailUMKM')
+        client, col = mongo.mongodb_config('DetailUMKM')
         datas = col.insert_one(model)
         client.close()
 
-        client, log_col = mongo.mongo('Log')
+        client, log_col = mongo.mongodb_config('Log')
         change = {'_id': doc_id}
         newvalues = {"$set":{'status': 'penetapan_tim'}}
         log_col.update_one(change, newvalues)
@@ -169,10 +172,10 @@ def bukti_pelaksanaan(data_model: umkm_model.Pelaksanaan, resp: Response):
             "model_data": model
         }
 
-        client, col = mongo.mongo('DetailUMKM')
+        client, col = mongo.mongodb_config('DetailUMKM')
         datas = col.insert_one(data)
         client.close()
-        client, log_col = mongo.mongo('Log')
+        client, log_col = mongo.mongodb_config('Log')
         change = {'_id': data_model.id}
         newvalues = {"$set": {'status': 'bukti_pelaksanaan'}}
         log_col.update_one(change, newvalues)
@@ -288,7 +291,7 @@ def jawaban(data: umkm_model.InputJawabanEvaluasi, resp: Response) -> bool:
     # example = {"id":asdasdasd,"nama":"Eka Widiawati","Tanggal":"19 Agustus 2021",1:"a",2:"b",3:"a",4:"a",5:"b",6:"a",7:"a",8:"b",9:"a",10:"a"}
     """
     try:
-        client, col = mongo.mongo('DetailUMKM')
+        client, col = mongo.mongodb_config('DetailUMKM')
         model = {
             "_id": util.id_generator('Detail'),
             "doc_id": data.id,
@@ -298,7 +301,7 @@ def jawaban(data: umkm_model.InputJawabanEvaluasi, resp: Response) -> bool:
         }
         datas = col.insert_one(model)
         client.close()
-        client, log_col = mongo.mongo('Log')
+        client, log_col = mongo.mongodb_config('Log')
         change = {'_id': data.id}
         newvalues = {"$set": {'status': 'jawaban_evaluasi'}}
         log_col.update_one(change, newvalues)
@@ -581,7 +584,7 @@ def jawaban_audit(data: umkm_model.JawabanAuditInternal, resp: Response):
 }
     """
     try:
-        client, col = mongo.mongo('DetailUMKM')
+        client, col = mongo.mongodb_config('DetailUMKM')
         model = {
             "_id": util.id_generator('Detail'),
             "doc_id": data.id,
@@ -593,7 +596,7 @@ def jawaban_audit(data: umkm_model.JawabanAuditInternal, resp: Response):
         }
         datas = col.insert_one(model)
         client.close()
-        client, log_col = mongo.mongo('Log')
+        client, log_col = mongo.mongodb_config('Log')
         change = {'_id': data.id}
         newvalues = {"$set": {'status': 'jawaban_audit'}}
         log_col.update_one(change, newvalues)
@@ -611,7 +614,7 @@ def jawaban_audit(data: umkm_model.JawabanAuditInternal, resp: Response):
 def daftar_hadir_kaji(model: umkm_model.DaftarHadirKaji, resp: Response):
     """ daftar hadir kaji ulang \n  docx hal 18"""
     try:
-        client, col = mongo.mongo('DetailUMKM')
+        client, col = mongo.mongodb_config('DetailUMKM')
         data = {
             "_id": util.id_generator('Detail'),
             "doc_id": model.id,
@@ -625,7 +628,7 @@ def daftar_hadir_kaji(model: umkm_model.DaftarHadirKaji, resp: Response):
         }
         datas = col.insert_one(datas)
         client.close()
-        client, log_col = mongo.mongo('Log')
+        client, log_col = mongo.mongodb_config('Log')
         change = {'_id': model.id}
         newvalues = {"$set":{'status': 'daftar_hasil_kaji'}}
         log_col.update_one(change, newvalues)
@@ -637,6 +640,29 @@ def daftar_hadir_kaji(model: umkm_model.DaftarHadirKaji, resp: Response):
         traceback.print_exc()
         return response.response_detail(400, error, resp)
 
+
+@app.post('/generate_lampiran')
+def generate_lampiran(doc_id:str, resp: Response):
+    try:
+        client, coll = mongo.mongodb_config("DetailUMKM")
+        client, coll = mongo.mongodb_config("DetailUMKM")
+        data = coll.find_one({'$and':[{'doc_id':doc_id},{'type':'detail_umkm'}]})
+        detail = data['data']
+        client.close()
+        client, coll_umkm = mongo.mongodb_config("UMKM")
+        creator = coll_umkm.find_one({'_id':doc_id})
+        client.close()
+        client, coll_acc = mongo.mongodb_config("Accounts")
+        detail_account = coll_acc.find_one({'_id':creator['creator']})
+        files = pdf.Lampiran(detail['nama_ketua'],detail['no_ktp_ketua'], detail['no_telp_ketua'],
+        "Pemimpin Perusahaan",detail_account['company_name'], detail_account['company_address'],
+        detail_account['marketing_area'])
+        return FileResponse(files,media_type='application/octet-stream',filename='lampiran.pdf')
+    except Exception as error:
+        traceback.print_exc()
+        return response.response_detail(400, error, resp)
+
+
 # BIKIN DOWNLOAD LAMPIRAN 6
 
 
@@ -644,7 +670,7 @@ def daftar_hadir_kaji(model: umkm_model.DaftarHadirKaji, resp: Response):
 def pembelian_pemeriksaan(pemeriksaan: umkm_model.Pemeriksaan, resp: Response):
     """ form pembelian dan pemeriksaan bahan """
     try:
-        client, col = mongo.mongo('DetailUMKM')
+        client, col = mongo.mongodb_config('DetailUMKM')
         data = {
             "_id": util.id_generator('Detail'),
             "doc_id":pemeriksaan.id,
@@ -653,7 +679,7 @@ def pembelian_pemeriksaan(pemeriksaan: umkm_model.Pemeriksaan, resp: Response):
         }
         datas = col.insert_one(data)
         client.close()
-        client, log_col = mongo.mongo('Log')
+        client, log_col = mongo.mongodb_config('Log')
         change = {'_id': pemeriksaan.id}
         newvalues = { "$set":{'status': 'pembelian'}}
         log_col.update_one(change, newvalues)
@@ -670,7 +696,7 @@ def pembelian_pemeriksaan(pemeriksaan: umkm_model.Pemeriksaan, resp: Response):
 def pembelian_pemeriksaan(data: umkm_model.Pemeriksaan, resp: Response):
     """ form pembelian dan pemeriksaan bahan import"""
     try:
-        client, col = mongo.mongo('DetailUMKM')
+        client, col = mongo.mongodb_config('DetailUMKM')
         datas = {
             "_id": util.id_generator('Detail'),
             "doc_id":data.id,
@@ -679,7 +705,7 @@ def pembelian_pemeriksaan(data: umkm_model.Pemeriksaan, resp: Response):
         }
         datas = col.insert_one(datas)
         client.close()
-        client, log_col = mongo.mongo('Log')
+        client, log_col = mongo.mongodb_config('Log')
         change = {'_id': data.id}
         newvalues = {"$set":{'status': 'pembelian_import'}}
         log_col.update_one(change, newvalues)
@@ -695,7 +721,7 @@ def pembelian_pemeriksaan(data: umkm_model.Pemeriksaan, resp: Response):
 def form_stok_barang(data: umkm_model.StokBarang, resp: Response):
     """ form pembelian dan pemeriksaan bahan import"""
     try:
-        client, col = mongo.mongo('DetailUMKM')
+        client, col = mongo.mongodb_config('DetailUMKM')
         model = {
             "_id": util.id_generator('Detail'),
             "type": "stok_barang",
@@ -703,7 +729,7 @@ def form_stok_barang(data: umkm_model.StokBarang, resp: Response):
         }
         datas = col.insert_one(model)
         client.close()
-        client, log_col = mongo.mongo('Log')
+        client, log_col = mongo.mongodb_config('Log')
         change = {'_id': data.id}
         newvalues = {"$set":{'status': 'stok_barang'}}
         log_col.update_one(change, newvalues)
@@ -720,7 +746,7 @@ def form_stok_barang(data: umkm_model.StokBarang, resp: Response):
 def form_produksi(data: umkm_model.FormProduksi, resp: Response):
     """ form pembelian dan pemeriksaan bahan import"""
     try:
-        client, col = mongo.mongo('DetailUMKM')
+        client, col = mongo.mongodb_config('DetailUMKM')
         model = {
             "_id": util.id_generator('Detail'),
             "type": "form_produksi",
@@ -728,7 +754,7 @@ def form_produksi(data: umkm_model.FormProduksi, resp: Response):
         }
         datas = col.insert_one(model)
         client.close()
-        client, log_col = mongo.mongo('Log')
+        client, log_col = mongo.mongodb_config('Log')
         change = {'_id': data.id}
         newvalues = {"$set":{'status': 'form_produksi'}}
         log_col.update_one(change, newvalues)
@@ -745,7 +771,7 @@ def form_produksi(data: umkm_model.FormProduksi, resp: Response):
 def form_produksi(data: umkm_model.FormPemusnahan, resp: Response):
     """ form pembelian dan pemeriksaan bahan import"""
     try:
-        client, col = mongo.mongo('DetailUMKM')
+        client, col = mongo.mongodb_config('DetailUMKM')
         model = {
             "_id": util.id_generator('Detail'),
             "type": "form_pemusnahan",
@@ -753,7 +779,7 @@ def form_produksi(data: umkm_model.FormPemusnahan, resp: Response):
         }
         datas = col.insert_one(model)
         client.close()
-        client, col_col = mongo.mongo('Log')
+        client, col_col = mongo.mongodb_config('Log')
         change = {'_id': data.id}
         newvalues = {"$set":{'status': 'form_pemusnahan'}}
         col_col.update_one(change, newvalues)
@@ -770,7 +796,7 @@ def form_produksi(data: umkm_model.FormPemusnahan, resp: Response):
 def form_pengecekan_kebersihan(data: umkm_model.FormPengecekanKebersihan, resp: Response):
     """ form pembelian dan pemeriksaan bahan import"""
     try:
-        client, col = mongo.mongo('DetailUMKM')
+        client, col = mongo.mongodb_config('DetailUMKM')
         model = {
             "_id": util.id_generator('Detail'),
             "type": "form_pengecekan_kebersihan",
@@ -778,7 +804,7 @@ def form_pengecekan_kebersihan(data: umkm_model.FormPengecekanKebersihan, resp: 
         }
         datas = col.insert_one(model)
         client.close()
-        client, log_col = mongo.mongo('Log')
+        client, log_col = mongo.mongodb_config('Log')
         change = {'_id': data.id}
         newvalues = {"$set":{'status': 'form_pengecekan_kebersihan'}}
         log_col.update_one(change, newvalues)
@@ -794,7 +820,7 @@ def form_pengecekan_kebersihan(data: umkm_model.FormPengecekanKebersihan, resp: 
 def daftar_bahan_halal(data: umkm_model.DaftarBarangHalal, resp: Response):
     """ form pembelian dan pemeriksaan bahan import"""
     try:
-        client, col = mongo.mongo('DetailUMKM')
+        client, col = mongo.mongodb_config('DetailUMKM')
         model = {
             "_id": util.id_generator('Detail'),
             "type": "daftar_bahan_halal",
@@ -802,7 +828,7 @@ def daftar_bahan_halal(data: umkm_model.DaftarBarangHalal, resp: Response):
         }
         datas = col.insert_one(model)
         client.close()
-        client, log_col = mongo.mongo('Log')
+        client, log_col = mongo.mongodb_config('Log')
         change = {'_id': data.id}
         newvalues = {"$set": {'status': 'daftar_bahan_halal'}}
         log_col.update_one(change, newvalues)
@@ -818,7 +844,7 @@ def daftar_bahan_halal(data: umkm_model.DaftarBarangHalal, resp: Response):
 def matriks_produk(data: umkm_model.MatrixProduksi, resp: Response):
     """ form pembelian dan pemeriksaan bahan import"""
     try:
-        client, col = mongo.mongo('DetailUMKM')
+        client, col = mongo.mongodb_config('DetailUMKM')
         model = {
             "_id": util.id_generator('Detail'),
             "type": "matriks_produk",
@@ -826,7 +852,7 @@ def matriks_produk(data: umkm_model.MatrixProduksi, resp: Response):
         }
         datas = col.insert_one(model)
         client.close()
-        client, log_col = mongo.mongo('Log')
+        client, log_col = mongo.mongodb_config('Log')
         change = {'_id': data.id}
         newvalues = {"$set":{'status': 'matriks_produk'}}
         log_col.update_one(change, newvalues)

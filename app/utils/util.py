@@ -4,8 +4,9 @@ import hashlib
 from datetime import datetime, date
 from random import randint
 from pymongo.errors import PyMongoError
-from config.mongo import mongo
+from app import config
 from fastapi.exceptions import HTTPException
+
 
 def sha256(param):
     """ hasing function """
@@ -14,19 +15,22 @@ def sha256(param):
     data.update(param)
     return data.hexdigest()
 
+
 def id_generator(param):
     """ id generator """
-    return str(param+":"+str(randint(111111111111,999999999999)))
+    return str(param + ":" + str(randint(111111111111, 999999999999)))
+
 
 def get_created_at():
     """ created_at generator """
-    return int(datetime.timestamp(datetime.now())*1000)
+    return int(datetime.timestamp(datetime.now()) * 1000)
 
-def username_checker(username:str)->bool:
+
+def username_checker(username: str) -> bool:
     """ username check into mongodb """
     try:
-        client, col = mongo('Accounts')
-        data = col.find_one({'username':username})
+        client, col = config.mongodb_config('Accounts')
+        data = col.find_one({'username': username})
         client.close()
         if data is None:
             return True
@@ -35,7 +39,7 @@ def username_checker(username:str)->bool:
     except PyMongoError as error:
         raise HTTPException(400, "Error Mongo") from error
 
+
 def get_time_parse():
     today = date.today()
     return today.strftime("%d %B %Y")
-

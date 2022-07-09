@@ -1,12 +1,14 @@
-"""mongo config"""
+"""mongodb config"""
 import traceback
 import pymongo
 from dotenv import dotenv_values
 from fastapi.exceptions import HTTPException
 
 conf = dotenv_values('.env')
-def mongo(column):
-    """ mongo config"""
+
+
+def mongodb_config(column):
+    """ mongodb config"""
     try:
         client = pymongo.MongoClient(conf.get('MONGO_URI'))
         database = client["HalalBC"]
