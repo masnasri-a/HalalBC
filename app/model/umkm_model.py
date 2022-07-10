@@ -141,6 +141,7 @@ class Pemeriksaan(BaseModel):
     data: List[DataPemeriksaan]
 
 class DataStokBarang(BaseModel):
+    """ data stok barang """
     tanggal_beli: str
     nama_bahan: str
     jumlah_bahan: str
