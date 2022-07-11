@@ -225,23 +225,19 @@ class DaftarBarangHalal(BaseModel):
     id: str
     data: List[DataDaftarBarangHalal]
 
+class DataListBarang(BaseModel):
+    "data list barang"
+    barang:str
+    status:bool
 
 class DataMatrixProduksi(BaseModel):
+    "data matrix produksi"
     nama_bahan: str
-    barang_1: str
-    barang_2: str
-    lainnya: str
-
+    list_barang:List[DataListBarang]
 
 class MatrixProduksi(BaseModel):
     """
-    /matriks_produk
-    [{
-        "nama_bahan":"",
-        "barang_1":"",
-        "barang_2":"",
-        "lainnya":"",
-    }]
+   matrix list barang
     """
     id: str
     data: List[DataMatrixProduksi]
