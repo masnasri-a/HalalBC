@@ -29,9 +29,22 @@ async def simulasi_sjh(creator_id, resp: Response,registered: Optional[bool] = F
             "created_at":util.get_created_at(),
             "creator_id":creator_id
         }
-        client, col = mongo.mongodb_config('BahanDetail')
-        check_simulasi = col.find({'_id':creator_id})
-        print(check_simulasi)
+        client, col = mongo.mongodb_config('DetailSimulasi')
+        check_simulasi = col.find_one({'_id':creator_id})
+        if check_simulasi is None:
+            simulasi_model = {
+                '_id':creator_id,
+                'list_simulasi':[
+                    models
+                ]
+            }
+            insert = col.insert_one(simulasi_model)
+        else:
+            list_simulasi = check_simulasi['list_simulasi']
+            list_simulasi.append(models)
+            find_id = {'_id':creator_id}
+            set_data = {'$set':{'list_simulasi': list_simulasi}}
+            col.update_one(find_id, set_data)
         if status:
             return response.response_detail(200, models,resp)
         else:
