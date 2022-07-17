@@ -29,6 +29,9 @@ async def simulasi_sjh(creator_id, resp: Response,registered: Optional[bool] = F
             "created_at":util.get_created_at(),
             "creator_id":creator_id
         }
+        client, col = mongo.mongodb_config('BahanDetail')
+        check_simulasi = col.find({'_id':creator_id})
+        print(check_simulasi)
         if status:
             return response.response_detail(200, models,resp)
         else:
