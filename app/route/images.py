@@ -3,7 +3,6 @@ import traceback
 from fastapi import APIRouter, UploadFile, File, Response
 from fastapi.exceptions import HTTPException
 from fastapi.responses import FileResponse
-from pydantic import Field
 from config import mongo
 from model import util_model
 from utils import response, util

@@ -2,7 +2,7 @@
 
 # pylint: disable=no-name-in-module
 from typing import List, Union
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 
 class InitUMKM(BaseModel):
@@ -241,3 +241,20 @@ class MatrixProduksi(BaseModel):
     """
     id: str
     data: List[DataMatrixProduksi]
+
+
+class DataBahan(BaseModel):
+    bahan:str = Field(..., example="Tepung")
+    halal:bool
+    nomor_sertifikat:str
+    input_date:str
+    update_date:str
+
+class InputBahan(BaseModel):
+    creator_id:str
+    first_insert_date:str
+    detail_bahan:List[DataBahan]
+
+class UpdateBahan(BaseModel):
+    creator_id:str
+    detail_bahan:List[DataBahan]

@@ -39,6 +39,19 @@ def username_checker(username: str) -> bool:
     except PyMongoError as error:
         raise HTTPException(400, "Error Mongo") from error
 
+def id_checker(_id: str) -> bool:
+    """ username check into mongodb """
+    try:
+        client, col = mongo.mongodb_config('Accounts')
+        data = col.find_one({'_id': _id})
+        client.close()
+        if data is None:
+            return True
+        else:
+            return False
+    except PyMongoError as error:
+        raise HTTPException(400, "Error Mongo") from error
+
 
 def get_time_parse():
     today = date.today()
