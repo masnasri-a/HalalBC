@@ -22,18 +22,36 @@ async def simulasi_sjh(creator_id, resp: Response,registered: Optional[bool] = F
         if valid_id:
             return response.response_detail(400, "id not valid", resp)
         detail = simulasi.Simulasi(creator_id, registered)
-        detail.result()
+        model, status = detail.logic()
+        models = {
+            "message":model['message'],
+            "data":None,
+            "created_at":util.get_created_at(),
+            "creator_id":creator_id
+        }
+        client, col = mongo.mongodb_config('DetailSimulasi')
+        check_simulasi = col.find_one({'_id':creator_id})
+        if check_simulasi is None:
+            simulasi_model = {
+                '_id':creator_id,
+                'list_simulasi':[
+                    models
+                ]
+            }
+            insert = col.insert_one(simulasi_model)
+        else:
+            list_simulasi = check_simulasi['list_simulasi']
+            list_simulasi.append(models)
+            find_id = {'_id':creator_id}
+            set_data = {'$set':{'list_simulasi': list_simulasi}}
+            col.update_one(find_id, set_data)
+        if status:
+            return response.response_detail(200, models,resp)
+        else:
+            return response.response_detail(400, models,resp)
     except Exception:
         traceback.print_exc()
         return response.response_detail(400, "Error create simulation", resp)
-
-@app.post('/simulasi_sjh_2')
-async def simulasi_2(model: simulasi_model.SimulasiTwo, resp: Response):
-    """apabila SJH sudah memenuhi syarat Sertitikat halal namun belum terdaftar/ memperoleh sertifikat halal"""
-    valid_id = util.id_checker(model.creator_id)
-    if valid_id:
-        return response.response_detail(400, "id not valid", resp)
-
 
 @app.post('/input_bahan')
 async def input_bahan(model: umkm_model.InputBahan, resp: Response):
