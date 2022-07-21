@@ -703,10 +703,306 @@ heading_style = doc.styles['Body Text']
 body = doc.add_paragraph(style=heading_style).add_run(f'{surat_penetapan_tim_signature_title}')
 body.font.size = Pt(11)
 
-
 ceo_sign = doc.styles['Body Text']
 doc.add_picture(surat_penetapan_tim_signature_image, width=Inches(1))
 doc.add_paragraph(style=ceo_sign).add_run(f'{surat_penetapan_tim_signature_name}')
 ceo_sign.font.size = Pt(11)
 
+# * ============================================================
+doc.add_page_break()
+# * ============================================================
+
+soal_evaluasi_title = "SOAL EVALUASI PELATIHAN INTERNAL SISTEM JAMINAN HALAL"
+soal_evaluasi_subtitle = "(soal ini diberikan kepada seluruh peserta pelatihan)"
+soal_evaluasi_soal = {
+
+}
+soal_evaluasi_jawaban = {
+    "nama" : "Dea Jedar",
+    "tanggal" : 1657473186975,
+    "nilai": '',
+    "data" : {
+        "1" : "a",
+        "2" : "b",
+        "3" : "a",
+        "4" : "a",
+        "5" : "b",
+        "6" : "a",
+        "7" : "d",
+        "8" : "c",
+        "9" : True,
+        "10" : False
+    }
+}
+pg_styles = doc.styles['List 3']
+pg_styles.paragraph_format.line_spacing = 1
+pg_styles.paragraph_format.space_after = 0
+soal_styles = doc.styles['List 2']
+soal_styles.paragraph_format.line_spacing = 1
+soal_styles.paragraph_format.space_after = 0
+title_soal_style = doc.styles['Body Text']
+title_soal_style.paragraph_format.space_after = 0
+
+body = doc.add_paragraph(style=title_soal_style).add_run(f'{soal_evaluasi_title}')
+body.font.size = Pt(11)
+doc.paragraphs[-1].alignment = WD_ALIGN_PARAGRAPH.CENTER
+body.font.bold = True 
+
+body = doc.add_paragraph(style=title_soal_style).add_run(f'{soal_evaluasi_subtitle}')
+body.font.size = Pt(11)
+doc.paragraphs[-1].alignment = WD_ALIGN_PARAGRAPH.CENTER
+body.font.bold = True 
+body.font.italic = True 
+
+body = doc.add_paragraph(style=title_soal_style).add_run(f'NAMA\t\t: {soal_evaluasi_jawaban["nama"]}')
+body.font.size = Pt(11)
+body.font.bold = True 
+
+body = doc.add_paragraph(style=title_soal_style).add_run(f'TANGGAL\t: {soal_evaluasi_jawaban["tanggal"]}')
+body.font.size = Pt(11)
+body.font.bold = True 
+
+body = doc.add_paragraph(style=title_soal_style).add_run(f'NILAI\t\t: {soal_evaluasi_jawaban["nilai"]}')
+body.font.size = Pt(11)
+body.font.bold = True 
+
+
+body = doc.add_paragraph(style=soal_styles).add_run('1.	Allah SWT memerintahkan Manusia untuk konsumsi makanan yang…')
+body.font.size = Pt(10)
+
+body = doc.add_paragraph(style=pg_styles).add_run('a.	Halal')
+body.font.size = Pt(10)
+if soal_evaluasi_jawaban['data']['1'] == "a":
+    body.font.bold = True 
+
+body = doc.add_paragraph(style=pg_styles).add_run('b.	Thoyib ')
+body.font.size = Pt(10)
+if soal_evaluasi_jawaban['data']['1'] == "b":
+    body.font.bold = True 
+
+body = doc.add_paragraph(style=pg_styles).add_run('c.	Kotor')
+body.font.size = Pt(10)
+if soal_evaluasi_jawaban['data']['1'] == "c":
+    body.font.bold = True 
+
+body = doc.add_paragraph(style=pg_styles).add_run('d.	a dan b')
+body.font.size = Pt(10)
+if soal_evaluasi_jawaban['data']['1'] == "d":
+    body.font.bold = True 
+
+
+
+body = doc.add_paragraph(style=soal_styles).add_run('2.	Berikut makanan dan minuman yang halal adalah…')
+body.font.size = Pt(10)
+
+body = doc.add_paragraph(style=pg_styles).add_run('a.	Klepon')
+body.font.size = Pt(10)
+if soal_evaluasi_jawaban['data']['2'] == "a":
+    body.font.bold = True 
+
+body = doc.add_paragraph(style=pg_styles).add_run('b.	Anjing ')
+body.font.size = Pt(10)
+if soal_evaluasi_jawaban['data']['2'] == "b":
+    body.font.bold = True 
+
+body = doc.add_paragraph(style=pg_styles).add_run('c.	Babi')
+body.font.size = Pt(10)
+if soal_evaluasi_jawaban['data']['2'] == "c":
+    body.font.bold = True 
+
+body = doc.add_paragraph(style=pg_styles).add_run('d.	Bangkai Ayam')
+body.font.size = Pt(10)
+if soal_evaluasi_jawaban['data']['2'] == "d":
+    body.font.bold = True 
+
+
+
+body = doc.add_paragraph(style=soal_styles).add_run('3.	Daging Babi dan turunannya merupakan najis…')
+body.font.size = Pt(10)
+
+body = doc.add_paragraph(style=pg_styles).add_run('a.	Ringan (mukhaffafah)')
+body.font.size = Pt(10)
+if soal_evaluasi_jawaban['data']['3'] == "a":
+    body.font.bold = True 
+
+body = doc.add_paragraph(style=pg_styles).add_run('b.	Berat (mughallazhah)')
+body.font.size = Pt(10)
+if soal_evaluasi_jawaban['data']['3'] == "b":
+    body.font.bold = True 
+
+body = doc.add_paragraph(style=pg_styles).add_run('c.	Sedang (mutawassithah)')
+body.font.size = Pt(10)
+if soal_evaluasi_jawaban['data']['3'] == "c":
+    body.font.bold = True 
+
+body = doc.add_paragraph(style=pg_styles).add_run('d.	Tidak Najis')
+body.font.size = Pt(10)
+if soal_evaluasi_jawaban['data']['3'] == "d":
+    body.font.bold = True 
+
+
+
+body = doc.add_paragraph(style=soal_styles).add_run('4.	Cara Mengghilangkan Najis Sedang (mutawassithah) yaitu…')
+body.font.size = Pt(10)
+
+body = doc.add_paragraph(style=pg_styles).add_run('a.	Dengan mengucurinya dengan air atau mencucinya di dalam air yang banyak (direndam) hingga hilang rasa, bau dan warna dari bahan najisnya.')
+body.font.size = Pt(10)
+if soal_evaluasi_jawaban['data']['4'] == "a":
+    body.font.bold = True 
+
+body = doc.add_paragraph(style=pg_styles).add_run('b.	Di Diamkan Saja')
+body.font.size = Pt(10)
+if soal_evaluasi_jawaban['data']['4'] == "b":
+    body.font.bold = True 
+
+body = doc.add_paragraph(style=pg_styles).add_run('c.	Di Bakar')
+body.font.size = Pt(10)
+if soal_evaluasi_jawaban['data']['4'] == "c":
+    body.font.bold = True 
+
+body = doc.add_paragraph(style=pg_styles).add_run('d.	Dicuci tujuh kali dengan air dan salah satunya dengan tanah atau bahan lain yang mempunyai kemampuan menghilangkan rasa, bau dan warna.')
+body.font.size = Pt(10)
+if soal_evaluasi_jawaban['data']['4'] == "d":
+    body.font.bold = True 
+
+
+
+body = doc.add_paragraph(style=soal_styles).add_run('5.	Cara Mengghilangkan Najis Berat (mughallazhah) yaitu…')
+body.font.size = Pt(10)
+
+body = doc.add_paragraph(style=pg_styles).add_run('a.	Dengan mengucurinya dengan air atau mencucinya di dalam air yang banyak (direndam) hingga hilang rasa, bau dan warna dari bahan najisnya.')
+body.font.size = Pt(10)
+if soal_evaluasi_jawaban['data']['5'] == "a":
+    body.font.bold = True 
+
+body = doc.add_paragraph(style=pg_styles).add_run('b.	Di Diamkan Saja')
+body.font.size = Pt(10)
+if soal_evaluasi_jawaban['data']['5'] == "b":
+    body.font.bold = True 
+
+body = doc.add_paragraph(style=pg_styles).add_run('c.	Di Bakar')
+body.font.size = Pt(10)
+if soal_evaluasi_jawaban['data']['5'] == "c":
+    body.font.bold = True 
+
+body = doc.add_paragraph(style=pg_styles).add_run('d.	Dicuci tujuh kali dengan air dan salah satunya dengan tanah atau bahan lain yang mempunyai kemampuan menghilangkan rasa, bau dan warna.')
+body.font.size = Pt(10)
+if soal_evaluasi_jawaban['data']['5'] == "d":
+    body.font.bold = True 
+
+
+
+body = doc.add_paragraph(style=soal_styles).add_run('6.	Cara menjaga Konsistensi dalam memproduksi Produk dan bahan yang halal perusahaan harus menerapkan…')
+body.font.size = Pt(10)
+
+body = doc.add_paragraph(style=pg_styles).add_run('a.	Sistem Keamanan Pangan')
+body.font.size = Pt(10)
+if soal_evaluasi_jawaban['data']['6'] == "a":
+    body.font.bold = True 
+
+body = doc.add_paragraph(style=pg_styles).add_run('b.	Sistem Keselamatan Kerja')
+body.font.size = Pt(10)
+if soal_evaluasi_jawaban['data']['6'] == "b":
+    body.font.bold = True 
+
+body = doc.add_paragraph(style=pg_styles).add_run('c.	Sistem Jaminan Halal')
+body.font.size = Pt(10)
+if soal_evaluasi_jawaban['data']['6'] == "c":
+    body.font.bold = True 
+
+body = doc.add_paragraph(style=pg_styles).add_run('d.	Sistem Informasi')
+body.font.size = Pt(10)
+if soal_evaluasi_jawaban['data']['6'] == "d":
+    body.font.bold = True 
+
+
+
+body = doc.add_paragraph(style=soal_styles).add_run('7.	Kriteria Sistem Jaminan Halal Terdiri dari …. Kriteria')
+body.font.size = Pt(10)
+
+body = doc.add_paragraph(style=pg_styles).add_run('a.	11')
+body.font.size = Pt(10)
+if soal_evaluasi_jawaban['data']['7'] == "a":
+    body.font.bold = True 
+
+body = doc.add_paragraph(style=pg_styles).add_run('b.	20')
+body.font.size = Pt(10)
+if soal_evaluasi_jawaban['data']['7'] == "b":
+    body.font.bold = True 
+
+body = doc.add_paragraph(style=pg_styles).add_run('c.	12')
+body.font.size = Pt(10)
+if soal_evaluasi_jawaban['data']['7'] == "c":
+    body.font.bold = True 
+
+body = doc.add_paragraph(style=pg_styles).add_run('d.	14')
+body.font.size = Pt(10)
+if soal_evaluasi_jawaban['data']['7'] == "d":
+    body.font.bold = True 
+
+
+
+body = doc.add_paragraph(style=soal_styles).add_run('8.	Aktifitas manakah dibawah ini yang merupakan aktifitas kritis dalam Sistem Jaminan Halal')
+body.font.size = Pt(10)
+
+body = doc.add_paragraph(style=pg_styles).add_run('a.	Seleksi Bahan Baru')
+body.font.size = Pt(10)
+if soal_evaluasi_jawaban['data']['8'] == "a":
+    body.font.bold = True 
+
+body = doc.add_paragraph(style=pg_styles).add_run('b.	Pembelian')
+body.font.size = Pt(10)
+if soal_evaluasi_jawaban['data']['8'] == "b":
+    body.font.bold = True 
+
+body = doc.add_paragraph(style=pg_styles).add_run('c.	Formulasi Produk baru')
+body.font.size = Pt(10)
+if soal_evaluasi_jawaban['data']['8'] == "c":
+    body.font.bold = True 
+
+body = doc.add_paragraph(style=pg_styles).add_run('d.	Semua Benar')
+body.font.size = Pt(10)
+if soal_evaluasi_jawaban['data']['8'] == "d":
+    body.font.bold = True 
+
+body = doc.add_paragraph(style=soal_styles)
+soal = body.add_run('9.	Setiap ada Bahan Baru perusahaan tidak wajib melaporkan kepada LPPOM MUI ')
+soal.font.size = Pt(10)
+if soal_evaluasi_jawaban["data"]['9'] == True:
+    non_slash = body.add_run("(Benar/")
+    non_slash.font.bold = True 
+    slash = body.add_run("Salah)")
+    slash.font.strike = True
+    slash.font.bold = True 
+    slash.font.size = Pt(10)
+    non_slash.font.size = Pt(10)
+else:
+    slash = body.add_run("(Benar")
+    slash.font.strike = True
+    slash.font.bold = True 
+    slash.font.size = Pt(10)
+    non_slash = body.add_run("/Salah)")
+    non_slash.font.bold = True 
+    non_slash.font.size = Pt(10)
+
+
+body = doc.add_paragraph(style=soal_styles)
+soal = body.add_run('10.	Audit Internal dilakukan 6 Bulan Sekali dan dilaporkan kepada LPPOM MUI')
+soal.font.size = Pt(10)
+if soal_evaluasi_jawaban["data"]['10'] == True:
+    non_slash = body.add_run("(Benar/")
+    non_slash.font.bold = True 
+    slash = body.add_run("Salah)")
+    slash.font.strike = True
+    slash.font.bold = True 
+    slash.font.size = Pt(10)
+    non_slash.font.size = Pt(10)
+else:
+    slash = body.add_run("(Benar")
+    slash.font.strike = True
+    slash.font.bold = True 
+    slash.font.size = Pt(10)
+    non_slash = body.add_run("/Salah)")
+    non_slash.font.bold = True 
+    non_slash.font.size = Pt(10)
 doc.save("Uji.docx")
