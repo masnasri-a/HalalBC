@@ -2,7 +2,8 @@
 import traceback
 from docx import Document
 from docx.enum.text import WD_ALIGN_PARAGRAPH
-from docx.shared import Pt
+from docx.enum.table import WD_TABLE_ALIGNMENT
+from docx.shared import Pt, Inches
 
 def soal_evaluasi_docx(data_evaluasi: dict) -> str:
     """ function for generating soal & jawaban evaluasi files """
@@ -151,3 +152,92 @@ def soal_evaluasi_docx(data_evaluasi: dict) -> str:
         traceback.print_exc()
         return error
     
+
+def bukti_pelaksanan_docx(data_bukti_pelaksanan: dict, sign_data: dict) -> str:
+    """ function for generating Bukti pelaksanaan Pelatihan internal files """
+    try:
+        doc = Document()
+        primary_style = doc.styles['Body Text']
+        primary_style.font.size = Pt(11)
+        primary_style.font.bold = True
+        
+        
+        header = doc.add_paragraph(style=primary_style).add_run('Bukti Pelaksanaan Pelatihan Internal')
+        header.font.size = Pt(14)
+        doc.paragraphs[-1].alignment = WD_ALIGN_PARAGRAPH.CENTER
+        
+        
+        doc.add_paragraph(style=primary_style).add_run()
+        doc.add_paragraph(style=primary_style).add_run(f'Tanggal Pelatihan\t: {data_bukti_pelaksanan["tanggal_pelaksanaan"]}')
+        doc.add_paragraph(style=primary_style).add_run(f'Pemateri\t\t: {data_bukti_pelaksanan["pemateri"]}')
+        doc.add_paragraph(style=primary_style).add_run('Materi\t\t\t: PENGENALAN HALAL HARAM DAN PENERAPAN SJH')
+        
+        
+        
+        table = doc.add_table(rows=1, cols=5)
+        table.style = 'Table Grid'
+        table.alignment = WD_TABLE_ALIGNMENT.CENTER
+        hdr_cells = table.rows[0].cells
+        hdr_cells[0].text = 'No'
+        hdr_cells[0].paragraphs[0].alignment = WD_ALIGN_PARAGRAPH.CENTER
+        hdr_cells[0].vertical_alignment = WD_TABLE_ALIGNMENT.CENTER
+        
+        hdr_cells[1].text = 'Nama Peserta'
+        hdr_cells[1].paragraphs[0].alignment = WD_ALIGN_PARAGRAPH.CENTER
+        hdr_cells[1].vertical_alignment = WD_TABLE_ALIGNMENT.CENTER
+        
+        hdr_cells[2].text = 'Posisi/Jabatan'
+        hdr_cells[2].paragraphs[0].alignment = WD_ALIGN_PARAGRAPH.CENTER
+        hdr_cells[2].vertical_alignment = WD_TABLE_ALIGNMENT.CENTER
+        
+        hdr_cells[3].text = 'Tanda Tangan'
+        hdr_cells[3].paragraphs[0].alignment = WD_ALIGN_PARAGRAPH.CENTER
+        hdr_cells[3].vertical_alignment = WD_TABLE_ALIGNMENT.CENTER
+        
+        hdr_cells[4].text = 'Nilai'
+        hdr_cells[4].paragraphs[0].alignment = WD_ALIGN_PARAGRAPH.CENTER
+        hdr_cells[4].vertical_alignment = WD_TABLE_ALIGNMENT.CENTER
+        
+        data = data_bukti_pelaksanan['data']
+        for index in range(len(data)):
+            row_cells = table.add_row().cells
+            row_cells[0].text = str(index + 1)
+            row_cells[0].paragraphs[0].alignment = WD_ALIGN_PARAGRAPH.CENTER
+            row_cells[0].vertical_alignment = WD_TABLE_ALIGNMENT.CENTER
+            
+            row_cells[1].text = data[index]['nama']
+            row_cells[1].paragraphs[0].alignment = WD_ALIGN_PARAGRAPH.CENTER
+            row_cells[1].vertical_alignment = WD_TABLE_ALIGNMENT.CENTER
+            
+            row_cells[2].text = data[index]['posisi']
+            row_cells[2].paragraphs[0].alignment = WD_ALIGN_PARAGRAPH.CENTER
+            row_cells[2].vertical_alignment = WD_TABLE_ALIGNMENT.CENTER
+            
+            row_cells[3].paragraphs[0].add_run().add_picture(f'./app/data/{data[index]["ttd"]}', width=Pt(28))
+            row_cells[3].paragraphs[0].alignment = WD_ALIGN_PARAGRAPH.CENTER
+            row_cells[3].vertical_alignment = WD_TABLE_ALIGNMENT.CENTER
+            
+            row_cells[4].text = str(data[index]['nilai'])
+            row_cells[4].paragraphs[0].alignment = WD_ALIGN_PARAGRAPH.CENTER
+            row_cells[4].vertical_alignment = WD_TABLE_ALIGNMENT.CENTER
+        
+        doc.add_paragraph(style=primary_style).add_run()
+        
+        notes = doc.add_paragraph(style=primary_style).add_run('Keterangan: \n1. Nilai Lulus  minimal 60, Jika tidak lulus harus melakukan remedial/pelatihan dan mengulang mengerjakan soal pelatihan \n2. Pelatihan internal harus menyertakan bukti foto (dokumentasi)')
+        notes.font.size = Pt(10)
+        
+        doc.add_paragraph(style=primary_style).add_run()
+        doc.add_paragraph(style=primary_style).add_run()
+        
+        detail_sign = doc.add_paragraph(style=primary_style).add_run(f'Jakarta, {data_bukti_pelaksanan["tanggal_pelaksanaan"]}\nMengetahui,')
+        detail_sign.font.bold = False
+        doc.add_paragraph(style=primary_style).add_run(f'{sign_data["title"]},')
+        doc.add_picture(f'./app/data/{sign_data["sign"]}', width=Inches(1))
+        doc.add_paragraph(style=primary_style).add_run(f'({sign_data["name"]})')
+        
+        doc.save('./app/data/coba.docx')
+        
+        return './app/data/coba.docx'
+    except Exception as error:
+        traceback.print_exc()
+        return error
