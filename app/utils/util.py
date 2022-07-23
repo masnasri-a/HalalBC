@@ -1,5 +1,6 @@
 """ util file pages """
 
+import errno
 import hashlib
 from datetime import datetime, date
 from random import randint
@@ -56,3 +57,16 @@ def id_checker(_id: str) -> bool:
 def get_time_parse():
     today = date.today()
     return today.strftime("%d %B %Y")
+
+def check_regitration(_id:str) -> bool:
+    try:
+        client, col = mongo.mongodb_config('Core')
+        data = col.find_one({'_id': _id})
+        client.close()
+        if data != None and data['status_registration']:
+            return True
+        else:
+            return False
+        return False
+    except Exception as error:
+        raise HTTPException(400, "Failed") from error

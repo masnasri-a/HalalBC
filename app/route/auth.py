@@ -56,7 +56,7 @@ def register_auditor(data: auth_model.DataAuditor):
                 "no_ktp": data.no_ktp,
                 "name": data.name,
                 "username": data.username,
-                "type": data.type,
+                "type": data.types,
                 "role": "auditor",
                 "password": util.sha256(data.password),
                 "religion": data.religion,

@@ -1,2 +1,0 @@
-# HalalBC
- Test

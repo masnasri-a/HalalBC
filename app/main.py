@@ -3,7 +3,7 @@
 import uvicorn
 from fastapi import FastAPI
 from fastapi.responses import RedirectResponse
-from route import auth, images, account, umkm, simulasi
+from route import auth, images, account, umkm, simulasi, core
 
 app = FastAPI()
 
@@ -17,8 +17,9 @@ async def redirect():
 app.include_router(router=auth.app, prefix="/auth", tags=["Auth"])
 app.include_router(router=images.app, prefix="/util", tags=["Util"])
 app.include_router(router=account.app, prefix="/account", tags=["Account"])
+app.include_router(router=core.app, prefix="/core", tags=["Core"])
 app.include_router(router=umkm.app, prefix="/umkm", tags=["UMKM"])
 app.include_router(router=simulasi.app, prefix="/simulasi", tags=["Simulasi"])
 
 if __name__ == "__main__":
-    uvicorn.run("main:app", host="0.0.0.0", port=5000, reload=True)
+    uvicorn.run("main:app", host="0.0.0.0", port=5009, reload=True)

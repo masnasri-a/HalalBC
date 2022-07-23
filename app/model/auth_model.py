@@ -16,7 +16,7 @@ class DataAuditor(BaseModel):
     password: str
     username: str
     religion: str
-    type: str
+    types: str
     address: str
     institution: str
     competence: str
