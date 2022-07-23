@@ -212,11 +212,12 @@ def bukti_pelaksanan_docx(data_bukti_pelaksanan: dict, sign_data: dict) -> str:
             row_cells[2].text = data[index]['posisi']
             row_cells[2].paragraphs[0].alignment = WD_ALIGN_PARAGRAPH.CENTER
             row_cells[2].vertical_alignment = WD_TABLE_ALIGNMENT.CENTER
-            
-            row_cells[3].paragraphs[0].add_run().add_picture(f'./app/data/{data[index]["ttd"]}', width=Pt(28))
-            row_cells[3].paragraphs[0].alignment = WD_ALIGN_PARAGRAPH.CENTER
-            row_cells[3].vertical_alignment = WD_TABLE_ALIGNMENT.CENTER
-            
+            if data[index]["ttd"]:
+                row_cells[3].paragraphs[0].add_run().add_picture(f'./app/data/{data[index]["ttd"]}', width=Pt(28))
+                row_cells[3].paragraphs[0].alignment = WD_ALIGN_PARAGRAPH.CENTER
+                row_cells[3].vertical_alignment = WD_TABLE_ALIGNMENT.CENTER
+            else:
+                row_cells[3].text = ""
             row_cells[4].text = str(data[index]['nilai'])
             row_cells[4].paragraphs[0].alignment = WD_ALIGN_PARAGRAPH.CENTER
             row_cells[4].vertical_alignment = WD_TABLE_ALIGNMENT.CENTER
@@ -229,11 +230,24 @@ def bukti_pelaksanan_docx(data_bukti_pelaksanan: dict, sign_data: dict) -> str:
         doc.add_paragraph(style=primary_style).add_run()
         doc.add_paragraph(style=primary_style).add_run()
         
-        detail_sign = doc.add_paragraph(style=primary_style).add_run(f'Jakarta, {data_bukti_pelaksanan["tanggal_pelaksanaan"]}\nMengetahui,')
-        detail_sign.font.bold = False
-        doc.add_paragraph(style=primary_style).add_run(f'{sign_data["title"]},')
-        doc.add_picture(f'./app/data/{sign_data["sign"]}', width=Inches(1))
-        doc.add_paragraph(style=primary_style).add_run(f'({sign_data["name"]})')
+        if sign_data:
+            detail_sign = doc.add_paragraph(style=primary_style).add_run(f'Jakarta, {data_bukti_pelaksanan["tanggal_pelaksanaan"]}\nMengetahui,')
+            detail_sign.font.bold = False
+            doc.add_paragraph(style=primary_style).add_run(f'{sign_data["title"]},')
+            if sign_data['sign']:
+                doc.add_picture(f'./app/data/{sign_data["sign"]}', width=Inches(1))
+            else:
+                doc.add_paragraph(style=primary_style).add_run()
+                doc.add_paragraph(style=primary_style).add_run()
+                doc.add_paragraph(style=primary_style).add_run()
+            doc.add_paragraph(style=primary_style).add_run(f'({sign_data["name"]})')
+        else:
+            detail_sign = doc.add_paragraph(style=primary_style).add_run('Jakarta, \nMengetahui,')
+            detail_sign.font.bold = False
+            doc.add_paragraph(style=primary_style).add_run()
+            doc.add_paragraph(style=primary_style).add_run()
+            doc.add_paragraph(style=primary_style).add_run()
+            doc.add_paragraph(style=primary_style).add_run("Ttd + nama jelas")
         
         doc.save('./app/data/coba.docx')
         
