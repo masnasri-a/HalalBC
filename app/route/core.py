@@ -1,5 +1,6 @@
 import http
 import re
+import traceback
 from fastapi import APIRouter, Response
 from model import core_model
 from config import mongo
@@ -70,14 +71,14 @@ def get_lph(location: str, resp: Response):
         rgx = re.compile('.*'+location+'.*', re.IGNORECASE)
         query = {'$and': [{'type': 'LPH'}, {'address': rgx}]}
         data = coll.find(query)
-        client.close()
         list_result = []
         for detail in data:
             del detail['password']
             list_result.append(detail)
+        client.close()
         return response.response_detail(200, list_result, resp)
-
     except:
+        traceback.print_exc()
         return response.response_detail(400, "get data LPH failed", resp)
 
 
@@ -137,11 +138,12 @@ def review_buss_place(model:core_model.ReviewBussinessPlace, resp:Response):
     except:
         return response.response_detail(400, "Review Bussiness Place Failed", resp)
 
-# @app.get('/mui_get_data')
-# def mui_get_data(model:core_model.MUIGetData, resp:Response):
-#     """ Mui Ambil Data Untuk Direview """
-#     try:
+@app.get('/mui_get_data')
+def mui_get_data(model:core_model.MUIGetData, resp:Response):
+    """ Mui Ambil Data Untuk Direview """
+    try:
+        client, coll = mongo.mongodb_config('Core')
+        
 
-
-#     except:
-#         return response.response_detail(400, "MUI get data failed", resp)
+    except:
+        return response.response_detail(400, "MUI get data failed", resp)
