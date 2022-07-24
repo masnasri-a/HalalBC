@@ -39,6 +39,19 @@ def registration_data(umkm_id, resp: Response):
     except:
         return response.response_detail(400, "Failed getting umkm data", resp)
 
+@app.get('/get_umkm_regestered')
+def umkm_registered(resp:Response):
+    """ ambil data list umkm yang register """
+    try:
+        client, coll = mongo.mongodb_config('Core')
+        data = coll.find({})
+        list_result = []
+        for detail in data:
+            list_result.append(detail['_id'])
+        return response.response_detail(200, list_result, resp)
+    except:
+        return response.response_detail(400, "Failed getting umkm data", resp)
+
 
 @app.post('/BPJPH_checking_data')
 def bpjph_checker(model: core_model.BPJPH_Check, resp: Response):
@@ -143,7 +156,9 @@ def mui_get_data(model:core_model.MUIGetData, resp:Response):
     """ Mui Ambil Data Untuk Direview """
     try:
         client, coll = mongo.mongodb_config('Core')
-        
-
+        data = coll.find_one({'_id':model.umkm_id})
+        client.close()
+        return response.response_detail(200, data, resp)
     except:
         return response.response_detail(400, "MUI get data failed", resp)
+
