@@ -14,15 +14,16 @@ app = APIRouter()
 def registration(model: core_model.Registration, resp: Response):
     """ Registration SJH by UMKM """
     try:
+        print(model.creator_id)
         if util.id_checker(model.creator_id):
             if not util.check_regitration(model.creator_id):
-                ingest = core.Core()
-                ingest.inset_register(model.creator_id)
+                core.inset_register(model.creator_id)
                 return response.response_detail(200, "Registration Insert Success", resp)
         else:
             traceback.print_exc()
             return response.response_detail(400, "Already Registration", resp)
     except:
+        traceback.print_exc()
         return response.response_detail(400, "Registration Failed", resp)
 
 

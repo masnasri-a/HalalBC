@@ -46,7 +46,7 @@ def id_checker(_id: str) -> bool:
         client, col = mongo.mongodb_config('Accounts')
         data = col.find_one({'_id': _id})
         client.close()
-        if data is None:
+        if data is not None:
             return True
         else:
             return False
