@@ -39,7 +39,7 @@ def registration_data(umkm_id, resp: Response):
     except:
         return response.response_detail(400, "Failed getting umkm data", resp)
 
-@app.get('/get_umkm_regestered')
+@app.get('/get_umkm_registered')
 def umkm_registered(resp:Response):
     """ ambil data list umkm yang register """
     try:
