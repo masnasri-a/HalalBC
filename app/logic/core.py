@@ -7,7 +7,7 @@ def inset_register(_id):
     col.insert_one(
         {
             "_id": _id,
-            "status_registration": False,
+            "status_registration": True,
             "status_check_by_BPJPH": False,
             "desc_check_by_BPJPH": "",
             "desc_result": "",
