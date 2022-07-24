@@ -20,6 +20,7 @@ def registration(model: core_model.Registration, resp: Response):
                 ingest.inset_register(model.creator_id)
                 return response.response_detail(200, "Registration Insert Success", resp)
         else:
+            traceback.print_exc()
             return response.response_detail(400, "Already Registration", resp)
     except:
         return response.response_detail(400, "Registration Failed", resp)
