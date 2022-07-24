@@ -66,15 +66,17 @@ def bpjph_checker(model: core_model.BPJPH_Check, resp: Response):
             find_id = {'_id': model.umkm_id}
             update_status = {"$set": {"status_check_by_BPJPH": True}}
             coll_data.update_one(find_id, update_status)
-            update_desc = {'desc_check_by_BPJPH': model.description}
+            update_desc = {"$set": {'desc_check_by_BPJPH': model.description}}
             coll_data.update_one(find_id, update_desc)
-            update_result = {'desc_result': model.result}
+            update_result = {"$set": {'desc_result': model.result}}
             coll_data.update_one(find_id, update_result)
             client_data.close()
             return response.response_detail(200, "Checking data success", resp)
         else:
+            traceback.print_exc()
             return response.response_detail(400, "BPJPH is not found", resp)
     except:
+        traceback.print_exc()
         return response.response_detail(400, "Checking data failed", resp)
 
 
@@ -103,10 +105,10 @@ def LPH_Appointment(model: core_model.Appointment, resp:Response):
     try:
         client, coll = mongo.mongodb_config('Core')
         find_id = {'_id': model.umkm_id}
-        updated = {'LPH_appointment': {
+        updated = {"$set": {'LPH_appointment': {
             "BPJPH_id": model.bpjphh_id,
             "LPH_id": model.lph_id
-        }}
+        }}}
         coll.update_one(find_id, updated)
         client.close()
         return response.response_detail(200, "Appointment Success", resp)
@@ -123,7 +125,7 @@ def checking_data(model:core_model.LPHCheckingData, resp:Response):
         updated = {'LPH_Checking_data_status': model.status}
         coll.update_one(find_id, updated)
         client_desc, coll_desc = mongo.mongodb_config('Core')
-        update_value = {'LPH_Checking_data_desc':model.description}
+        update_value = {"$set": {'LPH_Checking_data_desc':model.description}}
         coll_desc.update_one(find_id, update_value)
         client_desc.close()
         client.close()
@@ -138,15 +140,15 @@ def review_buss_place(model:core_model.ReviewBussinessPlace, resp:Response):
     try:
         client, coll = mongo.mongodb_config('Core')
         find_id = {'_id': model.umkm_id}
-        update_status_LPH_check_field = {'status_LPH_check_field':True}
+        update_status_LPH_check_field = {"$set": {'status_LPH_check_field':True}}
         coll.update_one(find_id, update_status_LPH_check_field)
         client.close()
         client_status, coll_status = mongo.mongodb_config('Core')
-        update_status = {'LPH_review_status':model.status}
+        update_status = {"$set": {'LPH_review_status':model.status}}
         coll_status.update_one(find_id, update_status)
         client_status.close()
         client_desc, coll_desc = mongo.mongodb_config('Core')
-        update_desc = {'LPH_to_MUI':model.description}
+        update_desc = {"$set": {'LPH_to_MUI':model.description}}
         coll_desc.update_one(find_id, update_desc)
         client_desc.close()
         return response.response_detail(200, "Review Bussiness Place Success", resp)
