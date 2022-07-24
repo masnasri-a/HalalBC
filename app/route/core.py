@@ -46,10 +46,21 @@ def umkm_registered(resp:Response):
     """ ambil data list umkm yang register """
     try:
         client, coll = mongo.mongodb_config('Core')
+        client_acc, coll_acc = mongo.mongodb_config('Accounts')
         data = coll.find({})
         list_result = []
         for detail in data:
-            list_result.append(detail['_id'])
+            name = coll_acc.find_one({'_id':detail['_id']})
+            list_result.append({
+                "id":detail['_id'],
+                "username":name['username'],
+                "status_registration":detail['status_registration'],
+                "status_check_by_BPJPH":detail['status_check_by_BPJPH'],
+                "status_LPH_check_field":detail['status_LPH_check_field'],
+                "status_checked_MUI":detail['status_checked_MUI'],
+                "Certificate_status":detail['Certificate_status']
+            })
+        client.close()
         return response.response_detail(200, list_result, resp)
     except:
         return response.response_detail(400, "Failed getting umkm data", resp)
