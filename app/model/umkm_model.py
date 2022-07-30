@@ -2,7 +2,7 @@
 
 # pylint: disable=no-name-in-module
 from typing import List, Union
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 
 class InitUMKM(BaseModel):
@@ -21,6 +21,16 @@ class UmkmDetail(BaseModel):
     ttd_penanggungjawab: str
     ttd_ketua: str
 
+
+class DataPenetapanTeam(BaseModel):
+    """ penetapan team """
+    nama:str
+    jabatan:str
+    position:str
+
+class PenetapanTeam(BaseModel):
+    id : str
+    data : List[DataPenetapanTeam]
 
 class ManagementHalahTeam(BaseModel):
     """ docx page 4 """
@@ -46,13 +56,20 @@ class ManagementHalahTeam(BaseModel):
 2.	Bertanggungjawab dalam proses transportasi bahan dan produk jadi 
 """
 
+class DataPelaksanaan(BaseModel):
+    """data pelaksanaan"""
+    nama:str
+    posisi:str
+    ttd:str
+    nilai:int
 
 class Pelaksanaan(BaseModel):
     """ docx page 13 """
     id: str
     tanggal_pelaksanaan: int
     pemateri: str
-    data: list
+    data: List[DataPelaksanaan]
+
 
 
 class InputJawabanEvaluasi(BaseModel):
@@ -63,21 +80,34 @@ class InputJawabanEvaluasi(BaseModel):
     data: dict
 
 
+class DataJawabanAudit(BaseModel):
+    id: str
+    jawaban: bool
+    keterangan: str
+
 class JawabanAuditInternal(BaseModel):
     id: str
     created_at: int
     auditee: str
     nama_auditor: str
     bagian_diaudit: str
-    data: list
+    data: List[DataJawabanAudit]
 
+class DataListOrang(BaseModel):
+    nama:str
+    jabatan:str
+    paraf:str
+
+class DataPembahasan(BaseModel):
+    pembahasan:str
+    perbaikan:str
 
 class DaftarHadirKaji(BaseModel):
     """ daftar hadir kaji class """
     id: str
     tanggal: str
-    list_orang: list
-    pembahasan: list
+    list_orang: List[DataListOrang]
+    pembahasan: List[DataPembahasan]
 
 
 class Lampiran(BaseModel):
@@ -97,6 +127,7 @@ class Pemeriksaan(BaseModel):
     data: List[DataPemeriksaan]
 
 class DataStokBarang(BaseModel):
+    """ data stok barang """
     tanggal_beli: str
     nama_bahan: str
     jumlah_bahan: str
@@ -128,8 +159,8 @@ class FormProduksi(BaseModel):
 
 class DataFormPemusnahan(BaseModel):
     """ data form pemusnhanan """
-    tanggal_produksi: int
-    tanggal_pemusnahan: int
+    tanggal_produksi: str
+    tanggal_pemusnahan: str
     nama_produk:str
     jumlah:str
     penyebab:str
@@ -180,23 +211,36 @@ class DaftarBarangHalal(BaseModel):
     id: str
     data: List[DataDaftarBarangHalal]
 
+class DataListBarang(BaseModel):
+    "data list barang"
+    barang:str
+    status:bool
 
 class DataMatrixProduksi(BaseModel):
+    "data matrix produksi"
     nama_bahan: str
-    barang_1: str
-    barang_2: str
-    lainnya: str
-
+    list_barang:List[DataListBarang]
 
 class MatrixProduksi(BaseModel):
     """
-    /matriks_produk
-    [{
-        "nama_bahan":"",
-        "barang_1":"",
-        "barang_2":"",
-        "lainnya":"",
-    }]
+   matrix list barang
     """
     id: str
     data: List[DataMatrixProduksi]
+
+
+class DataBahan(BaseModel):
+    bahan:str = Field(..., example="Tepung")
+    halal:bool
+    nomor_sertifikat:str
+    input_date:str
+    update_date:str
+
+class InputBahan(BaseModel):
+    creator_id:str
+    first_insert_date:str
+    detail_bahan:List[DataBahan]
+
+class UpdateBahan(BaseModel):
+    creator_id:str
+    detail_bahan:List[DataBahan]

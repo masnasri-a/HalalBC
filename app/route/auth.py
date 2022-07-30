@@ -4,9 +4,9 @@ import traceback
 from fastapi import APIRouter
 from fastapi.exceptions import HTTPException
 from pymongo import errors
-from app.config import mongo
-from app.utils import util
-from app.model import auth_model
+from config import mongo
+from utils import util
+from model import auth_model
 
 app = APIRouter()
 
@@ -56,7 +56,7 @@ def register_auditor(data: auth_model.DataAuditor):
                 "no_ktp": data.no_ktp,
                 "name": data.name,
                 "username": data.username,
-                "type": data.type,
+                "type": data.types,
                 "role": "auditor",
                 "password": util.sha256(data.password),
                 "religion": data.religion,

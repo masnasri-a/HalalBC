@@ -1,1 +1,0 @@
-from mongo import mongodb_config
