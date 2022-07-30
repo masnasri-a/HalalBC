@@ -22,6 +22,7 @@ def inset_register(_id):
             "LPH_to_MUI": "",
             "status_checked_MUI": False,
             "MUI_decicion_result": "",
+            "MUI_status":"",
             "Certificate_status": False,
             "Certificate_data": "",
             "QR_data": ""

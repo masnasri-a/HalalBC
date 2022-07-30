@@ -1,4 +1,5 @@
 import http
+from http import client
 import re
 import traceback
 from fastapi import APIRouter, Response
@@ -177,3 +178,36 @@ def mui_get_data(model:core_model.MUIGetData, resp:Response):
     except:
         return response.response_detail(400, "MUI get data failed", resp)
 
+@app.post('/mui_checking_data')
+def mui_checking_data(model:core_model.MUICheckingData, resp:Response):
+    """ MUI melakukan cek data registrasi """
+    try:
+        client, col = mongo.mongodb_config('Core')
+        find_id = {'_id':model.umkm_id}
+        new_value = {"$set": {'status_checked_MUI':True}}
+        col.update_one(find_id, new_value)
+        MUI_decicion_result = {"$set": {'MUI_decicion_result':model.description}}
+        col.update_one(find_id, MUI_decicion_result)
+        MUI_status = {"$set": {'MUI_status':model.status}}
+        col.update_one(find_id, MUI_status)
+        client.close()
+        return response.response_detail(200, "MUI Checking data Success", resp)
+    except:
+        return response.response_detail(400, "MUI checking data failed", resp)
+
+# @app.post()
+
+@app.post('/bpjph_insert_certificate_data')
+def bpjph_insert_certificate_data(model : core_model.UploadCertificate, resp:Response):
+    """ BPJPH Upload data certificate """
+    try:
+        client, col = mongo.mongodb_config('Core')
+        find_id = {'_id':model.umkm_id}
+        new_value = {"$set": {'Certificate_status':True}}
+        col.update_one(find_id, new_value)
+        data = {"$set": {'Certificate_data':model.cert_id}}
+        col.update_one(find_id, data)
+        client.close()
+        return response.response_detail(200, "Insert Certificate data Success", resp)
+    except:
+        return response.response_detail(400, "Insert Certificate data failed", resp)

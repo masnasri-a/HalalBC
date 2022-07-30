@@ -32,3 +32,13 @@ class MUIGetData(BaseModel):
     mui_data:str
     description:str = Field(..., example="Data yang diberikan tidak sesuai hasil cek lapangan")
     status:str = Field(..., example="Approved / Decline")
+
+class MUICheckingData(BaseModel):
+    umkm_id:str
+    mui_id:str
+    status:str = Field(..., example="Approved / Decline")
+    description:str = Field(..., example="Data sudah sesuai")
+
+class UploadCertificate(BaseModel):
+    umkm_id:str
+    cert_id:str
