@@ -53,6 +53,28 @@ def create_init(model: umkm_model.InitUMKM, resp: Response):
             "matriks_produk": False
         }
         col_log.insert_one(model)
+        client.close()
+        client, col_detail = mongo.mongodb_config('DetailUMKM')
+        data_detail = {
+            "_id": _id,
+            "creator":model.creator_id,
+            "status": "init",
+            "detail_umkm": False,
+            "penetapan_tim": False,
+            "bukti_pelaksanaan": False,
+            "jawaban_evaluasi": False,
+            "jawaban_audit": False,
+            "daftar_hasil_kaji": False,
+            "pembelian": False,
+            "pembelian_import": False,
+            "stok_barang": False,
+            "form_produksi": False,
+            "form_pemusnahan": False,
+            "form_pengecekan_kebersihan": False,
+            "daftar_bahan_halal": False,
+            "matriks_produk": False
+        }
+        col_detail.insert_one(data_detail)
         return response.response_detail(200, {'doc_id': data}, resp)
     except Exception as error:
         traceback.print_exc()
@@ -65,6 +87,7 @@ def details(creator_id, resp: Response):
     try:
         client, col = mongo.mongodb_config('Log')
         data = col.find_one({"creator": creator_id})
+        client.close()
         return response.response_detail(200, data, resp)
 
     except Exception as error:

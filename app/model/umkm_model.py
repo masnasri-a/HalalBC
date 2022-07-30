@@ -84,24 +84,17 @@ class Lampiran(BaseModel):
     'lampiran'
     id: str
 
+class DataPemeriksaan(BaseModel):
+    Tanggal:str
+    nama_dan_merk:str
+    nama_dan_negara:str
+    halal:str
+    exp_bahan:str
+    paraf:str
 
 class Pemeriksaan(BaseModel):
-    """
-    /form_pembelian_pemeriksaan_import
-    /form_pembelian_pemeriksaan
-    [
-        {
-            "Tanggal":"",
-            "nama_dan_merk":"",
-            "nama_dan_negara":"",
-            "halal":True,
-            "exp_bahan":"",
-            "paraf":""
-        }
-    ]
-    """
     id: str
-    data: list
+    data: List[DataPemeriksaan]
 
 class DataStokBarang(BaseModel):
     tanggal_beli: str
