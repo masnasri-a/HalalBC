@@ -28,9 +28,9 @@ class ReviewBussinessPlace(BaseModel):
 
 class MUIGetData(BaseModel):
     umkm_id:str
-    lph_id:str
-    description:str = Field(..., example="Data yang diberikan tidak sesuai hasil cek lapangan")
-    status:str = Field(..., example="Approved / Decline")
+    # lph_id:str
+    # description:str = Field(..., example="Data yang diberikan tidak sesuai hasil cek lapangan")
+    # status:str = Field(..., example="Approved / Decline")
 
 class MUICheckingData(BaseModel):
     umkm_id:str
