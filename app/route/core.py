@@ -169,11 +169,11 @@ def review_buss_place(model:core_model.ReviewBussinessPlace, resp:Response):
         return response.response_detail(400, "Review Bussiness Place Failed", resp)
 
 @app.get('/mui_get_data')
-def mui_get_data(model:core_model.MUIGetData, resp:Response):
+def mui_get_data(umkm_id, resp:Response):
     """ Mui Ambil Data Untuk Direview """
     try:
         client, coll = mongo.mongodb_config('Core')
-        data = coll.find_one({'_id':model.umkm_id})
+        data = coll.find_one({'_id':umkm_id})
         client.close()
         return response.response_detail(200, data, resp)
     except:
