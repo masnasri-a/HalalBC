@@ -56,6 +56,7 @@ def umkm_registered(resp:Response):
                 "id":detail['_id'],
                 "username":name['username'],
                 "status_registration":detail['status_registration'],
+                "LPH_id":detail['LPH_appointment']['LPH_id'],
                 "status_check_by_BPJPH":detail['status_check_by_BPJPH'],
                 "status_LPH_check_field":detail['status_LPH_check_field'],
                 "status_checked_MUI":detail['status_checked_MUI'],
