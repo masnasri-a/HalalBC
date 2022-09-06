@@ -61,9 +61,9 @@ def get_time_parse():
 def check_regitration(_id:str) -> bool:
     try:
         client, col = mongo.mongodb_config('Core')
-        data = col.find_one({'_id': _id})
+        data = col.find_one({'umkm_id': _id})
         client.close()
-        if data != None and data['status_registration']:
+        if data != None and data['registration']['status']:
             return True
         else:
             return False

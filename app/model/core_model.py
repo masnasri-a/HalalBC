@@ -1,7 +1,9 @@
+from typing import Optional
 from pydantic import BaseModel, Field
 
 class Registration(BaseModel):
     creator_id:str
+    prev_id:Optional[str] = ""
 
 class BPJPH_Check(BaseModel):
     umkm_id:str
@@ -41,3 +43,4 @@ class MUICheckingData(BaseModel):
 class UploadCertificate(BaseModel):
     umkm_id:str
     cert_id:str
+    expire:int

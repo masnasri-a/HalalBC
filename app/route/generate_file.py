@@ -5,10 +5,9 @@ from fastapi import APIRouter, HTTPException
 from fastapi.responses import FileResponse
 from utils.word import soal_evaluasi_docx, bukti_pelaksanan_docx
 from config import mongo
-from docx import Document
-from docx.enum.text import WD_ALIGN_PARAGRAPH
-from docx.shared import Pt
-
+# from docx import Document
+# from docx.enum.text import WD_ALIGN_PARAGRAPH
+# from docx.shared import Pt
 
 app = APIRouter()
 

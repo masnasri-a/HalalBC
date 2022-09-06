@@ -22,7 +22,7 @@ async def simulasi_sjh(creator_id, resp: Response,registered: Optional[bool] = F
         if valid_id:
             return response.response_detail(400, "id not valid", resp)
         detail = simulasi.Simulasi(creator_id, registered)
-        model, status = detail.logic()
+        model, status = detail.logic()  # type: ignore
         models = {
             "message":model['message'],
             "data":None,
