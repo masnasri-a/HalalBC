@@ -1,9 +1,13 @@
 """ service for creator docx files """
 import traceback
+from datetime import date
 from docx import Document
 from docx.enum.text import WD_ALIGN_PARAGRAPH
 from docx.enum.table import WD_TABLE_ALIGNMENT
 from docx.shared import Pt, Inches
+
+
+
 
 def soal_evaluasi_docx(data_evaluasi: dict) -> str:
     """ function for generating soal & jawaban evaluasi files """
@@ -120,9 +124,8 @@ def soal_evaluasi_docx(data_evaluasi: dict) -> str:
         sub_title.font.italic = True
         doc.paragraphs[-1].alignment = WD_ALIGN_PARAGRAPH.CENTER
         doc.paragraphs[-2].alignment = WD_ALIGN_PARAGRAPH.CENTER
-        
         doc.add_paragraph(style=header_style).add_run(f'NAMA\t\t: {data_evaluasi["nama"]}')
-        doc.add_paragraph(style=header_style).add_run(f'TANGGAL\t: {data_evaluasi["tanggal"]}')
+        doc.add_paragraph(style=header_style).add_run(f'TANGGAL\t: {date.fromtimestamp(int(data_evaluasi["tanggal"]) / 1000).strftime("%d %B %Y")}')
         doc.add_paragraph(style=header_style).add_run(f'NILAI\t\t: ')
         doc.add_paragraph(style=header_style).add_run()
         
@@ -168,7 +171,7 @@ def bukti_pelaksanan_docx(data_bukti_pelaksanan: dict, sign_data: dict = {}) -> 
         
         
         doc.add_paragraph(style=primary_style).add_run()
-        doc.add_paragraph(style=primary_style).add_run(f'Tanggal Pelatihan\t: {data_bukti_pelaksanan["tanggal_pelaksanaan"]}')
+        doc.add_paragraph(style=primary_style).add_run(f'Tanggal Pelatihan\t: {date.fromtimestamp(int(data_bukti_pelaksanan["tanggal_pelaksanaan"]) / 1000).strftime("%d %B %Y")}')
         doc.add_paragraph(style=primary_style).add_run(f'Pemateri\t\t: {data_bukti_pelaksanan["pemateri"]}')
         doc.add_paragraph(style=primary_style).add_run('Materi\t\t\t: PENGENALAN HALAL HARAM DAN PENERAPAN SJH')
         
@@ -231,7 +234,7 @@ def bukti_pelaksanan_docx(data_bukti_pelaksanan: dict, sign_data: dict = {}) -> 
         doc.add_paragraph(style=primary_style).add_run()
         
         if sign_data:
-            detail_sign = doc.add_paragraph(style=primary_style).add_run(f'Jakarta, {data_bukti_pelaksanan["tanggal_pelaksanaan"]}\nMengetahui,')
+            detail_sign = doc.add_paragraph(style=primary_style).add_run(f'Jakarta, {date.fromtimestamp(int(data_bukti_pelaksanan["tanggal_pelaksanaan"]) / 1000).strftime("%d %B %Y")}\nMengetahui,')
             detail_sign.font.bold = False
             doc.add_paragraph(style=primary_style).add_run(f'{sign_data["title"]},')
             if sign_data['sign']:
@@ -295,42 +298,55 @@ def audit_internal_docx(jawaban_audit: dict, sign_data: dict = {}):
         doc = Document()
         primary_style = doc.styles['Body Text']
         primary_style.font.size = Pt(11)
-        primary_style.font.bold = True
+        
+        header = doc.add_paragraph(style=primary_style).add_run('Lampiran 4.  Daftar Pertanyaan untuk Audit Internal')
+        header.font.bold = True
         
         
-        header = doc.add_paragraph(style=primary_style).add_run('Bukti Pelaksanaan Pelatihan Internal')
-        header.font.size = Pt(14)
+        title = doc.add_paragraph(style=primary_style).add_run('AUDIT INTERNAL')
+        title.font.size = Pt(14)
+        title.font.bold = True
         doc.paragraphs[-1].alignment = WD_ALIGN_PARAGRAPH.CENTER
         
         
         doc.add_paragraph(style=primary_style).add_run()
-        doc.add_paragraph(style=primary_style).add_run(f'Tanggal Audit \t\t: {jawaban_audit["created_at"]}')
+        doc.add_paragraph(style=primary_style).add_run(f'Tanggal Audit \t\t: {date.fromtimestamp(int(jawaban_audit["created_at"]) / 1000).strftime("%d %B %Y")}')
         doc.add_paragraph(style=primary_style).add_run(f'Auditor (yang mengaudit)\t: {jawaban_audit["auditee"]}')
-        doc.add_paragraph(style=primary_style).add_run(f'Bagian yang di audit\t\t\t: {jawaban_audit["bagian_diaudit"]}')
+        doc.add_paragraph(style=primary_style).add_run(f'Bagian yang di audit\t\t: {jawaban_audit["bagian_diaudit"]}')
         
         data = jawaban_audit['data']
-        table = doc.add_table(rows=1, cols=5)
+        table = doc.add_table(rows=2, cols=5)
         table.style = 'Table Grid'
+        
         hdr_cells = table.rows[0].cells
         hdr_cells[0].text = 'NO'
         hdr_cells[0].paragraphs[0].alignment = WD_ALIGN_PARAGRAPH.CENTER
         hdr_cells[0].vertical_alignment = WD_TABLE_ALIGNMENT.CENTER
+        table.cell(0,0).merge(table.cell(1,0))
         
         hdr_cells[1].text = 'PERTANYAAN'
         hdr_cells[1].paragraphs[0].alignment = WD_ALIGN_PARAGRAPH.CENTER
         hdr_cells[1].vertical_alignment = WD_TABLE_ALIGNMENT.CENTER
+        table.cell(0,1).merge(table.cell(1,1))
         
-        hdr_cells[2].text = 'YA'
+        
+        hdr_cells[2].text = 'HASIL AUDIT'
         hdr_cells[2].paragraphs[0].alignment = WD_ALIGN_PARAGRAPH.CENTER
         hdr_cells[2].vertical_alignment = WD_TABLE_ALIGNMENT.CENTER
+        table.cell(0,2).merge(table.cell(0,4))
         
-        hdr_cells[3].text = 'TIDAK'
-        hdr_cells[3].paragraphs[0].alignment = WD_ALIGN_PARAGRAPH.CENTER
-        hdr_cells[3].vertical_alignment = WD_TABLE_ALIGNMENT.CENTER
+        hdr_cells2 = table.rows[1].cells
+        hdr_cells2[2].text = 'YA'
+        hdr_cells2[2].paragraphs[0].alignment = WD_ALIGN_PARAGRAPH.CENTER
+        hdr_cells2[2].vertical_alignment = WD_TABLE_ALIGNMENT.CENTER
         
-        hdr_cells[4].text = 'KETERANGAN'
-        hdr_cells[4].paragraphs[0].alignment = WD_ALIGN_PARAGRAPH.CENTER
-        hdr_cells[4].vertical_alignment = WD_TABLE_ALIGNMENT.CENTER
+        hdr_cells2[3].text = 'TIDAK'
+        hdr_cells2[3].paragraphs[0].alignment = WD_ALIGN_PARAGRAPH.CENTER
+        hdr_cells2[3].vertical_alignment = WD_TABLE_ALIGNMENT.CENTER
+        
+        hdr_cells2[4].text = 'KETERANGAN'
+        hdr_cells2[4].paragraphs[0].alignment = WD_ALIGN_PARAGRAPH.CENTER
+        hdr_cells2[4].vertical_alignment = WD_TABLE_ALIGNMENT.CENTER
         for index in range(len(data)):
             row_cells = table.add_row().cells
             row_cells[0].text = str(index + 1)
@@ -353,11 +369,7 @@ def audit_internal_docx(jawaban_audit: dict, sign_data: dict = {}):
             row_cells[4].text = str(data[index]['keterangan'])
             row_cells[4].vertical_alignment = WD_TABLE_ALIGNMENT.CENTER
         
-        doc.add_paragraph(style=primary_style).add_run()
-        
-        doc.add_paragraph(style=primary_style).add_run('*)Keterangan: Khusus pertanyaan mengenai audit internal dan kaji ulang manajemen, auditor dapat memeriksa pelaksanaan audit internal dan kaji ulang manajemen pada periode sebelumnya Jadi pertanyaan ini tidak perlu diisi pada saat audit internal yang pertama.')
-        
-        doc.add_paragraph(style=primary_style).add_run()
+        keterangan = doc.add_paragraph(style=primary_style).add_run('*)Keterangan: Khusus pertanyaan mengenai audit internal dan kaji ulang manajemen, auditor dapat memeriksa pelaksanaan audit internal dan kaji ulang manajemen pada periode sebelumnya.')
         doc.add_paragraph(style=primary_style).add_run()
         
         if sign_data:
@@ -390,15 +402,18 @@ def data_hadir_kaji_ulang_docx(daftar_hasil_kaji: dict, sign_data: dict):
         doc = Document()
         primary_style = doc.styles['Body Text']
         primary_style.font.size = Pt(11)
-        primary_style.font.bold = True
         
         
-        header = doc.add_paragraph(style=primary_style).add_run('DAFTAR HADIR KAJI ULANG MANAJEMEN')
-        header.font.size = Pt(14)
+        header = doc.add_paragraph(style=primary_style).add_run('Lampiran 5.  Format Hasil Rapat Kaji Ulang Manajemen')
+        header.font.bold = True
+        
+        title = doc.add_paragraph(style=primary_style).add_run('DAFTAR HADIR KAJI ULANG MANAJEMEN')
+        title.font.size = Pt(14)
+        title.font.bold = True
         doc.paragraphs[-1].alignment = WD_ALIGN_PARAGRAPH.CENTER
         
         
-        doc.add_paragraph(style=primary_style).add_run(f'Tanggal Kaji Ulang Manajemen\t :{daftar_hasil_kaji["tanggal"]}')
+        doc.add_paragraph(style=primary_style).add_run(f'Tanggal Kaji Ulang Manajemen\t :{date.fromtimestamp(int(daftar_hasil_kaji["tanggal"]) / 1000).strftime("%d %B %Y")}')
         # doc.add_paragraph(style=primary_style).add_run(f'Nama Pimpinan Perusahaan \t\t: {sign_data["name"]}')
         
         doc.add_paragraph(style=primary_style).add_run()
@@ -500,9 +515,60 @@ def data_hadir_kaji_ulang_docx(daftar_hasil_kaji: dict, sign_data: dict):
         return error
 
 
-def surat_pernyataan_daftar_alamat():
-    pass
-    # TODO
+def surat_pernyataan_daftar_alamat_docx():
+    try:
+        doc = Document()
+        normal_text = doc.styles['Body Text']
+        normal_text.font.size = Pt(11)
+
+
+        header = doc.add_paragraph(style=normal_text).add_run("lampiran 6. Surat Pernyataan Daftar Alamat Fasilitas Produksi Dan Bebas Dari Babi dan Turunannya")
+        header.font.bold = True
+
+        doc.add_paragraph(style=normal_text).add_run()
+
+        title = doc.add_paragraph(style=normal_text).add_run('SURAT PERNYATAAN DAFTAR ALAMAT FASILITAS PRODUKSI DAN BEBAS DARI BABI DAN TURUNANNYA')
+        title.font.size = Pt(14)
+        title.font.bold = True
+        doc.paragraphs[-1].alignment = WD_ALIGN_PARAGRAPH.CENTER
+
+        doc.add_paragraph(style=normal_text).add_run()
+        doc.add_paragraph(style=normal_text).add_run()
+
+        doc.add_paragraph(style=normal_text).add_run("Saya yang bertanda tangan dibawah ini :")
+        doc.add_paragraph(style=normal_text).add_run()
+        doc.add_paragraph(style=normal_text).add_run()
+
+        doc.add_paragraph(style=normal_text).add_run(f"Nama\t\t:")
+        # doc.add_paragraph(style=normal_text).add_run(f"No. Ktp\t\t: {company['ktp']}")
+        doc.add_paragraph(style=normal_text).add_run(f"No. Ktp\t\t:")
+        doc.add_paragraph(style=normal_text).add_run(f"No. Telepon\t:")
+        doc.add_paragraph(style=normal_text).add_run(f"Jabatan\t\t:")
+
+        doc.add_paragraph(style=normal_text).add_run()
+        doc.add_paragraph(style=normal_text).add_run()
+
+        doc.add_paragraph(style=normal_text).add_run(f"Menyatakan bahwa, alamat produksi untuk perusahaan (\t\t) yaitu :")
+
+        doc.add_paragraph(style=normal_text).add_run()
+
+        doc.add_paragraph(style=normal_text).add_run(f"Seluruh fasilitas tersebut dan peralatan yang kami gunakan untuk produksi adalah bebas dari cemaran babi & turunannya.")
+        doc.add_paragraph(style=normal_text).add_run(f"Demikian pernyataan ini saya buat dengan sebenar sebenarnya untuk dapat dipergunakan sebagaimana mestinya.")
+
+        doc.add_paragraph(style=normal_text).add_run()
+
+        doc.add_paragraph(style=normal_text).add_run(f'Jakarta, {date.today().strftime("%d %B %Y")}')
+        doc.add_paragraph(style=normal_text).add_run()
+        doc.add_paragraph(style=normal_text).add_run()
+        doc.add_paragraph(style=normal_text).add_run()
+        doc.add_paragraph(style=normal_text).add_run(f"(\t\t)")
+
+        doc.save('./app/data/coba.docx')
+        
+        return './app/data/coba.docx'
+    except Exception as error:
+        traceback.print_exc()
+        return error
 
 def form_pembelian_pemeriksaan_bahan_docx(pembelian: list, pembelian_impor: list):
     try:
@@ -510,11 +576,13 @@ def form_pembelian_pemeriksaan_bahan_docx(pembelian: list, pembelian_impor: list
         doc = Document()
         primary_style = doc.styles['Body Text']
         primary_style.font.size = Pt(11)
-        primary_style.font.bold = True
         
+        header = doc.add_paragraph(style=primary_style).add_run('Lampiran 7.  Format Form Aktivitas Kritis')
+        header.font.bold = True
         
-        header = doc.add_paragraph(style=primary_style).add_run('FORM PEMBELIAN DAN PEMERIKSAAN BAHAN')
-        header.font.size = Pt(14)
+        title = doc.add_paragraph(style=primary_style).add_run('FORM PEMBELIAN DAN PEMERIKSAAN BAHAN')
+        title.font.size = Pt(14)
+        title.font.bold = True
         doc.paragraphs[-1].alignment = WD_ALIGN_PARAGRAPH.CENTER
         
         doc.add_paragraph(style=primary_style).add_run()
@@ -556,7 +624,7 @@ def form_pembelian_pemeriksaan_bahan_docx(pembelian: list, pembelian_impor: list
             row_cells[0].paragraphs[0].alignment = WD_ALIGN_PARAGRAPH.CENTER
             row_cells[0].vertical_alignment = WD_TABLE_ALIGNMENT.CENTER
             
-            row_cells[1].text = pembelian[index]['Tanggal']
+            row_cells[1].text = date.fromtimestamp(int(pembelian[index]['Tanggal']) / 1000).strftime("%d %B %Y")
             row_cells[1].paragraphs[0].alignment = WD_ALIGN_PARAGRAPH.CENTER
             row_cells[1].vertical_alignment = WD_TABLE_ALIGNMENT.CENTER
             
@@ -570,7 +638,7 @@ def form_pembelian_pemeriksaan_bahan_docx(pembelian: list, pembelian_impor: list
             row_cells[4].paragraphs[0].alignment = WD_ALIGN_PARAGRAPH.CENTER
             row_cells[4].vertical_alignment = WD_TABLE_ALIGNMENT.CENTER
             
-            row_cells[5].text = pembelian[index]['exp_bahan']
+            row_cells[5].text = date.fromtimestamp(int(pembelian[index]['exp_bahan']) / 1000).strftime("%d %B %Y")
             row_cells[5].paragraphs[0].alignment = WD_ALIGN_PARAGRAPH.CENTER
             row_cells[5].vertical_alignment = WD_TABLE_ALIGNMENT.CENTER
             
@@ -583,7 +651,8 @@ def form_pembelian_pemeriksaan_bahan_docx(pembelian: list, pembelian_impor: list
                 row_cells[6].text = ""
         
         doc.add_paragraph(style=primary_style).add_run()
-        doc.add_paragraph(style=primary_style).add_run('Khusus Daging Impor')
+        sub_head = doc.add_paragraph(style=primary_style).add_run('Khusus Daging Impor')
+        sub_head.font.bold = True
         
         table2 = doc.add_table(rows=1, cols=7)
         table2.style = 'Table Grid'
@@ -622,7 +691,7 @@ def form_pembelian_pemeriksaan_bahan_docx(pembelian: list, pembelian_impor: list
             row_cells[0].paragraphs[0].alignment = WD_ALIGN_PARAGRAPH.CENTER
             row_cells[0].vertical_alignment = WD_TABLE_ALIGNMENT.CENTER
             
-            row_cells[1].text = pembelian_impor[index]['Tanggal']
+            row_cells[1].text = date.fromtimestamp(int(pembelian_impor[index]['Tanggal']) / 1000).strftime("%d %B %Y")
             row_cells[1].paragraphs[0].alignment = WD_ALIGN_PARAGRAPH.CENTER
             row_cells[1].vertical_alignment = WD_TABLE_ALIGNMENT.CENTER
             
@@ -636,7 +705,7 @@ def form_pembelian_pemeriksaan_bahan_docx(pembelian: list, pembelian_impor: list
             row_cells[4].paragraphs[0].alignment = WD_ALIGN_PARAGRAPH.CENTER
             row_cells[4].vertical_alignment = WD_TABLE_ALIGNMENT.CENTER
             
-            row_cells[5].text = pembelian_impor[index]['exp_bahan']
+            row_cells[5].text = date.fromtimestamp(int(pembelian_impor[index]['exp_bahan']) / 1000).strftime("%d %B %Y")
             row_cells[5].paragraphs[0].alignment = WD_ALIGN_PARAGRAPH.CENTER
             row_cells[5].vertical_alignment = WD_TABLE_ALIGNMENT.CENTER
             
@@ -649,8 +718,9 @@ def form_pembelian_pemeriksaan_bahan_docx(pembelian: list, pembelian_impor: list
                 row_cells[6].text = ""
         
         doc.add_paragraph(style=primary_style).add_run()
-        doc.add_paragraph(style=primary_style).add_run('Sesuaikan dengan yang digunakan perusahaan saat ini untuk masing-masing aktivitas kritis, diatas hanya contoh saj')
-
+        keterangan = doc.add_paragraph(style=primary_style).add_run('Sesuaikan dengan yang digunakan perusahaan saat ini untuk masing-masing aktivitas kritis, diatas hanya contoh saja')
+        keterangan.font.italic = True
+        
         doc.save('./app/data/coba.docx')
         
         return './app/data/coba.docx'
@@ -664,11 +734,11 @@ def form_stok_bahan_docx(stok_barang: list):
         doc = Document()
         primary_style = doc.styles['Body Text']
         primary_style.font.size = Pt(11)
-        primary_style.font.bold = True
         
         
         header = doc.add_paragraph(style=primary_style).add_run('FORM STOK BAHAN')
         header.font.size = Pt(14)
+        header.font.bold = True
         doc.paragraphs[-1].alignment = WD_ALIGN_PARAGRAPH.CENTER
         
         doc.add_paragraph(style=primary_style).add_run()
@@ -710,7 +780,7 @@ def form_stok_bahan_docx(stok_barang: list):
             row_cells[0].paragraphs[0].alignment = WD_ALIGN_PARAGRAPH.CENTER
             row_cells[0].vertical_alignment = WD_TABLE_ALIGNMENT.CENTER
             
-            row_cells[1].text = stok_barang[index]['tanggal_beli']
+            row_cells[1].text = date.fromtimestamp(int(stok_barang[index]['tanggal_beli']) / 1000).strftime("%d %B %Y")
             row_cells[1].paragraphs[0].alignment = WD_ALIGN_PARAGRAPH.CENTER
             row_cells[1].vertical_alignment = WD_TABLE_ALIGNMENT.CENTER
             
@@ -752,11 +822,11 @@ def form_produksi_docx(produksi: list):
         doc = Document()
         primary_style = doc.styles['Body Text']
         primary_style.font.size = Pt(11)
-        primary_style.font.bold = True
         
         
         header = doc.add_paragraph(style=primary_style).add_run('FORM PRODUKSI')
         header.font.size = Pt(14)
+        header.font.bold = True
         doc.paragraphs[-1].alignment = WD_ALIGN_PARAGRAPH.CENTER
         
         doc.add_paragraph(style=primary_style).add_run()
@@ -798,7 +868,7 @@ def form_produksi_docx(produksi: list):
             row_cells[0].paragraphs[0].alignment = WD_ALIGN_PARAGRAPH.CENTER
             row_cells[0].vertical_alignment = WD_TABLE_ALIGNMENT.CENTER
             
-            row_cells[1].text = produksi[index]['tanggal_produksi']
+            row_cells[1].text = date.fromtimestamp(int(produksi[index]['tanggal_produksi']) / 1000).strftime("%d %B %Y")
             row_cells[1].paragraphs[0].alignment = WD_ALIGN_PARAGRAPH.CENTER
             row_cells[1].vertical_alignment = WD_TABLE_ALIGNMENT.CENTER
             
@@ -840,11 +910,11 @@ def form_pemusnahan_barang_docx(kebersihan: list):
         doc = Document()
         primary_style = doc.styles['Body Text']
         primary_style.font.size = Pt(11)
-        primary_style.font.bold = True
         
         
         header = doc.add_paragraph(style=primary_style).add_run('LAPORAN PEMUSNAHAN BARANG/PRODUK')
         header.font.size = Pt(14)
+        header.font.bold = True
         doc.paragraphs[-1].alignment = WD_ALIGN_PARAGRAPH.CENTER
         
         doc.add_paragraph(style=primary_style).add_run()
@@ -886,7 +956,7 @@ def form_pemusnahan_barang_docx(kebersihan: list):
             row_cells[0].paragraphs[0].alignment = WD_ALIGN_PARAGRAPH.CENTER
             row_cells[0].vertical_alignment = WD_TABLE_ALIGNMENT.CENTER
             
-            row_cells[1].text = kebersihan[index]['tanggal_produksi']
+            row_cells[1].text = date.fromtimestamp(int(kebersihan[index]['tanggal_produksi']) / 1000).strftime("%d %B %Y")
             row_cells[1].paragraphs[0].alignment = WD_ALIGN_PARAGRAPH.CENTER
             row_cells[1].vertical_alignment = WD_TABLE_ALIGNMENT.CENTER
             
@@ -902,7 +972,7 @@ def form_pemusnahan_barang_docx(kebersihan: list):
             row_cells[4].paragraphs[0].alignment = WD_ALIGN_PARAGRAPH.CENTER
             row_cells[4].vertical_alignment = WD_TABLE_ALIGNMENT.CENTER
             
-            row_cells[5].text = kebersihan[index]['tanggal_pemusnahan']
+            row_cells[5].text = date.fromtimestamp(int(kebersihan[index]['tanggal_pemusnahan']) / 1000).strftime("%d %B %Y")
             row_cells[5].paragraphs[0].alignment = WD_ALIGN_PARAGRAPH.CENTER
             row_cells[5].vertical_alignment = WD_TABLE_ALIGNMENT.CENTER
             
@@ -923,11 +993,11 @@ def form_pengecheckan_kebersihan_docx(kebersihan: list):
         doc = Document()
         primary_style = doc.styles['Body Text']
         primary_style.font.size = Pt(11)
-        primary_style.font.bold = True
         
         
         header = doc.add_paragraph(style=primary_style).add_run('FORM PENGECEKAN KEBERSIHAN FASILITAS PRODUKSI DAN KENDARAAN')
         header.font.size = Pt(14)
+        header.font.bold = True
         doc.paragraphs[-1].alignment = WD_ALIGN_PARAGRAPH.CENTER
         
         doc.add_paragraph(style=primary_style).add_run()
@@ -969,7 +1039,7 @@ def form_pengecheckan_kebersihan_docx(kebersihan: list):
             row_cells[0].paragraphs[0].alignment = WD_ALIGN_PARAGRAPH.CENTER
             row_cells[0].vertical_alignment = WD_TABLE_ALIGNMENT.CENTER
             
-            row_cells[1].text = kebersihan[index]['tanggal']
+            row_cells[1].text = date.fromtimestamp(int(kebersihan[index]['tanggal']) / 1000).strftime("%d %B %Y")
             row_cells[1].paragraphs[0].alignment = WD_ALIGN_PARAGRAPH.CENTER
             row_cells[1].vertical_alignment = WD_TABLE_ALIGNMENT.CENTER
             
@@ -1006,11 +1076,13 @@ def daftar_bahan_halal_docx(bahan_halal: list, company: dict, sign_data: dict):
         doc = Document()
         primary_style = doc.styles['Body Text']
         primary_style.font.size = Pt(11)
-        primary_style.font.bold = True
         
+        header = doc.add_paragraph(style=primary_style).add_run('Lampiran 8.  Daftar Bahan Halal (TIDAK WAJIB DIISI)')
+        header.font.bold = True
         
-        header = doc.add_paragraph(style=primary_style).add_run('DAFTAR BAHAN HALAL')
-        header.font.size = Pt(14)
+        title = doc.add_paragraph(style=primary_style).add_run('DAFTAR BAHAN HALAL')
+        title.font.size = Pt(14)
+        title.font.bold = True
         doc.paragraphs[-1].alignment = WD_ALIGN_PARAGRAPH.CENTER
         
         doc.add_paragraph(style=primary_style).add_run(f'Nama Perusahaan\t :{company["company_name"]}')
@@ -1125,19 +1197,19 @@ def matrik_produk_docx(matrik: list, company: dict, sign_data: dict):
         doc = Document()
         primary_style = doc.styles['Body Text']
         primary_style.font.size = Pt(11)
-        primary_style.font.bold = True
         
+        header = doc.add_paragraph(style=primary_style).add_run('Lampiran 9.  Matriks Produk  (TIDAK WAJIB DIISI)')
+        header.font.bold = True
         
-        header = doc.add_paragraph(style=primary_style).add_run('MATRIKS PRODUK')
-        header.font.size = Pt(14)
+        title = doc.add_paragraph(style=primary_style).add_run('MATRIKS PRODUK')
+        title.font.size = Pt(14)
+        title.font.bold = True
         doc.paragraphs[-1].alignment = WD_ALIGN_PARAGRAPH.CENTER
         
         doc.add_paragraph(style=primary_style).add_run(f'Nama Perusahaan\t :{company["company_name"]}')
         doc.add_paragraph(style=primary_style).add_run(f'Kelompok produk\t :{company["product_type"]}')
         
         doc.add_paragraph(style=primary_style).add_run()
-        
-        
         
         table = doc.add_table(rows=1, cols=(2+len(matrik)))
         table.style = 'Table Grid'
@@ -1150,10 +1222,17 @@ def matrik_produk_docx(matrik: list, company: dict, sign_data: dict):
         hdr_cells[1].paragraphs[0].alignment = WD_ALIGN_PARAGRAPH.CENTER
         hdr_cells[1].vertical_alignment = WD_TABLE_ALIGNMENT.CENTER
         
-        for index in range(len(matrik)):
-            hdr_cells[2+index].text = matrik[index]['nama_bahan']
-            hdr_cells[2+index].paragraphs[0].alignment = WD_ALIGN_PARAGRAPH.CENTER
-            hdr_cells[2+index].vertical_alignment = WD_TABLE_ALIGNMENT.CENTER
+        list_barang = []
+        for bahan in matrik:
+            for barang in bahan['list_barang']:
+                list_barang.append(barang['barang'])
+        if len(list_barang) > 1:
+            list_barang = list(dict.fromkeys(list_barang))
+        
+        for index_barang in range(len(list_barang)):
+            hdr_cells[2+index_barang].text = list_barang[index_barang]
+            hdr_cells[2+index_barang].paragraphs[0].alignment = WD_ALIGN_PARAGRAPH.CENTER
+            hdr_cells[2+index_barang].vertical_alignment = WD_TABLE_ALIGNMENT.CENTER
             
         for index in range(len(matrik)):
             row_cells = table.add_row().cells
@@ -1164,6 +1243,12 @@ def matrik_produk_docx(matrik: list, company: dict, sign_data: dict):
             row_cells[1].text = matrik[index]['nama_bahan']
             row_cells[1].paragraphs[0].alignment = WD_ALIGN_PARAGRAPH.CENTER
             row_cells[1].vertical_alignment = WD_TABLE_ALIGNMENT.CENTER
+            
+            for index_barang in range(len(list_barang)):
+                row_cells[2+index_barang].text = "v" if matrik[index]['list_barang'][index_barang]['status'] else "x"
+                row_cells[2+index_barang].paragraphs[0].alignment = WD_ALIGN_PARAGRAPH.CENTER
+                row_cells[2+index_barang].vertical_alignment = WD_TABLE_ALIGNMENT.CENTER
+            
         
         if sign_data:
             detail_sign.font.bold = False
