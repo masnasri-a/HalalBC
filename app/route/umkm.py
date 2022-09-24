@@ -52,7 +52,7 @@ def create_init(model: umkm_model.InitUMKM, resp: Response):
             "daftar_bahan_halal": False,
             "matriks_produk": False
         }
-        col_log.insert_one(model)
+        col_log.insert_one(data_model)
         client.close()
         client, col_detail = mongo.mongodb_config('DocumentDetails')
         data_detail = {
