@@ -54,7 +54,7 @@ def create_init(model: umkm_model.InitUMKM, resp: Response):
         }
         col_log.insert_one(model)
         client.close()
-        client, col_detail = mongo.mongodb_config('DetailUMKM')
+        client, col_detail = mongo.mongodb_config('DocumentDetails')
         data_detail = {
             "_id": _id,
             "creator":model.creator_id,
