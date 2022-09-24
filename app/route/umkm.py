@@ -109,6 +109,7 @@ def detail_umkm(data_model: umkm_model.UmkmDetail, resp: Response):
             "ttd_ketua": data_model.ttd_ketua
         }
         client, col = mongo.mongodb_config('DocumentDetails')
+        print("ID = "+data_model.id)
         change = {'_id': data_model.id}
         newvalues = {"$set": {'detail_umkm': data}}
         col.update_one(change, newvalues)
