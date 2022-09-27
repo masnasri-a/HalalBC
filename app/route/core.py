@@ -164,6 +164,7 @@ def checking_data(model:core_model.LPHCheckingData, resp:Response):
         client.close()
         return response.response_detail(200, "Checking Data Success", resp)
     except:
+        traceback.print_exc()
         return response.response_detail(400, "Checking Data Failed", resp)
 
 
