@@ -19,7 +19,7 @@ async def simulasi_sjh(creator_id, resp: Response,registered: Optional[bool] = F
     """apabila SJH masih belum cukup syarat Sertitikat halal"""
     try:
         valid_id = util.id_checker(creator_id)
-        if valid_id:
+        if not valid_id:
             return response.response_detail(400, "id not valid", resp)
         detail = simulasi.Simulasi(creator_id, registered)
         model, status = detail.logic()  # type: ignore
@@ -58,7 +58,7 @@ async def input_bahan(model: umkm_model.InputBahan, resp: Response):
     """ input bahan baru """
     try:
         valid_id = util.id_checker(model.creator_id)
-        if valid_id:
+        if not valid_id:
             return response.response_detail(400, "id not valid", resp)
         client, col = mongo.mongodb_config('BahanDetail')
         list_bahan = []
@@ -85,14 +85,15 @@ async def input_bahan(model: umkm_model.InputBahan, resp: Response):
 def get_bahan(creator_id: str, resp: Response):
     try:
         valid_id = util.id_checker(creator_id)
-        if valid_id:
+        if not valid_id:
             return response.response_detail(400, "id not valid", resp)
         client, col = mongo.mongodb_config('BahanDetail')
         data = col.find_one({'creator_id':creator_id})
+        print(data)
         client.close()
         return response.response_detail(200, data['list_bahan'], resp)
-
     except Exception as error:
+        traceback.print_exc()
         return response.response_detail(400, "Failed get data bahan", resp)
 
 @app.post('/update_bahan')
