@@ -3,6 +3,7 @@ from http import client
 import json
 import re
 import traceback
+from typing import Optional
 from fastapi import APIRouter, Response
 from model import core_model
 from config import mongo
@@ -103,12 +104,15 @@ def bpjph_checker(model: core_model.BPJPH_Check, resp: Response):
 
 
 @app.get('/get_LPH')
-def get_lph(location: str, resp: Response):
+def get_lph(resp: Response,location: Optional[str] = ""):
     """ ambil data LPH dari address """
     try:
         client, coll = mongo.mongodb_config('Accounts')
-        rgx = re.compile('.*'+location+'.*', re.IGNORECASE)
-        query = {'$and': [{'type': 'LPH'}, {'address': rgx}]}
+        if location != "":
+            rgx = re.compile('.*'+location+'.*', re.IGNORECASE)
+            query = {'$and': [{'$or':[{'type': 'LPH'},{'type':'lph'}]}, {'address': rgx}]}
+        else:
+            query = {'$or':[{'type': 'LPH'},{'type':'lph'}]}
         data = coll.find(query)
         list_result = []
         for detail in data:
