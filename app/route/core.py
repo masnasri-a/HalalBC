@@ -42,6 +42,7 @@ def registration_data(umkm_id, resp: Response):
         else:
             return response.response_detail(400, "UMKM not registered", resp)
     except:
+        traceback.print_exc()
         return response.response_detail(400, "Failed getting umkm data", resp)
 
 @app.get('/get_umkm_registered')
