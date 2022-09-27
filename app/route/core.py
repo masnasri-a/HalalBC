@@ -108,11 +108,11 @@ def get_lph(resp: Response,location: Optional[str] = ""):
     """ ambil data LPH dari address """
     try:
         client, coll = mongo.mongodb_config('Accounts')
-        if location != "":
-            rgx = re.compile('.*'+location+'.*', re.IGNORECASE)
-            query = {'$and': [{'$or':[{'type': 'LPH'},{'type':'lph'}]}, {'address': rgx}]}
-        else:
-            query = {'$or':[{'type': 'LPH'},{'type':'lph'}]}
+        # if location != "":
+        #     rgx = re.compile('.*'+location+'.*', re.IGNORECASE)
+        #     query = {'$and': [{'$or':[{'type': 'LPH'},{'type':'lph'}]}, {'address': rgx}]}
+        # else:
+        query = {'$or':[{'type': 'LPH'},{'type':'lph'}]}
         data = coll.find(query)
         list_result = []
         for detail in data:
