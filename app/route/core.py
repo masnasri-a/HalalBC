@@ -62,9 +62,9 @@ def umkm_registered(resp:Response):
                 "username":name['username'],
                 "status_registration":detail['registration']['status'],
                 "lph_id":detail['lph_appointment']['lph_id'],
-                "status_check_by_lph":detail['lph_checked']['status'],
+                "status_check_by_lph":True if detail['lph_checked']['status'] != "" else False,
                 "status_check_by_BPJPH":detail['bpjph_checked']['status'],
-                "status_LPH_check_field":detail['lph_checked']['survey_location'],
+                "status_LPH_check_field":detail['lph_checked']['review_status'],
                 "status_checked_MUI":detail['mui']['checked_status'],
                 "Certificate_status":detail['certificate']['status']
             })
