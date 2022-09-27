@@ -1,5 +1,6 @@
 import http
 from http import client
+import json
 import re
 import traceback
 from fastapi import APIRouter, Response
@@ -54,7 +55,7 @@ def umkm_registered(resp:Response):
         data = coll.find({})
         list_result = []
         for detail in data:
-            name = coll_acc.find_one({'_id':detail['_id']})
+            name = coll_acc.find_one({'_id':detail['umkm_id']})
             list_result.append({
                 "id":detail['_id'],
                 "username":name['username'],
