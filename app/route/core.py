@@ -68,6 +68,7 @@ def umkm_registered(resp:Response):
         client.close()
         return response.response_detail(200, list_result, resp)
     except:
+        traceback.print_exc()
         return response.response_detail(400, "Failed getting umkm data", resp)
 
 
