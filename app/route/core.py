@@ -187,6 +187,7 @@ def review_buss_place(model:core_model.ReviewBussinessPlace, resp:Response):
         client_desc.close()
         return response.response_detail(200, "Review Bussiness Place Success", resp)
     except:
+        traceback.print_exc()
         return response.response_detail(400, "Review Bussiness Place Failed", resp)
 
 @app.get('/mui_get_data')
