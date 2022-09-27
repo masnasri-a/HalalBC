@@ -23,7 +23,7 @@ class LPHCheckingData(BaseModel):
     description:str = Field(..., example="Harus dilakukan Peninjauan karena .....")
 
 class ReviewBussinessPlace(BaseModel):
-    unkm_id:str
+    umkm_id:str
     lph_id:str
     description:str = Field(..., example="Data yang diberikan tidak sesuai hasil cek lapangan")
     status:str = Field(..., example="Approved / Decline")
