@@ -151,7 +151,7 @@ def checking_data(model:core_model.LPHCheckingData, resp:Response):
     try:
         client, coll = mongo.mongodb_config('Core')
         find_id = {'umkm_id': model.umkm_id}
-        updated = {'lph_checked.status': model.status}
+        updated = {"$set": {'lph_checked.status': model.status}}
         coll.update_one(find_id, updated)
         client_desc, coll_desc = mongo.mongodb_config('Core')
         update_value = {"$set": {'lph_checked.desc':model.description}}
