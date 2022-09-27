@@ -172,6 +172,7 @@ def checking_data(model:core_model.LPHCheckingData, resp:Response):
 def review_buss_place(model:core_model.ReviewBussinessPlace, resp:Response):
     """ LPH Melakukan Review Lapangan """
     try:
+        print(model)
         client, coll = mongo.mongodb_config('Core')
         find_id = {'umkm_id': model.umkm_id}
         update_status_LPH_check_field = {"$set": {'lph_checked.survey_location':True}}
