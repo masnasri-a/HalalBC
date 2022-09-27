@@ -58,6 +58,7 @@ def umkm_registered(resp:Response):
             name = coll_acc.find_one({'_id':detail['umkm_id']})
             list_result.append({
                 "id":detail['_id'],
+                "umkm_id":detail['umkm_id'],
                 "username":name['username'],
                 "status_registration":detail['registration']['status'],
                 "lph_id":detail['lph_appointment']['lph_id'],
