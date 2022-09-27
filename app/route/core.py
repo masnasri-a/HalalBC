@@ -85,8 +85,10 @@ def bpjph_checker(model: core_model.BPJPH_Check, resp: Response):
         if coll.find_one({'_id': model.BPJPH_id}):
             client.close()
             find_id = {'umkm_id': model.umkm_id}
-            update_status = {"$set": {"bpjph_checked.checked": True}}
+            update_status = {"$set": {"bpjph_checked.status": True}}
             coll_data.update_one(find_id, update_status)
+            update_checked = {"$set": {"bpjph_checked.checked": True}}
+            coll_data.update_one(find_id, update_checked)
             update_desc = {"$set": {'bpjph_checked.desc': model.description}}
             coll_data.update_one(find_id, update_desc)
             update_result = {"$set": {'bpjph_checked.result': model.result}}
