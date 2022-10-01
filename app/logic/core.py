@@ -38,7 +38,7 @@ def inset_register(_id, prev_id):
                 "checked_status": False,
                 "decision_desc": "",
                 "date": 0,
-                "approved": False
+                "approved": ""
             },
             "certificate": {
                 "created_date": 0,
