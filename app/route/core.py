@@ -10,6 +10,8 @@ from config import mongo
 from utils import util
 from utils import response
 from logic import core
+from client import blockchain
+
 app = APIRouter()
 
 
@@ -17,12 +19,14 @@ app = APIRouter()
 def registration(model: core_model.Registration, resp: Response):
     """ Registration SJH by UMKM """
     try:
-        if util.id_checker(model.creator_id):
+        if not util.id_checker(model.creator_id):
             if not util.check_regitration(model.creator_id):
                 core.inset_register(model.creator_id,"")
+                blockchain.add_transaction("TX",model.creator_id,bytes("register SJH",'utf-8'))
                 return response.response_detail(200, "Registration Insert Success", resp)
             else:
                 core.inset_register(model.creator_id,model.prev_id)
+                blockchain.add_transaction("TX",model.creator_id,bytes("register SJH",'utf-8'))
                 return response.response_detail(200, "Renew Registration Insert Success", resp)
         else:
             traceback.print_exc()
@@ -96,6 +100,7 @@ def bpjph_checker(model: core_model.BPJPH_Check, resp: Response):
             update_date = {"$set": {'bpjph_checked.date': util.get_created_at()}}
             coll_data.update_one(find_id, update_date)
             client_data.close()
+            blockchain.add_transaction(model.BPJPH_id,model.BPJPH_id,bytes(json.dumps(model.dict),'utf-8'))
             return response.response_detail(200, "Checking data success", resp)
         else:
             traceback.print_exc()
@@ -139,6 +144,7 @@ def LPH_Appointment(model: core_model.Appointment, resp:Response):
             "date":util.get_created_at()
         }}}
         coll.update_one(find_id, updated)
+        blockchain.add_transaction(model.bpjphh_id,model.bpjphh_id,bytes(json.dumps(model.dict),'utf-8'))
         client.close()
         return response.response_detail(200, "Appointment Success", resp)
     except:
@@ -162,6 +168,7 @@ def checking_data(model:core_model.LPHCheckingData, resp:Response):
         client_date.close()
         client_desc.close()
         client.close()
+        blockchain.add_transaction(model.umkm_id,model.umkm_id,bytes(json.dumps(model.dict),'utf-8'))
         return response.response_detail(200, "Checking Data Success", resp)
     except:
         traceback.print_exc()
@@ -186,6 +193,7 @@ def review_buss_place(model:core_model.ReviewBussinessPlace, resp:Response):
         update_desc = {"$set": {'lph_checked.to_mui':model.description}}
         coll_desc.update_one(find_id, update_desc)
         client_desc.close()
+        blockchain.add_transaction(model.umkm_id,model.umkm_id,bytes(json.dumps(model.dict),'utf-8'))
         return response.response_detail(200, "Review Bussiness Place Success", resp)
     except:
         traceback.print_exc()
@@ -217,6 +225,7 @@ def mui_checking_data(model:core_model.MUICheckingData, resp:Response):
         MUI_date = {"$set": {'mui.date':util.get_created_at()}}
         col.update_one(find_id, MUI_date)
         client.close()
+        blockchain.add_transaction(model.umkm_id,model.umkm_id,bytes(json.dumps(model.dict),'utf-8'))
         return response.response_detail(200, "MUI Checking data Success", resp)
     except:
         return response.response_detail(400, "MUI checking data failed", resp)
@@ -238,6 +247,7 @@ def bpjph_insert_certificate_data(model : core_model.UploadCertificate, resp:Res
         expire = {"$set": {'certificate.expired_date':model.expire}}
         col.update_one(find_id, expire)
         client.close()
+        blockchain.add_transaction(model.umkm_id,model.umkm_id,bytes(json.dumps(model.dict),'utf-8'))
         return response.response_detail(200, "Insert Certificate data Success", resp)
     except:
         return response.response_detail(400, "Insert Certificate data failed", resp)

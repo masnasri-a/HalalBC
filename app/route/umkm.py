@@ -1,5 +1,6 @@
 """ umkm  routing pages """
 
+import json
 import traceback
 from typing import List
 from fastapi import APIRouter, HTTPException, Response
@@ -8,6 +9,7 @@ from utils import pdf
 from model import umkm_model
 from utils import response, util
 from config import mongo
+from client import blockchain
 from pydantic import parse_obj_as
 
 app = APIRouter()
@@ -75,6 +77,8 @@ def create_init(model: umkm_model.InitUMKM, resp: Response):
             "matriks_produk": False
         }
         col_detail.insert_one(data_detail)
+        blockchain.add_transaction(model.creator_id,model.creator_id,bytes(json.dumps(data),'utf-8'))
+        
         return response.response_detail(200, {'doc_id': data}, resp)
     except Exception as error:
         traceback.print_exc()
@@ -121,6 +125,7 @@ def detail_umkm(data_model: umkm_model.UmkmDetail, resp: Response):
         newvalues = {"$set": {'detail_umkm': True}}
         log_col.update_one(change, newvalues)
         client.close()
+        blockchain.add_transaction(data_model.id,data_model.id,bytes(json.dumps(data),'utf-8'))
         res = response.response_detail(200, "insert detail umkm success", resp)
         return res
     except Exception as error:
@@ -149,6 +154,7 @@ def penetapan_tim( data_model: umkm_model.PenetapanTeam, resp: Response):
         newvalues = { "$set":{'penetapan_tim': True}}
         log_col.update_one(change, newvalues)
         client.close()
+        blockchain.add_transaction(data_model.id,data_model.id,bytes(json.dumps(data_model),'utf-8'))
 
         res = response.response_detail(200, "penetapan team has been created", resp)
         return res
@@ -199,6 +205,7 @@ def bukti_pelaksanaan(data_model: umkm_model.Pelaksanaan, resp: Response):
         newvalues = {"$set": {'bukti_pelaksanaan': True}}
         log_col.update_one(change, newvalues)
         client.close()
+        blockchain.add_transaction(data_model.id,data_model.id,bytes(json.dumps(data_model),'utf-8'))
         res = response.response_detail(200, "data pelaksanaan has been inserted", resp)
         return res
     except Exception as error:
@@ -325,6 +332,7 @@ def jawaban(data: umkm_model.InputJawabanEvaluasi, resp: Response) -> bool:
         newvalues = {"$set": {'jawaban_evaluasi': True}}
         log_col.update_one(change, newvalues)
         client.close()
+        blockchain.add_transaction(data.id,data.id,bytes(json.dumps(data),'utf-8'))
         res = response.response_detail(200, "jawaban evaluasi has been created", resp)
         return res
     except Exception as error:
@@ -465,6 +473,7 @@ def jawaban_audit(data: umkm_model.JawabanAuditInternal, resp: Response):
         newvalues = {"$set": {'jawaban_audit': True}}
         log_col.update_one(change, newvalues)
         client.close()
+        blockchain.add_transaction(data.id,data.id,bytes(json.dumps(model),'utf-8'))
         res = response.response_detail(200, "Jawaban audit iinternal has been created", resp)
         return res
     except Exception as error:
@@ -501,6 +510,7 @@ def daftar_hadir_kaji(model: umkm_model.DaftarHadirKaji, resp: Response):
         newvalues = {"$set":{'daftar_hasil_kaji': True}}
         log_col.update_one(change, newvalues)
         client.close()
+        blockchain.add_transaction(data.id,data.id,bytes(json.dumps(model),'utf-8'))
         return response.response_detail(200, "daftar hasil kaji has been created", resp)
     except Exception as error:
         traceback.print_exc()
@@ -575,6 +585,7 @@ def pembelian_pemeriksaan(data: umkm_model.Pemeriksaan, resp: Response):
         newvalues = {"$set":{'pembelian_import': True}}
         log_col.update_one(change, newvalues)
         client.close()
+        blockchain.add_transaction(data.id,data.id,bytes(json.dumps(data.data),'utf-8'))
         return response.response_detail(200, "pembelian dan pemeriksaan import has been created", resp)
     except Exception as error:
         return response.response_detail(400, error, resp)
@@ -599,6 +610,7 @@ def form_stok_barang(data: umkm_model.StokBarang, resp: Response):
         newvalues = {"$set":{'stok_barang': True}}
         log_col.update_one(change, newvalues)
         client.close()
+        blockchain.add_transaction(data.id,data.id,bytes(json.dumps(data.data),'utf-8'))
         return response.response_detail(200, "Stok barang has been created", resp)
     except Exception as error:
         traceback.print_exc()
@@ -624,6 +636,7 @@ def form_produksi(data: umkm_model.FormProduksi, resp: Response):
         newvalues = {"$set":{'form_produksi': True}}
         log_col.update_one(change, newvalues)
         client.close()
+        blockchain.add_transaction(data.id,data.id,bytes(json.dumps(data.data),'utf-8'))
         return response.response_detail(200, "form produksi has been created", resp)
     except Exception as error:
         traceback.print_exc()
@@ -649,6 +662,7 @@ def form_produksi(data: umkm_model.FormPemusnahan, resp: Response):
         newvalues = {"$set":{'form_pemusnahan': True}}
         col_col.update_one(change, newvalues)
         client.close()
+        blockchain.add_transaction(data.id,data.id,bytes(json.dumps(data.data),'utf-8'))
         return response.response_detail(200, "Pemusnahan has been created", resp)
     except Exception as error:
         traceback.print_exc()
@@ -674,6 +688,7 @@ def form_pengecekan_kebersihan(data: umkm_model.FormPengecekanKebersihan, resp: 
         newvalues = {"$set":{'form_pengecekan_kebersihan': True}}
         log_col.update_one(change, newvalues)
         client.close()
+        blockchain.add_transaction(data.id,data.id,bytes(json.dumps(data.data),'utf-8'))
         return response.response_detail(200, "pengecekan kebersihan has been created",resp)
     except Exception as error:
         traceback.print_exc()
@@ -699,6 +714,7 @@ def daftar_bahan_halal(data: umkm_model.DaftarBarangHalal, resp: Response):
         newvalues = {"$set": {'daftar_bahan_halal': True}}
         log_col.update_one(change, newvalues)
         client.close()
+        blockchain.add_transaction(data.id,data.id,bytes(json.dumps(data.data),'utf-8'))
         return response.response_detail(200, "daftar barang halal has benn created", resp)
     except Exception as error:
         return response.response_detail(400, error, resp)
@@ -723,6 +739,7 @@ def matriks_produk(data: umkm_model.MatrixProduksi, resp: Response):
         newvalues = {"$set":{'matriks_produk': True}}
         log_col.update_one(change, newvalues)
         client.close()
+        blockchain.add_transaction(data.id,data.id,bytes(json.dumps(data.data),'utf-8'))
         return response.response_detail(200, "matrix product has been created", resp)
     except Exception as error:
         return response.response_detail(400, error, resp)

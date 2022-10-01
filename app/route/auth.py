@@ -7,7 +7,7 @@ from pymongo import errors
 from config import mongo
 from utils import util
 from model import auth_model
-
+from client import blockchain
 app = APIRouter()
 
 
@@ -16,9 +16,9 @@ def register_umkm(data: auth_model.DataUMKM):
     """ A function to generate accounts of UMKM """
     try:
         if util.username_checker(data.username):
-
+            umkm_id = util.id_generator('UMKM')
             model = {
-                "_id": util.id_generator('UMKM'),
+                "_id": umkm_id,
                 "username": data.username,
                 "password": util.sha256(data.password),
                 "company_name": data.company_name,
@@ -37,6 +37,8 @@ def register_umkm(data: auth_model.DataUMKM):
             client, col = mongo.mongodb_config('Accounts')
             datas = col.insert_one(model)
             client.close()
+            tx = blockchain.add_account(umkm_id,data.username, 'umkm')
+            print(tx)
             return datas.inserted_id
         else:
             raise HTTPException(400, 'Username Already Used')
@@ -51,8 +53,9 @@ def register_auditor(data: auth_model.DataAuditor):
     """ A Function for register Auditor Account like a 'Fatwa','LBH','BPJPH' """
     try:
         if util.username_checker(data.username):
+            audit_id = util.id_generator('AUDIT')
             model = {
-                "_id": util.id_generator('AUDIT'),
+                "_id": audit_id,
                 "no_ktp": data.no_ktp,
                 "name": data.name,
                 "username": data.username,
@@ -71,6 +74,7 @@ def register_auditor(data: auth_model.DataAuditor):
             }
             client, col = mongo.mongodb_config('Accounts')
             datas = col.insert_one(model)
+            blockchain.add_account(audit_id,data.username, 'auditor')
             client.close()
             return datas.inserted_id
         else:
@@ -85,8 +89,9 @@ def register_consumer(data: auth_model.DataKonsumen):
     """ A function for register consumen accounts """
     try:
         if util.username_checker(data.username):
+            consumen_id = util.id_generator('CON')
             model = {
-                "_id": util.id_generator('CON'),
+                "_id": consumen_id,
                 "username": data.username,
                 "password": util.sha256(data.password),
                 "name": data.name,
@@ -99,6 +104,7 @@ def register_consumer(data: auth_model.DataKonsumen):
             client, col = mongo.mongodb_config('Accounts')
             datas = col.insert_one(model)
             client.close()
+            blockchain.add_account(consumen_id,data.username, 'auditor')
             return datas.inserted_id
         else:
             raise HTTPException(400, 'Username Already Used')

@@ -19,6 +19,7 @@ def soal_evaluasi(doc_id: str):
     try:
         client, col = mongo.mongodb_config('DocumentDetails')
         jawaban = col.find_one({"_id": doc_id}, {"jawaban_evaluasi": 1})['jawaban_evaluasi']
+        print(jawaban)
         docx_result = soal_evaluasi_docx(jawaban)
         client.close()
         return FileResponse(path=docx_result, filename="coba.docx", media_type='application/vnd.openxmlformats-officedocument.wordprocessingml.document')
