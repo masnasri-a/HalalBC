@@ -61,10 +61,11 @@ def umkm_registered(resp:Response):
         list_result = []
         for detail in data:
             name = coll_acc.find_one({'_id':detail['umkm_id']})
+            print(detail['umkm_id'])
             list_result.append({
                 "id":detail['_id'],
                 "umkm_id":detail['umkm_id'],
-                "username":name['username'],
+                "username":name['username'] if 'username' in name else 'No Name',
                 "status_registration":detail['registration']['status'],
                 "lph_id":detail['lph_appointment']['lph_id'],
                 "status_check_by_lph":True if detail['lph_checked']['status'] != "" else False,
@@ -261,6 +262,7 @@ def qr_detail(umkm_id, resp:Response):
     try:
         client, col = mongo.mongodb_config('Core')
         client_acc, col_acc = mongo.mongodb_config('Accounts')
+        client_bahan, col_bahan = mongo.mongodb_config('DocumentDetails')
         profile_account = col_acc.find_one({'_id':umkm_id})
         result = {}
         if profile_account is not None:
@@ -269,6 +271,11 @@ def qr_detail(umkm_id, resp:Response):
         core_data = col.find_one({'umkm_id':umkm_id})
         if core_data is not None:
             result['core'] = core_data
+        data_bahan = col_bahan.find_one({'creator':umkm_id})
+        if data_bahan is not None:
+            result['pembelian'] = data_bahan['pembelian']
+            result['pembelian_import'] = data_bahan['pembelian_import']
+            result['stok_barang'] = data_bahan['stok_barang']
         client.close()
         client_acc.close()
         return response.response_detail(200, result, resp)
