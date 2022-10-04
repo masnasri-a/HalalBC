@@ -17,7 +17,7 @@ def get_auditor(_id: str):
     """ A function to get Auditor Account by id """
     try:
         client, col = mongo.mongodb_config('Accounts')
-        data = col.find_one({'_id': id, 'role': 'auditor'})
+        data = col.find_one({'_id': _id, 'role': 'auditor'})
         if data is not None:
             return data
         else:
