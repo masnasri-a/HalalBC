@@ -3,6 +3,7 @@ import traceback
 from fastapi import APIRouter, UploadFile, File, Response
 from fastapi.exceptions import HTTPException
 from fastapi.responses import FileResponse
+import requests
 from config import mongo
 from model import util_model
 from utils import response, util
@@ -20,6 +21,10 @@ async def upload(resp: Response,image: UploadFile = File(...)):
         async with aiofiles.open(destination_file_path, 'wb') as out_file:
             while content := await image.read(1024):
                 await out_file.write(content)
+            url = 'http://103.13.206.148:5001/api/v0/add/'
+            files = {'media': open(destination_file_path, 'rb')}
+            res = requests.post(url, files=files)
+            print(res.json()['Hash'])
         return response.response_detail(200, new_file_name+'.'+type_file.split('/')[-1], resp)
     except Exception as error:
         traceback.print_exc()
