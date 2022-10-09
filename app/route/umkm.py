@@ -510,7 +510,7 @@ def daftar_hadir_kaji(model: umkm_model.DaftarHadirKaji, resp: Response):
         newvalues = {"$set":{'daftar_hasil_kaji': True}}
         log_col.update_one(change, newvalues)
         client.close()
-        blockchain.add_transaction(data.id,data.id,bytes(json.dumps(data),'utf-8'))
+        blockchain.add_transaction(model.id,model.id,bytes(json.dumps(data),'utf-8'))
         return response.response_detail(200, "daftar hasil kaji has been created", resp)
     except Exception as error:
         traceback.print_exc()
