@@ -474,7 +474,6 @@ def jawaban_audit(data: umkm_model.JawabanAuditInternal, resp: Response):
         newvalues = {"$set": {'jawaban_audit': True}}
         log_col.update_one(change, newvalues)
         client.close()
-        blockchain.add_transaction(data.id,data.id,bytes(json.dumps(model),'utf-8'))
         res = response.response_detail(200, "Jawaban audit iinternal has been created", resp)
         return res
     except Exception as error:
