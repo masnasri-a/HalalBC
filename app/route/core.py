@@ -19,13 +19,24 @@ app = APIRouter()
 def registration(model: core_model.Registration, resp: Response):
     """ Registration SJH by UMKM """
     try:
+        client, coll = mongo.mongodb_config('Core')
         if util.id_checker(model.creator_id):
             if not util.check_regitration(model.creator_id):
                 core.inset_register(model.creator_id,"")
+                find_id = {'umkm_id': model.creator_id}
+                update_status = {"$set": {"registration.status": True}}
+                coll.update_one(find_id, update_status)
+                update_date = {"$set": {"registration.date": util.get_created_at()}}
+                coll.update_one(find_id, update_date)
                 blockchain.add_transaction("TX",model.creator_id,bytes("register SJH",'utf-8'))
                 return response.response_detail(200, "Registration Insert Success", resp)
             else:
                 core.inset_register(model.creator_id,model.prev_id)
+                find_id = {'umkm_id': model.creator_id}
+                update_status = {"$set": {"registration.status": True}}
+                coll.update_one(find_id, update_status)
+                update_date = {"$set": {"registration.date": util.get_created_at()}}
+                coll.update_one(find_id, update_date)
                 blockchain.add_transaction("TX",model.creator_id,bytes("register SJH",'utf-8'))
                 return response.response_detail(200, "Renew Registration Insert Success", resp)
         else:
@@ -34,6 +45,19 @@ def registration(model: core_model.Registration, resp: Response):
     except:
         traceback.print_exc()
         return response.response_detail(400, "Registration Failed", resp)
+
+
+@app.get('/tracing')
+def tracing(umkm_id, resp: Response):
+    """ UMKM data will be Tracing """
+    try:
+        client, coll = mongo.mongodb_config('Core')
+        data = coll.find_one({'umkm_id':umkm_id})
+        client.close()
+        return data
+    except:
+        traceback.print_exc()
+        return response.response_detail(400, "Tracing Failed", resp)
 
 
 @app.get('/umkm_registration_data')
