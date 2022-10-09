@@ -101,7 +101,7 @@ def bpjph_checker(model: core_model.BPJPH_Check, resp: Response):
             update_date = {"$set": {'bpjph_checked.date': util.get_created_at()}}
             coll_data.update_one(find_id, update_date)
             client_data.close()
-            blockchain.add_transaction(model.BPJPH_id,model.BPJPH_id,bytes(json.dumps(model.dict),'utf-8'))
+            blockchain.add_transaction(model.BPJPH_id,model.BPJPH_id,bytes(json.dumps(model),'utf-8'))
             return response.response_detail(200, "Checking data success", resp)
         else:
             traceback.print_exc()
