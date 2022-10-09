@@ -154,7 +154,7 @@ def penetapan_tim( data_model: umkm_model.PenetapanTeam, resp: Response):
         newvalues = { "$set":{'penetapan_tim': True}}
         log_col.update_one(change, newvalues)
         client.close()
-        blockchain.add_transaction(data_model.id,data_model.id,bytes(json.dumps(data_model),'utf-8'))
+        blockchain.add_transaction(data_model.id,data_model.id,bytes(json.dumps(data_model.data),'utf-8'))
 
         res = response.response_detail(200, "penetapan team has been created", resp)
         return res
