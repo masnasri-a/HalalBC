@@ -19,7 +19,7 @@ app = APIRouter()
 def registration(model: core_model.Registration, resp: Response):
     """ Registration SJH by UMKM """
     try:
-        if not util.id_checker(model.creator_id):
+        if util.id_checker(model.creator_id):
             if not util.check_regitration(model.creator_id):
                 core.inset_register(model.creator_id,"")
                 blockchain.add_transaction("TX",model.creator_id,bytes("register SJH",'utf-8'))
