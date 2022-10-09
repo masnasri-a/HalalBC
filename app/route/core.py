@@ -54,7 +54,7 @@ def tracing(umkm_id, resp: Response):
         client, coll = mongo.mongodb_config('Core')
         data = coll.find_one({'umkm_id':umkm_id})
         client.close()
-        return data
+        return response.response_detail(200, data, resp)
     except:
         traceback.print_exc()
         return response.response_detail(400, "Tracing Failed", resp)
