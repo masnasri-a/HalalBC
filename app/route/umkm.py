@@ -159,6 +159,7 @@ def penetapan_tim( data_model: umkm_model.PenetapanTeam, resp: Response):
         res = response.response_detail(200, "penetapan team has been created", resp)
         return res
     except Exception as error:
+        traceback.print_exc()
         return response.response_detail(400, error, resp)
 
 @app.post('/insert_bukti_pelaksanaan', status_code=200)
