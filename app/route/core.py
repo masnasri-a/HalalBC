@@ -30,7 +30,7 @@ def registration(model: core_model.Registration, resp: Response):
                 coll.update_one(find_id, update_date)
                 blockchain.add_transaction("TX",model.creator_id,bytes("register SJH",'utf-8'))
                 return response.response_detail(200, "Registration Insert Success", resp)
-            else:
+            elif not util.check_regitration(model.creator_id) and model.prev_id != "":
                 core.inset_register(model.creator_id,model.prev_id)
                 find_id = {'umkm_id': model.creator_id}
                 update_status = {"$set": {"registration.status": True}}
@@ -64,7 +64,7 @@ def tracing(umkm_id, resp: Response):
 def registration_data(umkm_id, resp: Response):
     """ UMKM data will be checking by BPJPH """
     try:
-        if not util.check_regitration(umkm_id):
+        if util.check_regitration(umkm_id):
             client, coll = mongo.mongodb_config('Accounts')
             profile_umkm = coll.find_one({'_id':umkm_id})
             client.close()
