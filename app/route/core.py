@@ -303,3 +303,49 @@ def qr_detail(umkm_id, resp:Response):
         return response.response_detail(200, result, resp)
     except:
         return response.response_detail(400, "detail qr failed", resp)
+
+
+@app.post('/review')
+def review(model: core_model.ReviewUMKM, resp:Response):
+    """
+        CONSUMEN POST A REVIEW ABOUT PRODUCT
+    """
+    try:
+        client, col = mongo.mongodb_config('Review')
+        data = {}
+        data['_id'] = util.id_generator("REVIEW")
+        data.update(model.dict())
+        data['created_at'] = util.get_created_at()
+        tex = blockchain.add_transaction(data['_id'],data['_id'],bytes(json.dumps(data),'utf-8'))
+        data['transaction_id'] = tex
+        col.insert_one(data)
+        client.close()
+        return response.response_detail(200, data, resp)
+    except:
+        traceback.print_exc()
+        return response.response_detail(400, "failed post review", resp)
+
+
+
+@app.get('/review_by_umkm')
+def review_by_umkm(umkm_id, resp:Response):
+    """
+        GET REVIEW DATA BY UMKM_ID
+    """
+    try:
+        client, col = mongo.mongodb_config('Review')
+        data = col.find({'umkm_id._id':umkm_id})
+        if data:
+            res = []
+            for detail in data:
+                res.append(detail)
+            client.close()
+            
+            return response.response_detail(200, res, resp)
+        else:
+            traceback.print_exc()
+            return response.response_detail(400, "get review failed", resp)
+    except:
+        traceback.print_exc()
+        return response.response_detail(400, "get review failed", resp)
+
