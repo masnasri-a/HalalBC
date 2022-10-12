@@ -56,8 +56,8 @@ def sjh_full_ver(document_detail: dict, acc, sign):
     
     matrik_produk_docx(doc, document_detail['matriks_produk'], acc, sign)
     
-    doc.save('./app/assets/coba.docx')
-    return './app/assets/coba.docx'
+    doc.save('./app/assets/'+document_detail['creator']+'.docx')
+    return './app/assets/'+document_detail['creator']+'.docx'
     
 def cover_docx(doc: Document, detail_umkm, company, sign_data):
     add_head(doc, "MANUAL SJH", 36)

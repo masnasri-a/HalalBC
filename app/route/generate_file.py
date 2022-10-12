@@ -32,3 +32,16 @@ def generate_sjh(doc_id: str):
     except Exception as error:
         traceback.print_exc()
         raise HTTPException(status_code=400, detail=error)
+
+
+@app.get("/download_doc", response_class=FileResponse)
+def generate_sjh(umkm_id: str):
+    """
+        Download 
+    """
+    try:
+        path = './app/assets/'+umkm_id+'.docx'
+        return FileResponse(path=path, filename="coba.docx", media_type='application/vnd.openxmlformats-officedocument.wordprocessingml.document')
+    except Exception as error:
+        traceback.print_exc()
+        raise HTTPException(status_code=400, detail=error)
