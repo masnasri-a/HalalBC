@@ -96,6 +96,7 @@ def umkm_registered(resp:Response):
                 "status_check_by_BPJPH":detail['bpjph_checked']['status'],
                 "status_LPH_check_field":detail['lph_checked']['review_status'],
                 "status_checked_MUI":detail['mui']['checked_status'],
+                "fatwa_status":detail['fatwa']['status'] if 'fatwa' in detail else None,
                 "Certificate_status":detail['certificate']['status']
             })
         client.close()
@@ -257,7 +258,7 @@ def mui_checking_data(model:core_model.MUICheckingData, resp:Response):
 # @app.post()
 
 @app.post('/bpjph_insert_certificate_data')
-def bpjph_insert_certificate_data(model : core_model.UploadCertificate, resp:Response):
+def bpjph_insert_cetificate_data(model : core_model.UploadCertificate, resp:Response):
     """ BPJPH Upload data certificate """
     try:
         client, col = mongo.mongodb_config('Core')
@@ -274,6 +275,26 @@ def bpjph_insert_certificate_data(model : core_model.UploadCertificate, resp:Res
         return response.response_detail(200, "Insert Certificate data Success", resp)
     except:
         return response.response_detail(400, "Insert Certificate data failed", resp)
+
+
+@app.post('/mui_insert_fatwa_data')
+def bpjph_insert_fatwa_data(model : core_model.UploadCertificate, resp:Response):
+    """ BPJPH Upload data fatwa """
+    try:
+        client, col = mongo.mongodb_config('Core')
+        find_id = {'umkm_id':model.umkm_id}
+        new_value = {"$set": {'fatwa.status':True}}
+        col.update_one(find_id, new_value)
+        data = {"$set": {'fatwa.data':model.cert_id}}
+        col.update_one(find_id, data)
+        create = {"$set": {'fatwa.created_date':util.get_created_at()}}
+        col.update_one(find_id, create)
+        expire = {"$set": {'fatwa.expired_date':model.expire}}
+        col.update_one(find_id, expire)
+        client.close()
+        return response.response_detail(200, "Insert Fatwa data Success", resp)
+    except:
+        return response.response_detail(400, "Insert Fatwa data failed", resp)
 
 
 @app.get('/qr_detail')

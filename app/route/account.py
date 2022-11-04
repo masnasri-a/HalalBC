@@ -1,5 +1,6 @@
 """ Account Services """
 
+from typing import Optional
 import traceback
 from fastapi import APIRouter
 from fastapi.exceptions import HTTPException
@@ -91,20 +92,32 @@ def get_umkm(id: str):
 
 
 @app.get("/get_all_umkm")
-def get_all_umkm():
+def get_all_umkm(lph_id:Optional[str] = "all" ):
     """ A function to get all UMKM Account """
     try:
         client, col = mongo.mongodb_config('Accounts')
-        data = col.find({'role': 'umkm'})
-        if data is not None:
-            return [detail for detail in data]
+        if lph_id != "all":
+            data = col.find({'$and':[{'role': 'umkm'},{'lph_appointment.lph_id':lph_id}]})
+            list_id = []
+            for detail in data:
+                list_id.append(detail['umkm_id'])
+            query = {'_id':{'$in':list_id}}
+            datas = col.find(query)
+            if datas is not None:
+                return [detail for detail in datas]
+            else:
+                client.close()
+                raise HTTPException(404, 'Account not found')
         else:
-            client.close()
-            raise HTTPException(404, 'Account not found')
+            data = col.find({'role': 'umkm'})
+            if data is not None:
+                return [detail for detail in data]
+            else:
+                client.close()
+                raise HTTPException(404, 'Account not found')
     except errors.ExecutionTimeout as error:
         traceback.print_exc()
         raise HTTPException(400, "Failed Get all UMKM") from error
-
 
 @app.get("/get_all_umkm_area")
 def get_all_umkm_area(marketing_area: str):

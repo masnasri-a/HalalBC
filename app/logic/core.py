@@ -40,6 +40,12 @@ def inset_register(_id, prev_id):
                 "date": 0,
                 "approved": ""
             },
+            "fatwa": {
+                "created_date": 0,
+                "expired_date": 0,
+                "status": False,
+                "data": ""
+            },
             "certificate": {
                 "created_date": 0,
                 "expired_date": 0,

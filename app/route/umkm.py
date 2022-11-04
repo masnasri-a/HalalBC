@@ -445,6 +445,22 @@ def get_audit_internal():
     except Exception as error:
         raise HTTPException(400, "error getting data") from error
 
+@app.get('/list_jawaban_audit_internal')
+def jawaban_audit_internal(umkm_id:str, resp:Response):
+    try:
+        client, col = mongo.mongodb_config('DocumentDetails')
+        client_audit, col_audit = mongo.mongodb_config('AuditInternal')
+        doc_id = col.find_one({'creator':umkm_id})
+        result = []
+        data = col_audit.find({'doc_id':doc_id['_id']})
+        for detail in data:
+            result.append(detail)
+        res = response.response_detail(200, result, resp)
+        client.close()
+        client_audit.close()
+        return res
+    except:
+        raise HTTPException(400, "error getting data")
 
 @app.post('/jawaban_audit_internal')
 def jawaban_audit(data: umkm_model.JawabanAuditInternal, resp: Response):
@@ -453,6 +469,7 @@ def jawaban_audit(data: umkm_model.JawabanAuditInternal, resp: Response):
     """
     try:
         client, col = mongo.mongodb_config('DocumentDetails')
+        client_audit, col_audit = mongo.mongodb_config('AuditInternal')
         list_detail = []
         for detail in data.data:
             list_detail.append(detail.dict())
@@ -467,6 +484,12 @@ def jawaban_audit(data: umkm_model.JawabanAuditInternal, resp: Response):
         newvalues = {"$set": {'jawaban_audit': model}}
         col.update_one(change, newvalues)
         client.close()
+        data_audit = {}
+        data_audit['_id'] = util.id_generator('AI')
+        data_audit['doc_id'] = data.id
+        data_audit['data'] = model 
+        col_audit.insert_one(data_audit)
+        client_audit.close()
         client, log_col = mongo.mongodb_config('Log')
         change = {'_id': data.id}
         newvalues = {"$set": {'status': 'jawaban_audit'}}

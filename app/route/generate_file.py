@@ -25,7 +25,6 @@ def generate_sjh(doc_id: str):
         sign = col_sign.find_one({"type_id": document_detail['creator']})
         acc = col_acc.find_one({"_id": document_detail['creator']})
         docx_result = sjh_full_ver(document_detail, acc, sign)
-        
         client.close()
         client_acc.close()
         client_sign.close()
