@@ -76,16 +76,24 @@ def registration_data(umkm_id, resp: Response):
         return response.response_detail(400, "Failed getting umkm data", resp)
 
 @app.get('/get_umkm_registered')
-def umkm_registered(resp:Response):
+def umkm_registered(resp:Response, lph_id:Optional[str] = 'all'):
     """ ambil data list umkm yang register """
     try:
         client, coll = mongo.mongodb_config('Core')
+        datas = coll.find({'lph_appointment.lph_id':lph_id})
+        list_id = []
+        query = {}
+        for detail in data:
+            list_id.append(detail['umkm_id'])
+        if lph_id != 'all':
+            query = {'_id':{'$in':list_id}}
+        else:
+            query = {}
         client_acc, coll_acc = mongo.mongodb_config('Accounts')
-        data = coll.find({})
+        data = coll.find(query)
         list_result = []
         for detail in data:
             name = coll_acc.find_one({'_id':detail['umkm_id']})
-            print(detail['umkm_id'])
             list_result.append({
                 "id":detail['_id'],
                 "umkm_id":detail['umkm_id'],

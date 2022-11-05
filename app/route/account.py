@@ -96,8 +96,9 @@ def get_all_umkm(lph_id:Optional[str] = "all" ):
     """ A function to get all UMKM Account """
     try:
         client, col = mongo.mongodb_config('Accounts')
+        client_core, col_core =  mongo.mongodb_config('Core')
         if lph_id != "all":
-            data = col.find({'$and':[{'role': 'umkm'},{'lph_appointment.lph_id':lph_id}]})
+            data = col_core.find({'lph_appointment.lph_id':lph_id})
             list_id = []
             for detail in data:
                 list_id.append(detail['umkm_id'])
