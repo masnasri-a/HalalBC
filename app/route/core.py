@@ -83,7 +83,7 @@ def umkm_registered(resp:Response, lph_id:Optional[str] = 'all'):
         datas = coll.find({'lph_appointment.lph_id':lph_id})
         list_id = []
         query = {}
-        for detail in data:
+        for detail in datas:
             list_id.append(detail['umkm_id'])
         if lph_id != 'all':
             query = {'_id':{'$in':list_id}}
