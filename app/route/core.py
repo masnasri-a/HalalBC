@@ -86,10 +86,11 @@ def umkm_registered(resp:Response, lph_id:Optional[str] = 'all'):
         for detail in datas:
             list_id.append(detail['umkm_id'])
         if lph_id != 'all':
-            query = {'_id':{'$in':list_id}}
+            query = {'umkm_id':{'$in':list_id}}
         else:
             query = {}
         client_acc, coll_acc = mongo.mongodb_config('Accounts')
+        print(query)
         data = coll.find(query)
         list_result = []
         for detail in data:
