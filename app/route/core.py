@@ -80,16 +80,18 @@ def umkm_registered(resp:Response, lph_id:Optional[str] = 'all'):
     """ ambil data list umkm yang register """
     try:
         client, coll = mongo.mongodb_config('Core')
-        datas = coll.find({'lph_appointment.lph_id':lph_id})
+        client_acc, coll_acc = mongo.mongodb_config('Accounts')
+        check_lph = coll_acc.find_one({'$and':[{'_id':lph_id},{'type':'lph'}]})
         list_id = []
         query = {}
-        for detail in datas:
-            list_id.append(detail['umkm_id'])
-        if lph_id != 'all':
-            query = {'umkm_id':{'$in':list_id}}
-        else:
-            query = {}
-        client_acc, coll_acc = mongo.mongodb_config('Accounts')
+        if check_lph:
+            datas = coll.find({'lph_appointment.lph_id':lph_id})
+            for detail in datas:
+                list_id.append(detail['umkm_id'])
+            if lph_id != 'all':
+                query = {'umkm_id':{'$in':list_id}}
+            else:
+                query = {}
         print(query)
         data = coll.find(query)
         list_result = []
