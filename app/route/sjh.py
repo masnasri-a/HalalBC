@@ -24,6 +24,24 @@ def detail_umkm(creator_id: str, resp: Response):
     client_acc.close()
     return response.response_detail(200, payload, resp)
 
+
+@app.get("/penetapan_tim")
+def detail_umkm(creator_id: str, resp: Response):
+    
+    client, col = mongo.mongodb_config('DocumentDetails')
+    client_acc, col_acc = mongo.mongodb_config('Accounts')
+    acc = col_acc.find_one({"_id": creator_id})
+    raw_data = col.find({"creator": creator_id}, {'penetapan_tim': 1})
+    document_detail = list(raw_data)[-1]
+    payload = {
+        **document_detail,
+        "creator_detail": acc
+    }
+    client.close()
+    client_acc.close()
+    return response.response_detail(200, payload, resp)
+
+
 @app.get("/bukti_pelaksanaan")
 def detail_umkm(creator_id: str, resp: Response):
     
@@ -98,6 +116,23 @@ def detail_umkm(creator_id: str, resp: Response):
     client, col = mongo.mongodb_config('DocumentDetails')
     client_acc, col_acc = mongo.mongodb_config('Accounts')
     raw_data = col.find({"creator": creator_id}, {'pembelian': 1})
+    acc = col_acc.find_one({"_id": creator_id})
+    document_detail = list(raw_data)[-1]
+    payload = {
+        **document_detail,
+        "creator_detail": acc
+    }
+    client.close()
+    client_acc.close()
+    return response.response_detail(200, payload, resp)
+    
+
+@app.get("/pembelian_import")
+def detail_umkm(creator_id: str, resp: Response):
+    
+    client, col = mongo.mongodb_config('DocumentDetails')
+    client_acc, col_acc = mongo.mongodb_config('Accounts')
+    raw_data = col.find({"creator": creator_id}, {'pembelian_import': 1})
     acc = col_acc.find_one({"_id": creator_id})
     document_detail = list(raw_data)[-1]
     payload = {
