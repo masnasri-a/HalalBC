@@ -21,7 +21,6 @@ def generate_sjh(doc_id: str):
         client_acc, col_acc = mongo.mongodb_config('Accounts')
         client_sign, col_sign = mongo.mongodb_config('UtilData')
         document_detail = col.find_one({"creator": doc_id})
-        print(document_detail)
         sign = col_sign.find_one({"type_id": document_detail['creator']})
         acc = col_acc.find_one({"_id": document_detail['creator']})
         docx_result = sjh_full_ver(document_detail, acc, sign)
