@@ -1,7 +1,7 @@
 """ Auth Model Pages """
 
 # pylint: disable=no-name-in-module
-from typing import List, Union
+from typing import List, Union, Optional
 from pydantic import BaseModel, Field
 
 
@@ -109,7 +109,6 @@ class DaftarHadirKaji(BaseModel):
     list_orang: List[DataListOrang]
     pembahasan: List[DataPembahasan]
 
-
 class Lampiran(BaseModel):
     'lampiran'
     id: str
@@ -120,6 +119,8 @@ class DataPemeriksaan(BaseModel):
     nama_dan_negara:str
     halal:str
     exp_bahan:str
+    no_sertifikat:Optional[str] = ''
+    struk_pembelian:str
     paraf:str
 
 class Pemeriksaan(BaseModel):
