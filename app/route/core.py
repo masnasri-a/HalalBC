@@ -381,3 +381,30 @@ def review_by_umkm(umkm_id, resp:Response):
         traceback.print_exc()
         return response.response_detail(400, "get review failed", resp)
 
+@app.post('/pelaporan')
+def pelaporan(model:core_model.Pelaporan, resp:Response):
+    try:
+        client, col = mongo.mongodb_config('Pelaporan')
+        data = {
+            '_id':util.id_generator("PELAPORAN"),
+            **model.dict()
+        }
+        col.insert_one(data)
+        client.close()
+        return response.response_detail(200, "Insert Pelaporan Success", resp)
+
+    except:
+        traceback.print_exc()
+        return response.response_detail(400, "Pelaporan Failed", resp)
+
+@app.get('/pelaporan')
+def g_pelaporan(resp:Response, username:Optional[str]='all'):
+    try:
+        client, col = mongo.mongodb_config('Pelaporan')
+        data = col.find()
+        res = list(data)
+        client.close()
+        return response.response_detail(200, res, resp)
+    except:
+        traceback.print_exc()
+        return response.response_detail(400, "Get Pelaporan Failed", resp)

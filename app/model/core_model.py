@@ -75,3 +75,10 @@ class ReviewUMKM(BaseModel):
             return data
         else:
             raise ValueError('consumen id is not found')
+
+class Pelaporan(BaseModel):
+    image:str
+    description:str
+    umkm_name:str
+    address:str
+    user_name:str
