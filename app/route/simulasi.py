@@ -84,7 +84,7 @@ app = APIRouter()
 #         return response.response_detail(400, "input bahan failed", resp)
 
 
-@app.get('/simulasi')
+@app.post('/simulasi')
 def get_bahan(creator_id: str, resp: Response):
     try:
         valid_id = util.id_checker(creator_id)
@@ -161,7 +161,7 @@ def get_bahan(creator_id: str, resp: Response):
         return response.response_detail(400, "Failed get data bahan", resp)
 
 
-@app.post('/get_simulasi')
+@app.get('/get_simulasi')
 def add_update_bahan(creator_id: str,resp: Response):
     try:
         client, col = mongo.mongodb_config('BahanSimulasi')
