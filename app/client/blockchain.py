@@ -99,23 +99,23 @@ def get_cert(umkm_id):
         traceback.print_exc()
 
 
-# if __name__ == "__main__":
-#     # web3, client = connect_contract()
+if __name__ == "__main__":
+    web3, client = connect_contract()
     
-#     adder = add_account("UMKM:08", "new2s", "umkm")
-#     print(adder)
+    # adder = add_account("UMKM:08", "new2s", "umkm")
+    # print(adder)
 
-    # get_acc = get_account("UMKM:06")
+    # get_acc = get_account("UMKM:08")
     # print(get_acc)
 
-    # test_data = {
-    #     "name":"nasri",
-    #     "role":"umkm"
-    # }
-    # data = json.dumps(test_data)
+    test_data = {
+        "name":"nasri",
+        "role":"umkm"
+    }
+    data = json.dumps(test_data)
     
-    # add_tx = add_transaction("TX", "UMKM:02", data)
-    # print(add_tx)
+    add_tx = add_transaction("TX", "UMKM:02", data)
+    print(add_tx)
 
     # get_tx = get_transaction("TX")
     # print(get_tx)

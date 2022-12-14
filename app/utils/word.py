@@ -75,8 +75,13 @@ def cover_docx(doc: Document, detail_umkm, company, sign_data):
     doc.add_paragraph(style=doc.styles['Body Text']).add_run('Dibuat dan disahkan oleh :')
     doc.paragraphs[-1].alignment = WD_ALIGN_PARAGRAPH.CENTER
     add_linespace(doc)
-    doc.add_picture(f'./app/assets/{sign_data["sign"]}', width=Inches(0.7))
-    doc.paragraphs[-1].alignment = WD_ALIGN_PARAGRAPH.CENTER
+    try:
+        doc.add_picture(f'./app/assets/{sign_data["sign"]}', width=Inches(0.7))
+        doc.paragraphs[-1].alignment = WD_ALIGN_PARAGRAPH.CENTER
+    except:
+        url = 'f8bc60c00959b16a0b5213d4232b290608309b3bbcb569ee50e8f1320e5ddd6f.octet-stream'
+        doc.add_picture(f'./app/assets/f8bc60c00959b16a0b5213d4232b290608309b3bbcb569ee50e8f1320e5ddd6f.octet-stream', width=Inches(0.7))
+        doc.paragraphs[-1].alignment = WD_ALIGN_PARAGRAPH.CENTER
     add_head(doc, detail_umkm['nama_ketua'])
     doc.add_paragraph(style=doc.styles['Body Text']).add_run('Tanggal Pengesahan :')
     doc.paragraphs[-1].alignment = WD_ALIGN_PARAGRAPH.CENTER
