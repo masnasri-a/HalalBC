@@ -1,7 +1,7 @@
 import http
 from http import client
 import json
-import re
+import re, io
 import traceback
 from typing import Optional
 from fastapi import APIRouter, Response
@@ -12,6 +12,7 @@ from utils import response
 from logic import core, certificate
 from client import blockchain
 from starlette.responses import FileResponse
+from fastapi import Response, BackgroundTasks
 
 app = APIRouter()
 
@@ -307,6 +308,19 @@ def generate_cert(umkm_id, resp:Response):
     except:
         traceback.print_exc()
         return response.response_detail(400, "Failed Generate Certificate", resp)
+
+@app.get('/load_certificate')
+def load_cert(umkm_id:str, resp:Response):
+    try:
+        resps = FileResponse(f"app/assets/certificate-{umkm_id}.pdf", media_type='application/octet-stream',filename="certificate.pdf")
+        if resps:
+            return resps
+        else:
+            response.response_detail(400, "Certificate no available", resp)
+    except:
+        traceback.print_exc()
+        return response.response_detail(400, "Certificate no available", resp)
+        
         
 @app.post('/bpjph_insert_certificate_data')
 def bpjph_insert_cetificate_data(model : core_model.UploadCertificate, resp:Response):
