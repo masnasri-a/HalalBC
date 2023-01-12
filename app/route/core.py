@@ -9,8 +9,9 @@ from model import core_model
 from config import mongo
 from utils import util
 from utils import response
-from logic import core
+from logic import core, certificate
 from client import blockchain
+from starlette.responses import FileResponse
 
 app = APIRouter()
 
@@ -268,6 +269,45 @@ def mui_checking_data(model:core_model.MUICheckingData, resp:Response):
 
 # @app.post()
 
+@app.post('/generate_certificate')
+def generate_cert(umkm_id, resp:Response):
+    try:
+        client_acc, col_acc = mongo.mongodb_config('Accounts')
+        account = col_acc.find_one({"_id":umkm_id})
+        client, col = mongo.mongodb_config('DocumentDetails')
+        product = col.find_one({"creator":umkm_id})
+        print(product)
+        data = {}
+        
+        if account:
+            lens = len(account['company_address'])
+            address = account['company_address']
+            if  lens< 60:
+                address += 2*"\n"
+            elif lens <120:
+                address += "\n"
+            address += "."
+            data['_id'] = umkm_id
+            data['name'] = account['company_name']
+            data['product_type'] = account['product_type']
+            data['product_name'] = account['product_name']
+            data['address'] = address
+        if product:
+            prd:dict = product
+            matrix = prd.get('matriks_produk')
+            resps = []
+            for detail in matrix:
+                resps.append(detail['nama_bahan'])
+            print(resps)
+            data['matrix'] = resps
+        print(data)
+        file_name = certificate.generate(data)
+        return FileResponse(file_name, media_type='application/octet-stream',filename="certificate.pdf")
+
+    except:
+        traceback.print_exc()
+        return response.response_detail(400, "Failed Generate Certificate", resp)
+        
 @app.post('/bpjph_insert_certificate_data')
 def bpjph_insert_cetificate_data(model : core_model.UploadCertificate, resp:Response):
     """ BPJPH Upload data certificate """

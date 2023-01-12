@@ -1,4 +1,4 @@
-import json
+import json, time, random
 import os
 import traceback
 from web3 import Web3
@@ -107,16 +107,16 @@ if __name__ == "__main__":
 
     # get_acc = get_account("UMKM:08")
     # print(get_acc)
-
-    test_data = {
-        "name":"nasri",
-        "role":"umkm"
-    }
-    data = json.dumps(test_data)
-    
-    add_tx = add_transaction("TX", "UMKM:02", data)
-    print(add_tx)
-
+    while True:
+        test_data = {
+            "name":"nasri",
+            "role":"umkm"
+        }
+        data = json.dumps(test_data)
+        
+        add_tx = add_transaction("TX", "UMKM:02", data)
+        print(add_tx)
+        time.sleep(random.randint(3,60))
     # get_tx = get_transaction("TX")
     # print(get_tx)
 

@@ -21,7 +21,7 @@ async def upload(resp: Response,image: UploadFile = File(...)):
         async with aiofiles.open(destination_file_path, 'wb') as out_file:
             while content := await image.read(1024):
                 await out_file.write(content)
-            url = 'http://103.13.206.148:5001/api/v0/add/'
+            url = 'http://103.176.79.228:5001/api/v0/add/'
             files = {'media': open(destination_file_path, 'rb')}
             res = requests.post(url, files=files)
             print(res.json()['Hash'])
