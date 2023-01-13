@@ -16,34 +16,50 @@ from fastapi import Response, BackgroundTasks
 
 app = APIRouter()
 
+@app.get('/check_registration_sjh')
+def check_regis(umkm_id:str, resp:Response):
+    try:
+        status =  util.check_regitration(umkm_id)
+        if status:
+            return response.response_detail(200, {"registered":status, "detail":"Account has been registered"}, resp)
+        else:
+            return response.response_detail(404, {"registered":status, "detail":"Account not registered"}, resp)
+    except:
+        traceback.print_exc()
+        return response.response_detail(500, "Database has down", resp)
 
 @app.post('/registration_sjh')
 def registration(model: core_model.Registration, resp: Response):
     """ Registration SJH by UMKM """
     try:
-        client, coll = mongo.mongodb_config('Core')
-        if util.id_checker(model.creator_id):
-            if not util.check_regitration(model.creator_id):
-                core.inset_register(model.creator_id,"")
-                find_id = {'umkm_id': model.creator_id}
-                update_status = {"$set": {"registration.status": True}}
-                coll.update_one(find_id, update_status)
-                update_date = {"$set": {"registration.date": util.get_created_at()}}
-                coll.update_one(find_id, update_date)
-                blockchain.add_transaction("TX",model.creator_id,bytes("register SJH",'utf-8'))
-                return response.response_detail(200, "Registration Insert Success", resp)
-            elif not util.check_regitration(model.creator_id) and model.prev_id != "":
-                core.inset_register(model.creator_id,model.prev_id)
-                find_id = {'umkm_id': model.creator_id}
-                update_status = {"$set": {"registration.status": True}}
-                coll.update_one(find_id, update_status)
-                update_date = {"$set": {"registration.date": util.get_created_at()}}
-                coll.update_one(find_id, update_date)
-                blockchain.add_transaction("TX",model.creator_id,bytes("register SJH",'utf-8'))
-                return response.response_detail(200, "Renew Registration Insert Success", resp)
+        client_simulasi, col_simulasi = mongo.mongodb_config("BahanSimulasi")
+        if util.id_checker(model.creator_id): 
+            client, coll = mongo.mongodb_config('Core')
+            if col_simulasi.find_one({"_id":model.creator_id}):
+                if not util.check_regitration(model.creator_id):
+                    core.inset_register(model.creator_id,"")
+                    find_id = {'umkm_id': model.creator_id}
+                    update_status = {"$set": {"registration.status": True}}
+                    coll.update_one(find_id, update_status)
+                    update_date = {"$set": {"registration.date": util.get_created_at()}}
+                    coll.update_one(find_id, update_date)
+                    blockchain.add_transaction("TX",model.creator_id,bytes("register SJH",'utf-8'))
+                    return response.response_detail(200, "Registration Insert Success", resp)
+                elif not util.check_regitration(model.creator_id) and model.prev_id != "":
+                    core.inset_register(model.creator_id,model.prev_id)
+                    find_id = {'umkm_id': model.creator_id}
+                    update_status = {"$set": {"registration.status": True}}
+                    coll.update_one(find_id, update_status)
+                    update_date = {"$set": {"registration.date": util.get_created_at()}}
+                    coll.update_one(find_id, update_date)
+                    blockchain.add_transaction("TX",model.creator_id,bytes("register SJH",'utf-8'))
+                    return response.response_detail(200, "Renew Registration Insert Success", resp)
+            else:
+                traceback.print_exc()
+                return response.response_detail(401, "Please Simulasi first before registration", resp)
         else:
             traceback.print_exc()
-            return response.response_detail(400, "Already Registration", resp)
+            return response.response_detail(404, "Please check your creator id", resp)
     except:
         traceback.print_exc()
         return response.response_detail(400, "Registration Failed", resp)
@@ -277,9 +293,8 @@ def generate_cert(umkm_id, resp:Response):
         account = col_acc.find_one({"_id":umkm_id})
         client, col = mongo.mongodb_config('DocumentDetails')
         product = col.find_one({"creator":umkm_id})
-        print(product)
         data = {}
-        
+        data['_id'] = umkm_id
         if account:
             lens = len(account['company_address'])
             address = account['company_address']
@@ -299,10 +314,9 @@ def generate_cert(umkm_id, resp:Response):
             resps = []
             for detail in matrix:
                 resps.append(detail['nama_bahan'])
-            print(resps)
             data['matrix'] = resps
-        print(data)
         file_name = certificate.generate(data)
+        print(file_name)
         return FileResponse(file_name, media_type='application/octet-stream',filename="certificate.pdf")
 
     except:

@@ -116,7 +116,7 @@ if __name__ == "__main__":
         
         add_tx = add_transaction("TX", "UMKM:02", data)
         print(add_tx)
-        time.sleep(random.randint(3,60))
+        time.sleep(random.randint(60,600))
     # get_tx = get_transaction("TX")
     # print(get_tx)
 
