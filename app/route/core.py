@@ -36,6 +36,7 @@ def registration(model: core_model.Registration, resp: Response):
         if util.id_checker(model.creator_id): 
             client, coll = mongo.mongodb_config('Core')
             if col_simulasi.find_one({"_id":model.creator_id}):
+                
                 if not util.check_regitration(model.creator_id):
                     core.inset_register(model.creator_id,"")
                     find_id = {'umkm_id': model.creator_id}
@@ -55,7 +56,19 @@ def registration(model: core_model.Registration, resp: Response):
                     blockchain.add_transaction("TX",model.creator_id,bytes("register SJH",'utf-8'))
                     return response.response_detail(200, "Renew Registration Insert Success", resp)
                 else:
-                    return response.response_detail(400, "Account already registered", resp)
+                    datas = coll.find_one({"umkm_id":model.creator_id})
+                    dates = datas['registration']['date']
+                    if dates >= dates + (31536000000 * 3):
+                        core.inset_register(model.creator_id,datas['_id'])
+                        find_id = {'umkm_id': model.creator_id}
+                        update_status = {"$set": {"registration.status": True}}
+                        coll.update_one(find_id, update_status)
+                        update_date = {"$set": {"registration.date": util.get_created_at()}}
+                        coll.update_one(find_id, update_date)
+                        blockchain.add_transaction("TX",model.creator_id,bytes("register SJH",'utf-8'))
+                        return response.response_detail(200, "Renew Registration Insert Success", resp)
+                    else:
+                        return response.response_detail(400, "Account already registered", resp)
             else:
                 traceback.print_exc()
                 return response.response_detail(401, "Please Simulasi first before registration", resp)
