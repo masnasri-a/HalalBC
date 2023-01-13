@@ -54,6 +54,8 @@ def registration(model: core_model.Registration, resp: Response):
                     coll.update_one(find_id, update_date)
                     blockchain.add_transaction("TX",model.creator_id,bytes("register SJH",'utf-8'))
                     return response.response_detail(200, "Renew Registration Insert Success", resp)
+                else:
+                    return response.response_detail(200, "Account already registered", resp)
             else:
                 traceback.print_exc()
                 return response.response_detail(401, "Please Simulasi first before registration", resp)
