@@ -3,6 +3,7 @@
 # pylint: disable=no-name-in-module
 from typing import List, Union, Optional
 from pydantic import BaseModel, Field
+from enum import Enum
 
 
 class InitUMKM(BaseModel):
@@ -245,3 +246,11 @@ class InputBahan(BaseModel):
 class UpdateBahan(BaseModel):
     creator_id:str
     detail_bahan:List[DataBahan]
+    
+class GroupingModel(str, Enum):
+    audit = "audit"
+    pembelian = "pembelian"
+    pembelian_import = "pembelian_import"
+    produksi = "produksi"
+    bahan = "bahan"
+    matrix = "matrix"

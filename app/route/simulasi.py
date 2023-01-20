@@ -206,6 +206,7 @@ def get_bahan(creator_id: str, resp: Response):
                 ]
             }
             col_sim.insert_one(model)
+            return response.response_detail(200, result, resp)
         else:
             log: list = find_simulasi['log']
             log.append(
@@ -221,6 +222,7 @@ def get_bahan(creator_id: str, resp: Response):
             print(count_status)
             print(total)
             col_sim.update_one(myquery, value)
+        
         return response.response_detail(200, result, resp)
     except Exception as error:
         traceback.print_exc()

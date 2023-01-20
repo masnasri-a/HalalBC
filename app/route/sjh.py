@@ -109,10 +109,9 @@ def detail_umkm(creator_id: str, resp: Response):
     client_acc.close()
     return response.response_detail(200, payload, resp)
     
-
+    
 @app.get("/pembelian")
 def detail_umkm(creator_id: str, resp: Response):
-    
     client, col = mongo.mongodb_config('DocumentDetails')
     client_acc, col_acc = mongo.mongodb_config('Accounts')
     raw_data = col.find({"creator": creator_id}, {'pembelian': 1})
