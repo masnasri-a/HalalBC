@@ -537,6 +537,14 @@ def group_audit_internal(resp: Response, type: umkm_model.GroupingModel, umkm_id
                             }]
                         }},
                 )
+            else:
+                aggregation_query.append(
+                    {
+                        "$match": {
+                                "type_data":type.value
+                            }
+                        }
+                )
         aggregation_query.append({
             "$group": {
                 "_id": "$doc_id",
