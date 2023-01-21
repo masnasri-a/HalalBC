@@ -549,7 +549,11 @@ def group_audit_internal(resp: Response, type: umkm_model.GroupingModel, umkm_id
         responses = []
         for datas in data:
             responses.append(datas)
-        return responses
+        if len(responses) >= 1:
+            res = response.response_detail(200, responses, resp)
+            return res
+        else:
+            return response.response_detail(404, "Data Not Found", resp)
     except Exception as error:
         traceback.print_exc()
         return response.response_detail(400, error, resp)

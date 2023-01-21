@@ -12,7 +12,6 @@ async def redirect():
     """ a function for redirect / into /docs """
     return RedirectResponse('/docs')
 
-
 app.include_router(router=auth.app, prefix="/auth", tags=["Auth"])
 app.include_router(router=generate_file.app, prefix="/generate", tags=["Generate"])
 app.include_router(router=sjh.app, prefix="/sjh", tags=["sjh"])
