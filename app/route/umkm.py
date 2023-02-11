@@ -649,9 +649,9 @@ def pembelian_pemeriksaan(pemeriksaan: umkm_model.Pemeriksaan, resp: Response):
         data_audit['_id'] = util.id_generator('PP')
         data_audit['doc_id'] = pemeriksaan.id
         data_audit['data_type'] = 'pembelian'
-        data_audit['data'] = pemeriksaan.data
+        data_audit['data'] = pemeriksaan.dict().get('data')
         print(data_audit)
-        col_audit.insert_one(data_audit)
+        col_audit.insert_one(dict(data_audit))
         client_audit.close()
         client, log_col = mongo.mongodb_config('Log')
         change = {'_id': pemeriksaan.id}
