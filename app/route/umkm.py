@@ -529,21 +529,29 @@ def group_audit_internal(resp: Response, type: umkm_model.GroupingModel, umkm_id
             if docs:
                 aggregation_query.append(
                     {
-                        "$match": {
-                            "$and": [{
-                                "doc_id": docs['_id']
-                            },{
-                                "type_data":type.value
-                            }]
-                        }},
+                        "$match": {"$or": [
+                            {
+                                "$and": [{
+                                    "doc_id": docs['_id']
+                                }, {
+                                    "type_data": type.value
+                                }]
+                            }, {"data_type": type.value
+                                }]}},
                 )
             else:
                 aggregation_query.append(
                     {
                         "$match": {
-                                "type_data":type.value
-                            }
+                            "$or":[
+                                {
+                            "type_data": type.value
+                        },{
+                            "data_type": type.value
                         }
+                            ]
+                        }
+                    }
                 )
         aggregation_query.append({
             "$group": {
