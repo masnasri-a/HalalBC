@@ -13,77 +13,6 @@ from logic import simulasi
 
 app = APIRouter()
 
-
-# @app.post('/simulasi_sjh')
-# async def simulasi_sjh(creator_id, resp: Response, registered: Optional[bool] = False):
-#     """apabila SJH masih belum cukup syarat Sertitikat halal"""
-#     try:
-#         valid_id = util.id_checker(creator_id)
-#         if not valid_id:
-#             return response.response_detail(400, "id not valid", resp)
-#         detail = simulasi.Simulasi(creator_id, registered)
-#         model, status = detail.logic()  # type: ignore
-#         models = {
-#             "message": model['message'],
-#             "data": None,
-#             "created_at": util.get_created_at(),
-#             "creator_id": creator_id
-#         }
-#         client, col = mongo.mongodb_config('DetailSimulasi')
-#         check_simulasi = col.find_one({'_id': creator_id})
-#         if check_simulasi is None:
-#             simulasi_model = {
-#                 '_id': creator_id,
-#                 'list_simulasi': [
-#                     models
-#                 ]
-#             }
-#             insert = col.insert_one(simulasi_model)
-#         else:
-#             list_simulasi = check_simulasi['list_simulasi']
-#             list_simulasi.append(models)
-#             find_id = {'_id': creator_id}
-#             set_data = {'$set': {'list_simulasi': list_simulasi}}
-#             col.update_one(find_id, set_data)
-#         if status:
-#             return response.response_detail(200, models, resp)
-#         else:
-#             return response.response_detail(400, models, resp)
-#     except Exception:
-#         traceback.print_exc()
-#         return response.response_detail(400, "Error create simulation", resp)
-
-
-# @app.post('/input_bahan')
-# async def input_bahan(model: umkm_model.InputBahan, resp: Response):
-#     """ input bahan baru """
-#     try:
-#         valid_id = util.id_checker(model.creator_id)
-#         if not valid_id:
-#             return response.response_detail(400, "id not valid", resp)
-#         client, col = mongo.mongodb_config('BahanDetail')
-
-#         list_bahan = []
-#         number_id = 1
-#         for detail in model.detail_bahan:
-#             model_detail = detail.dict()
-#             model_detail['id'] = number_id
-#             list_bahan.append(model_detail)
-#             number_id += 1
-#         result_model = {
-#             "_id": util.id_generator('BHN'),
-#             "creator_id": model.creator_id,
-#             "created_at": util.get_created_at(),
-#             "list_bahan": list_bahan
-#         }
-#         col.insert_one(result_model)
-#         client.close()
-#         return response.response_detail(200, "insert bahan success", resp)
-#     except Exception as error:
-#         traceback.print_exc()
-#         return response.response_detail(400, "input bahan failed", resp)
-
-
 @app.post('/simulasi')
 def get_bahan(creator_id: str, resp: Response):
     try:
@@ -91,7 +20,19 @@ def get_bahan(creator_id: str, resp: Response):
         if not valid_id:
             return response.response_detail(400, "id not valid", resp)
         client, col = mongo.mongodb_config('DocumentDetails')
-        client_sim, col_sim = mongo.mongodb_config('BahanSimulasi')
+        # client_sim, col_sim = mongo.mongodb_config('BahanSimulasi')
+        client_sim, col_sim = mongo.mongodb_config('LogSimulasi')
+        # Cek Akun sudah melakukan pengisian dokumen apa belum?
+        document_account = col.find_one({"creator":creator_id})
+        if not document_account:        
+            return response.response_detail(404, "UMKM Belum melakukan Pengisian data", resp)
+        # Cek kalau ada yang belum terisi
+        keys_with_none = [key for key, value in document_account.items() if value is None]
+        if keys_with_none:
+            return response.response_detail(404, "UMKM Belum melakukan keseluruhan Pengisian data", resp)
+        
+        # Cek akun apakah pernah registrasi apa belum
+        
         data = col.find_one({'creator': creator_id})
         pembelian = data['pembelian']
         result = []
@@ -119,8 +60,6 @@ def get_bahan(creator_id: str, resp: Response):
                         })
                         count_status += 1
                         total += 1
-
-
                 else:
                     result.append({
                         'name': detail['nama_dan_merk'],
@@ -192,6 +131,7 @@ def get_bahan(creator_id: str, resp: Response):
                     "type":"pembelian_import"
                 })
         client.close()
+        
         find_simulasi = col_sim.find_one({'_id': creator_id})
         if find_simulasi is None:
             model = {
@@ -222,7 +162,6 @@ def get_bahan(creator_id: str, resp: Response):
             print(count_status)
             print(total)
             col_sim.update_one(myquery, value)
-        
         return response.response_detail(200, result, resp)
     except Exception as error:
         traceback.print_exc()

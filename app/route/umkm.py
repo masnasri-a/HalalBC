@@ -643,22 +643,33 @@ def generate_lampiran(doc_id: str, resp: Response):
 def pembelian_pemeriksaan(pemeriksaan: umkm_model.Pemeriksaan, resp: Response):
     """ form pembelian dan pemeriksaan bahan """
     try:
+        list_pemeriksaan = []
         client_audit, col_audit = mongo.mongodb_config('Product')
         client, col = mongo.mongodb_config('DocumentDetails')
-        list_pemeriksaan = []
+        client_bahan, col_bahan = mongo.mongodb_config('BahanSimulasi')
+        list_halal = []
+        list_tidak_halal = []
+        for list_bahan in col_bahan.find({}):
+            if list_bahan.get('required'):
+                list_halal.append(str(list_bahan.get('name')).lower())
+            else:
+                list_tidak_halal.append(str(list_bahan.get('name')).lower())
         for detail_pemeriksaan in pemeriksaan.data:
+            dict_temp = detail_pemeriksaan.dict()
+            if dict_temp.get('nama_dan_merk') in list_halal:
+                if not dict_temp.get('no_sertifikat'):
+                    return response.response_detail(400, f"bahan {dict_temp.get('nama_dan_merk')} harus bersisi nomor sertifikat", resp)
             list_pemeriksaan.append(detail_pemeriksaan.dict())
         change = {'_id': pemeriksaan.id}
         newvalues = {"$set": {'pembelian': list_pemeriksaan}}
         col.update_one(change, newvalues)
         client.close()
-
         data_audit = {}
         data_audit['_id'] = util.id_generator('PP')
         data_audit['doc_id'] = pemeriksaan.id
         data_audit['data_type'] = 'pembelian'
         data_audit['data'] = pemeriksaan.dict().get('data')
-        print(data_audit)
+        # print(data_audit)
         col_audit.insert_one(dict(data_audit))
         client_audit.close()
         client, log_col = mongo.mongodb_config('Log')
@@ -668,6 +679,7 @@ def pembelian_pemeriksaan(pemeriksaan: umkm_model.Pemeriksaan, resp: Response):
         newvalues = {"$set": {'pembelian': True}}
         log_col.update_one(change, newvalues)
         client.close()
+        client_bahan.close()
         blockchain.add_transaction(pemeriksaan.id, pemeriksaan.id, bytes(
             json.dumps(list_pemeriksaan), 'utf-8'))
         return response.response_detail(200, "pembelian dan pemeriksaan has been created", resp)
@@ -683,6 +695,20 @@ def pembelian_pemeriksaan(data: umkm_model.Pemeriksaan, resp: Response):
         client_audit, col_audit = mongo.mongodb_config('Product')
         client, col = mongo.mongodb_config('DocumentDetails')
         list_pemeriksaan = []
+        client_bahan, col_bahan = mongo.mongodb_config('BahanSimulasi')
+        list_halal = []
+        list_tidak_halal = []
+        for list_bahan in col_bahan.find({}):
+            if list_bahan.get('required'):
+                list_halal.append(str(list_bahan.get('name')).lower())
+            else:
+                list_tidak_halal.append(str(list_bahan.get('name')).lower())
+        for detail_pemeriksaan in data.data:
+            dict_temp = detail_pemeriksaan.dict()
+            if dict_temp.get('nama_dan_merk') in list_halal:
+                if not dict_temp.get('no_sertifikat'):
+                    return response.response_detail(400, f"bahan {dict_temp.get('nama_dan_merk')} harus bersisi nomor sertifikat", resp)
+            list_pemeriksaan.append(detail_pemeriksaan.dict())
         for detail_pemeriksaan in data.data:
             list_pemeriksaan.append(detail_pemeriksaan.dict())
         change = {'_id': data.id}
@@ -703,6 +729,7 @@ def pembelian_pemeriksaan(data: umkm_model.Pemeriksaan, resp: Response):
         newvalues = {"$set": {'pembelian_import': True}}
         log_col.update_one(change, newvalues)
         client.close()
+        client_bahan.close()
         blockchain.add_transaction(data.id, data.id, bytes(
             json.dumps(list_pemeriksaan), 'utf-8'))
         return response.response_detail(200, "pembelian dan pemeriksaan import has been created", resp)
@@ -741,10 +768,33 @@ def form_stok_barang(data: umkm_model.StokBarang, resp: Response):
 def form_produksi(data: umkm_model.FormProduksi, resp: Response):
     """ form pembelian dan pemeriksaan bahan import"""
     try:
-
         client, col = mongo.mongodb_config('DocumentDetails')
         list_produksi = []
+        list_bahan = col.find_one({"_id":data.id})
+        
+        # Cek id ada di db
+        if not list_bahan:
+            return response.response_detail(400, "Id tidak ada di db", resp)
+            
+        temp_pembelian = list_bahan.get('pembelian')
+        list_product_avail = []
+        for temp in temp_pembelian:
+            name = temp.get('nama_dan_merk')
+            total = temp.get('jumlah_pembelian')
+            list_product_avail.append({
+                'name':name,
+                'total':total
+            })
+        
         for detail_stok in data.data:
+            temp_dict = detail_stok.dict()
+            for product in list_product_avail:
+                if temp_dict.get('nama_produk') == product.get('name'):
+                    # Check totalnya harus >= avail
+                    jumlah_awal = 0
+                    jumlah_awal = int(temp_dict.get('jumlah_awal'))
+                    if jumlah_awal > product.get('total'):
+                        return response.response_detail(400, f"bahan produksi dari produk {product.get('name')} kurang dari total jumlah penyimpanan", resp)         
             list_produksi.append(detail_stok.dict())
         change = {'_id': data.id}
         newvalues = {"$set": {'form_produksi': list_produksi}}

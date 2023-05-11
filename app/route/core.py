@@ -148,6 +148,38 @@ def umkm_registered(resp:Response, lph_id:Optional[str] = 'all'):
     except:
         traceback.print_exc()
         return response.response_detail(400, "Failed getting umkm data", resp)
+    
+@app.get('/get_umkm_not_registered')
+def umkm_registered(resp:Response, lph_id:Optional[str] = 'all'):
+    """ ambil data list umkm yang register """
+    try:
+        client, coll = mongo.mongodb_config('Core')
+        client_acc, coll_acc = mongo.mongodb_config('Accounts')
+        client_sim, coll_sim = mongo.mongodb_config('LogSimulasi')
+        list_id = []
+        dataId = coll.find({})
+        for datas in dataId:
+            list_id.append(datas.get("_id"))
+        print(list_id)
+        list_result = []
+        data = coll_acc.find({"$and":[{"_id": {"$nin": list_result}},{"role":"umkm"}]})
+        for detail in data:
+            if 'umkm_id' in detail:
+                # name = coll_acc.find_one({'_id':detail['umkm_id']})
+                print(detail)
+                simulasi = coll_sim.find_one({"_id":detail['umkm_id']})
+                if simulasi:
+                    list_result.append({
+                        "id":detail['_id'],
+                        "username":detail['username'],
+                        "company_name":detail['company_name'],
+                        "created_at":"created_at"
+                    })
+        client.close()
+        return response.response_detail(200, list_result, resp)
+    except:
+        traceback.print_exc()
+        return response.response_detail(400, "Failed getting umkm data", resp)
 
 
 @app.post('/BPJPH_checking_data')
