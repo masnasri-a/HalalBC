@@ -46,6 +46,7 @@ class UploadCertificate(BaseModel):
     umkm_id:str
     cert_id:str
     expire:int
+    status:str
 
 
 class ReviewUMKM(BaseModel):
